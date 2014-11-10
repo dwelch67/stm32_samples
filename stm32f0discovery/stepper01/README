@@ -1,0 +1,50 @@
+
+See the top level README for schematic and programmers reference information.
+
+This example uses PA9 AF1 as USART1_TX.
+This example uses PA10 AF1 as USART1_RX (not really used)
+
+The uart part is based on uart02.  8MHz external clock, uart is 115200
+baud 8N1.  Timer from blinker02.  Ired from ired02
+
+
+This example demonstrates how to use an ir receiver module, specifically
+
+http://www.sparkfun.com/products/10266
+
+Be careful!  The pinout for various ir modules is not the same you
+remove this one and replace it with another and you may short something
+out.  On the top left of the board (with the usb port up) is 3v
+then gnd then vbat the pc13.  I am using 3v, gnd for vs and gnd on the
+ir receiver and pc13 for the ir receiver output.
+
+Add one of these stepper motors
+
+https://www.sparkfun.com/products/9065
+
+And if desired one of these, modified for 3.3Volt.
+
+http://jim.sh/ftx/
+
+(or any other 3.3volt uart/serial solution).
+
+I am using codes from a Pioneer cd player remote control which you wont
+likey find or happen to have, so use the codes that come out for a remote
+that you might happen to have that uses the right codes or do your own
+decoding.
+
+Fairly trivial.  The processor is running 8 mhz, so 1 microsecond is
+8000 ticks of the arm timer.  servo commands are simple pulses from 0.5
+to 2.5 ms (ideally repeated every 20ms) so that would be 4000 to 20000
+ticks.  This servo is not a complete 180 degrees it is more like 160,
+so it doesnt quite make the full 4000 to 20000 timer ticks.
+
+I am driving the servo completely from board, using the 5v from usb and
+a ground. then using the led output pc9 for the pulses.  So far the
+usb power has been able to drive this thing and not harm the computer or
+this board (or servo).  Try this at your own risk it is your computer
+mobo you might fry...
+
+
+
+

@@ -1,0 +1,13 @@
+
+See the top level README for schematic and programmers reference information.
+
+This example uses PA9 AF1 as USART1_TX.
+This example uses PA10 AF1 as USART1_RX.
+This example uses PA2 AF1 as USART2_TX.
+This example uses PA3 AF1 as USART2_RX.
+
+GPS time is supposed to be very accurate.  This is a bit of a quicky
+to take that data and display it on one of these:
+
+https://www.sparkfun.com/products/11443
+

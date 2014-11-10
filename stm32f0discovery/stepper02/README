@@ -1,0 +1,35 @@
+
+See the top level README for schematic and programmers reference information.
+
+This example uses PA9 AF1 as USART1_TX.
+This example uses PA10 AF1 as USART1_RX (not really used)
+
+The uart part is based on uart02.  8MHz external clock, uart is 115200
+baud 8N1.  Timer from blinker02.
+
+I have one of these stepper motors
+
+https://www.sparkfun.com/products/9065
+
+And one of these, modified for 3.3Volt.
+
+http://jim.sh/ftx/
+
+(or any other 3.3volt uart/serial solution).
+
+Fairly trivial.  The processor is running 8 mhz, so 1 microsecond is
+8000 ticks of the arm timer.  servo commands are simple pulses from 0.5
+to 2.5 ms (ideally repeated every 20ms) so that would be 4000 to 20000
+ticks.  This servo is not a complete 180 degrees it is more like 160,
+so it doesnt quite make the full 4000 to 20000 timer ticks.
+
+I am driving the servo completely from board, using the 5v from usb and
+a ground. then using the led output pc9 for the pulses.  So far the
+usb power has been able to drive this thing and not harm the computer or
+this board (or servo).  Try this at your own risk it is your computer
+mobo you might fry...
+
+This variant takes characters from the uart, Z/X rotate in large steps,
+A/S rotate in not as big, Q/W smaller and 1/2 even smaller.
+
+

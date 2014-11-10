@@ -1,0 +1,17 @@
+
+See the top level README for schematic and programmers reference information.
+
+This example demonstrates how to use an ir receiver module, specifically
+
+http://www.sparkfun.com/products/10266
+
+The first step in decoding ir is making sure you have your gpio setup
+and are receiving something from the receiver.  Blinking an led is not
+a bad way to do this.  You may need to experiment with your receiver
+and have the led on when the receiver is on or led off when the receiver
+is on depending on the blink you want.  In this case we have two leds
+and can have one match the receiver and one inverted.  With the above
+receiver the green led should be on normally and the blue blink on when
+it is detecting ir pulses.
+
+future examples will decode protocols.

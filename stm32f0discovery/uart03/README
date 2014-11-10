@@ -1,0 +1,13 @@
+
+See the top level README for schematic and programmers reference information.
+
+This example uses PA9 AF1 as USART1_TX.
+This example uses PA10 AF1 as USART1_RX.
+This example uses PA2 AF1 as USART2_TX.
+This example uses PA3 AF1 as USART2_RX.
+
+This is based on uart02 but uses both uarts.
+
+Whatever character comes in the RX of one uart is echoed back out the
+TX of the other uart.  Carriage returns are echoed with an additional
+line feed.

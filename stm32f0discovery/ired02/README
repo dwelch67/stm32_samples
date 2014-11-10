@@ -1,0 +1,245 @@
+
+See the top level README for schematic and programmers reference information.
+
+This example uses PA9 AF1 as USART1_TX.
+This example uses PA10 AF1 as USART1_RX (not really used)
+
+The uart part is based on uart02.  8MHz external clock, uart is 115200
+baud 8N1.  Timer from blinker02.
+
+This web page
+
+http://www.sbprojects.com/knowledge/ir/index.php
+
+Does a pretty good job of describing IR protocols.  Given a choice
+I prefer the protocols that have a start pattern, something you can
+isolate as the beginning and know where you are.
+
+This example demonstrates how to use an ir receiver module, specifically
+
+http://www.sparkfun.com/products/10266
+
+Be careful!  The pinout for various ir modules is not the same you
+remove this one and replace it with another and you may short something
+out.  On the top left of the board (with the usb port up) is 3v
+then gnd then vbat the pc13.  I am using 3v, gnd for vs and gnd on the
+ir receiver and pc13 for the ir receiver output.
+
+So I start with ired01 where I simply blink an led to make sure that
+I have my gpio input properly setup.  Also determine if the ir
+receivier is normally high or normally low, that kind of thing.
+This example starts with step 1 below, I am using the system timer
+to measure the pulses.  I search for the longest pulse, the max
+part below, then I added the min part after that.  Note that how far or
+close you are between the receiver and the remote changes these numbers
+sometimes quite a bit, also point the remote around the room bouncing
+off of walls and the ceiling, etc.  Move the remote close and far away
+from the receiver.
+
+Your numbers may differ (likely will) and you may need to find a
+different remote if you dont have one of the protocols with a start
+pattern like the one I am using.
+
+Step 2 is to measure the second part of the start pulse and determine
+a limit for that.  Adding that to the code.  Note that some patterns
+have a long on pattern with two different short patterns, one of the
+off patterns is a repeat and the code ends there, so try both single
+presses on the remote as well as holding the button down on the remote.
+Some codes have repeats and others dont, you might have to hold the
+button down on a volume up or volume down or channel up or channel down
+to see the repeat.
+
+If you look at the various protocols with a start pattern after the
+start pattern you often go right into the code which is generally
+an on period with an off period, one or both of the parts, on or off,
+being the part that determines the data bit for that field.
+
+Using step 3 and contining one bit at a time, may not show much because
+many of the patterns are going to have some static bits up front and the
+interesting bits at the end of the coded pattern.  So step 4 attempts
+in my case, to find the rest of those patterns, you naturally have
+to use the experimentally determined numbers to create limits to kick
+out of the loops if this appears to be a bad code.
+
+I my case with step 4 I was able to determine that I was looking at
+a 32 bit code.  The on period was around 0x1000 ticks and off period
+either 0x1000 or 0x3100 plus or minus some, depending on the data
+bit.  This looked like the nec protocol
+
+http://www.sbprojects.com/knowledge/ir/nec.php
+
+But isnt that protocol exactly.
+
+
+
+Programmable remotes and the real remotes are not necessarily the
+same behavior as each other even if they both work on the device (tv,
+dvd player, etc).  Repeat patterns for example, and even carrier
+frequency which you can fudge a little.  We are doing that here
+by using one receiver set for one frequency to receive different things
+the timing may not match documentation for that reason.  Say for example
+you believe that a data bit should be 500us on and 500us off, but
+experimentally you find the on period is shorter and off period longer
+that may be because you are using a receiver made for a different carrier
+frequency.  In theory the on and off period together should be closer
+to the specified time period.
+
+
+Once you get the hang of this for one remote try many remotes.  I dont
+particularly care to make myself a generic one size fits all decoder
+I am more interested in one remote/protocol just like my tv or
+dvr or whatever that only cares about one protocol from one remote not
+every protocol from every remote.  I have found that by using this
+approach of giving good sized, within reason, period limits, and starting
+searching again quickly if I fail to see a pattern, I can get good range
+between the receiver and the remote.
+
+
+
+
+
+step 1
+
+    while(1)
+    {
+        while(GET32(GPIOC_IDR)&(1<<13)) continue; //to LOW
+        a=GET32(STK_CVR);
+        while(1) if(GET32(GPIOC_IDR)&(1<<13)) break; //to HIGH
+        b=GET32(STK_CVR);
+        c=(a-b)&STK_MASK;
+        ra=0;
+        if(c>max)
+        {
+            max=c;
+            ra++;
+        }
+        if(c<min)
+        {
+            if(c>0x10000)
+            {
+                min=c;
+                ra++;
+            }
+        }
+        if(ra)
+        {
+            hexstrings(max); hexstring(min);
+        }
+    }
+
+
+step 2
+
+
+    while(1)
+    {
+        while(GET32(GPIOC_IDR)&(1<<13)) continue; //to LOW
+        a=GET32(STK_CVR);
+        while(1) if(GET32(GPIOC_IDR)&(1<<13)) break; //to HIGH
+        b=GET32(STK_CVR);
+        c=(a-b)&STK_MASK;
+        if(c<(0x10B58-0x300)) continue;
+        if(c>(0x10B58+0x300)) continue;
+        while(GET32(GPIOC_IDR)&(1<<13)) continue; //to LOW
+        a=GET32(STK_CVR);
+        c=(b-a)&STK_MASK;
+        ra=0;
+        if(c>max)
+        {
+            max=c;
+            ra++;
+        }
+        if(c<min)
+        {
+            //if(c>0x10000)
+            {
+                min=c;
+                ra++;
+            }
+        }
+        if(ra)
+        {
+            hexstrings(max); hexstring(min);
+        }
+    }
+
+step 3
+
+    while(1)
+    {
+        while(GET32(GPIOC_IDR)&(1<<13)) continue; //to LOW
+        a=GET32(STK_CVR);
+        while(1) if(GET32(GPIOC_IDR)&(1<<13)) break; //to HIGH
+        b=GET32(STK_CVR);
+        c=(a-b)&STK_MASK;
+        if(c<(0x10B58-0x300)) continue;
+        if(c>(0x10B58+0x300)) continue;
+        while(GET32(GPIOC_IDR)&(1<<13)) continue; //to LOW
+        a=GET32(STK_CVR);
+        c=(b-a)&STK_MASK;
+        if(c<(0x844C-0x200)) continue;
+        if(c>(0x844C+0x200)) continue;
+        while(1) if(GET32(GPIOC_IDR)&(1<<13)) break; //to HIGH
+        b=GET32(STK_CVR);
+        c=(a-b)&STK_MASK;
+        ra=0;
+        if(c>max)
+        {
+            max=c;
+            ra++;
+        }
+        if(c<min)
+        {
+            //if(c>0x10000)
+            {
+                min=c;
+                ra++;
+            }
+        }
+        if(ra)
+        {
+            hexstrings(max); hexstring(min);
+        }
+    }
+
+step 4
+
+    while(1)
+    {
+        while(GET32(GPIOC_IDR)&(1<<13)) continue; //to LOW
+        a=GET32(STK_CVR);
+        while(1) if(GET32(GPIOC_IDR)&(1<<13)) break; //to HIGH
+        b=GET32(STK_CVR);
+        c=(a-b)&STK_MASK;
+        if(c<(0x10B58-0x300)) continue;
+        if(c>(0x10B58+0x300)) continue;
+        while(GET32(GPIOC_IDR)&(1<<13)) continue; //to LOW
+        a=GET32(STK_CVR);
+        c=(b-a)&STK_MASK;
+        if(c<(0x844C-0x200)) continue;
+        if(c>(0x844C+0x200)) continue;
+        for(ra=0;ra<128;)
+        {
+            while(1) if(GET32(GPIOC_IDR)&(1<<13)) break; //to HIGH
+            b=GET32(STK_CVR);
+            c=(a-b)&STK_MASK;
+            if(c>0x6000) break;
+            data[ra++]=c;
+            while(GET32(GPIOC_IDR)&(1<<13)) continue; //to LOW
+            a=GET32(STK_CVR);
+            c=(b-a)&STK_MASK;
+            if(c>0x6000) break;
+            data[ra++]=c;
+        }
+        rb=ra;
+        uart_send(0x0A);
+        uart_send(0x0A);
+        uart_send(0x0D);
+        hexstring(rb);
+        for(ra=0;ra<rb;ra+=2)
+        {
+            hexstrings(data[ra+0]);
+            hexstring(data[ra+1]);
+        }
+    }
+

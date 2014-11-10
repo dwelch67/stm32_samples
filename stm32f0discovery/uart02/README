@@ -1,0 +1,12 @@
+
+See the top level README for schematic and programmers reference information.
+
+This example uses PA9 AF1 as USART1_TX.
+This example uses PA10 AF1 as USART1_RX.
+
+This is based on uart01 and blinker02, it takes the clock init routine
+from blinker02, changing from internal 8mhz clock to external 8mhz clock.
+And uart init information from uart01.
+
+Whatever character comes in the RX is echoed back out the TX.  Carriage
+returns are echoed with an additional line feed.
