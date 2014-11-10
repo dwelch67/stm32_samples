@@ -1,0 +1,11 @@
+
+See the top level README for schematic and programmers reference information.
+
+Same as blinker03 except it switches to the external clock first.
+
+The schematic shows that the external clock is 8MHz, so we have to wonder
+if we really switched or not since the internal clock is also 8MHz.
+Unlike the prior examples, for this example even if the flash program
+that boots the processor changes the clocks, this program by
+selecting the external, should blink the led based on an 8MHz clock
+speed no matter what.

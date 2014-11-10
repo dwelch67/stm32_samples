@@ -1,0 +1,20 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+The previous level README says this:
+
+
+and the leds blink
+
+> halt
+> stm32f0x mass_erase 0
+> reset
+
+and they dont.
+
+
+Problem is that if you do that then running sram based programs doesnt
+work.  This example provides a very simple branch to self binary that
+can be used on the flash, that doesnt mess with clocks or anything
+but allows sram based programs to run.

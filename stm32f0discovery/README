@@ -41,6 +41,9 @@ PA10 is USART1_RX alternate function 1
 PB6 is USART1_TX alternate function 0
 PB7 is USART1_RX alternate function 0
 
+There are two leds on this board that we can control, one is on PC8 the
+other on PC9.
+
 This board uses a version 2 (V2) stlink interface, what that really
 is there is another microcontroller on the board, that handles the
 usb side of things, this one (STM32F103.. on the schematic) you do not
@@ -139,6 +142,11 @@ and the leds blink
 
 and they dont.
 
+Now the problem with this mass_erase is that it leaves the processor
+in a funny state such that the sram based programs wont run.  The
+brself directory contains just about the simplest program that puts
+you in a state on power up that you can run sram based examples.
+
 ---------------------
 
 These parts also include a serial bootloader, I have used this
@@ -166,26 +174,6 @@ http://www.sparkfun.com/products/8430
 
 Or this for level shifting to a real com port.
 http://www.sparkfun.com/products/449
-
-With this board the preferred solution, is to connect SB14 and SB15
-on the back of the board.  SB as in solder bridge, these are pads
-that are oriented so that it is really easy to put a blob of solder
-down and short them.  Read on if you dont want to solder.  So what is
-going on here, is again there are really two microcontrollers on this
-board, one is there for the stlink feature, it has usb on one side
-and uses swd to program the stm32f0 microcontroller that is ours
-to program.  What they have also done is basically put a usb to uart
-feature in that stlink interface.  When SB14 and 15 are bridged then
-the stm32f0 uart is connected to the stlink uart, so that we dont
-need one of the above solutions, a couple of solder blobs and there
-you go, done.  But not everyone can or wants to try soldering.  One
-thing you might try is notice that JP1 has two holes labelled TX and
-RX.  If you take a couple of the male/femail wires above and connect
-PA10 to TX and PA9 to RX using a little bending of the male end of the
-wire once through the hole and maybe a little gravity or other physics
-to hopefully keep the metal touching the metal in the hole, this will
-make the same connection.  If you put solder on the solder bridge then
-you dont need to do that.
 
 -----------------
 
