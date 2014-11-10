@@ -1,0 +1,26 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+There are two leds on this board that we can control, one is on PC8 the
+other on PC9.
+
+Some/many microcontrollers to save power require that you enable a logic
+block in a part before using.  Before we can talk to gpio port c to
+blink the leds on pins 8 and 9, we have to enable gpio port c.  This
+happens in the RCC block.  Then we configure the two pins as output
+push-pull (meaning we drive the pin both high and low) no pull up.
+
+This example is in C with some asm to get things started.  Both gcc
+and llvm's clang are used to create various flavors of binaries from
+the same source.  The code is quite trivial but this hopefully creates
+a foundation of how to use these tools for an environment like this.
+
+The sram version of this code is meant to be loaded into sram and the
+debugger told to start executing at the beginning, so it does not follow
+the post-reset boot scheme of the cortex-m.
+
+The flash version does have a vector table that allows this program
+to boot from flash.
+
+

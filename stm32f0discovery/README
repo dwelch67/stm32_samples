@@ -1,0 +1,177 @@
+
+stm32f0 discovery examples
+
+This repository is a collection of examples for use on the stm32f0
+discovery board.
+
+http://www.st.com/stm32f0-discovery
+
+Then under products find the one that says STM32F0DISCO the STM32F0
+one basically.
+
+Currently that links to
+
+http://www.st.com/web/catalog/tools/FM116/SC959/SS1532/LN1848/PF253215
+
+Links below and document numbers may have changed from the time of this
+writing.
+
+Retails for $8.88 plus shipping.
+
+Under the Design Resources tab you will find a schematic zip file which
+as of this writing simply includes one pdf file.  From the schematics
+the part number for the part we are using is STM32F051R8T6
+
+go to the page that comes up for that part.
+
+http://www.st.com/internet/mcu/product/251901.jsp
+
+Under the Design Resources tab download the datasheet DS8668, note that
+the document number is not part of the filename.  You will also
+want the reference manual RM0091 and the programming manual PM0215.
+For information on the serial bootloader add AN2606 and AN3155.
+
+Go to the bottom of the datasheet, under part numbering.  The R means
+64 pin, the 8 means 64Kbytes.  The T means LQFP.
+
+For the uart examples we need to know the pins for tx and rx.  Searching
+through the document you find that
+PA9 is USART1_TX alternate function 1
+PA10 is USART1_RX alternate function 1
+PB6 is USART1_TX alternate function 0
+PB7 is USART1_RX alternate function 0
+
+This board uses a version 2 (V2) stlink interface, what that really
+is there is another microcontroller on the board, that handles the
+usb side of things, this one (STM32F103.. on the schematic) you do not
+develop for.  It allows us to access the hardware debugger in the
+stm32f0 part that we are here to program.  This includes loading and
+running programs in ram and loading programs into flash to be run on
+reset or power up.
+
+No doubt there are closed source windows solutions, but I am interested
+in open source linux solutions.  The main place to go for this is
+
+https://github.com/texane/stlink
+
+I am not a fan of gdb, but am a fan of jtag debugging there is support
+for the stmf0 through openocd which is the popular open source jtag
+utility for arm.  Note we are not directly manipulating the jtag on the
+stm32f0 part, we are talking to the stlink microcontroller which is
+manipulating the jtag on the stm32f0 for us.
+
+Openocd home
+
+http://openocd.sourceforge.net/
+
+git clone git://git.code.sf.net/p/openocd/code openocd
+or
+git clone git://repo.or.cz/openocd.git
+or
+git clone http://repo.or.cz/r/openocd.git
+
+then
+
+cd openocd
+./boostrap
+mkdir build
+cd build
+../configure --enable-stlink
+or
+../configure --enable-stlink --prefix=SOMEDIR
+make
+sudo make install
+
+In various places in this document you will find an openocd config file
+stm32f0discovery.cfg, this is derived from the stock openocd config.
+The stock one simply points at two other files in openocd, instead I
+pulled the three files and made one complete one that doesnt need to
+go find anything else.  Personal preference no other reason.
+
+To load a program in sram and run it the simplest way to do it is to
+have one terminal for the openocd server.  Change to the directory
+that contains your binary file (elf format), this way you dont have to
+type in a path, then with openocd in your path
+
+cd blinker01
+openocd -f ../stm32f0discovery.cfg
+
+it will connect and mention some breakpoints and such.
+
+In another terminal, doesnt matter what directory it is in,
+
+telnet localhost 4444
+
+This should connect to the other and you should see both screens reflect
+the connection.  IF THE CONNECTION WORKS then
+
+> halt
+> load_image blinker01.gcc.thumb.sram.elf
+> resume 0x20000000
+
+You can repeat those three lines over and over again as you continue
+to develop your program (ideally in a third terminal).  The above
+only writes the program to ram and runs it there.  When the power goes
+out the program is lost.  To have the program run when power is applied
+you need to write the program to the flash.  Building for flash
+and for sram are two different binaries for reasons described elsewhere
+(TODO).  Again using openocd and a terminal to log into the openocd
+debug server (see above)
+
+Looks like there is flash support now
+
+> flash banks
+#0 : stm32f0x.flash (stm32f1x) at 0x08000000, size 0x00010000, buswidth 0, chipwidth 0
+
+The command is
+
+flash write_image [erase] [unlock] filename [offset [file_type]]
+
+> halt
+> flash write_image erase blinker01.gcc.thumb.flash.elf
+> reset
+
+and the leds blink
+
+> halt
+> stm32f0x mass_erase 0
+> reset
+
+and they dont.
+
+---------------------
+
+These parts also include a serial bootloader, I have used this
+bootloader before with another board.  The uloader directory contains
+a framework of functions that you can use to program the part using the
+built in serial bootloader.  See the README in the uloader directory
+
+----------------
+
+However you do things I highly recommend you keep in your toolbox one
+or many usb to serial converters and you learn to use the uart for
+debugging, bootloading, etc.  It remains a simpler to use interface
+than usb.
+
+A recent purchase, experimentally white is RX and green is TX, black GND
+http://www.nexuscyber.com/usb-to-ttl-serial-debug-console-cable-for-raspberry-pi
+
+http://www.sparkfun.com/products/9873
+plus some male/female wire
+http://www.sparkfun.com/products/9140
+
+Solutions that may involve soldering
+http://www.sparkfun.com/products/718
+http://www.sparkfun.com/products/8430
+
+Or this for level shifting to a real com port.
+http://www.sparkfun.com/products/449
+
+-----------------
+
+Start with the blinker examples, sram builds.
+
+My examples do not initialize .bss nor do I use .data.  To understand
+how that affects you see the bssdata directory in my raspberry pi repo
+http://github.com/dwelch67/raspberrypi  then go to the bssdata repo and
+read the README.
