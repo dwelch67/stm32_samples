@@ -64,11 +64,11 @@ Openocd home
 
 http://openocd.sourceforge.net/
 
-git clone git://git.code.sf.net/p/openocd/code openocd
-or
 git clone git://repo.or.cz/openocd.git
 or
 git clone http://repo.or.cz/r/openocd.git
+or
+git clone git://git.code.sf.net/p/openocd/code openocd
 
 then
 
@@ -76,9 +76,9 @@ cd openocd
 ./boostrap
 mkdir build
 cd build
-../configure --enable-stlink
+../configure
 or
-../configure --enable-stlink --prefix=SOMEDIR
+../configure --prefix=SOMEDIR
 make
 sudo make install
 
@@ -167,6 +167,71 @@ http://www.sparkfun.com/products/8430
 Or this for level shifting to a real com port.
 http://www.sparkfun.com/products/449
 
+With this board the preferred solution, is to connect SB14 and SB15
+on the back of the board.  SB as in solder bridge, these are pads
+that are oriented so that it is really easy to put a blob of solder
+down and short them.  Read on if you dont want to solder.  So what is
+going on here, is again there are really two microcontrollers on this
+board, one is there for the stlink feature, it has usb on one side
+and uses swd to program the stm32f0 microcontroller that is ours
+to program.  What they have also done is basically put a usb to uart
+feature in that stlink interface.  When SB14 and 15 are bridged then
+the stm32f0 uart is connected to the stlink uart, so that we dont
+need one of the above solutions, a couple of solder blobs and there
+you go, done.  But not everyone can or wants to try soldering.  One
+thing you might try is notice that JP1 has two holes labelled TX and
+RX.  If you take a couple of the male/femail wires above and connect
+PA10 to TX and PA9 to RX using a little bending of the male end of the
+wire once through the hole and maybe a little gravity or other physics
+to hopefully keep the metal touching the metal in the hole, this will
+make the same connection.  If you put solder on the solder bridge then
+you dont need to do that.
+
+-----------------
+
+Toolchain.  I run on linux, these examples are tested on linux, other
+than subtle differences like rm vs del in the Makefile, you should be
+able to use these examples on a windows or mac system.
+
+My code is written to be somewhat generic, but the assembly and in
+particular the linker script are specific to the gnu tools because
+that is how the toolchain world works unfortunately.  Since everyone
+can get the gnu tools, they are available for Windows, Mac and Linux,
+but not everyone can or wants to use the pay-for tools (or free tools
+that are specific to one operating system) these examples are written
+and tested using a gnu tool chain.  My personal style is such that
+this code tends to port across the various versions of the gnu tools
+also it is not specific to arm-none-eabi, arm-none-gnueabi,
+arm-linux-gnueabi and so on.  You may need to change the ARMGNU line
+at the top of my Makefile though.
+
+So, if you are running Ubuntu Linux or a derivative you might only
+need to do this:
+
+apt-get install gcc-arm-linux-gnueabi binutils-arm-linux-gnueabi
+
+Or you can go here and get a pre-built for your operating system
+
+https://launchpad.net/gcc-arm-embedded
+
+Or in another one of my github repositories you can get a build_arm
+script
+
+https://github.com/dwelch67/build_gcc
+
+Which builds a cross compiler from sources.  Here again tested on
+Linux (Ubuntu derivative) I used to use prior versions of this
+script on Windows, but I gave up on maintaining that...This latter
+build from the script is what I use as my daily driver arm toolchain.
+
+Easier to come by but you can also get the llvm/clang toolchain as
+an alternate compiler, it is not like gcc, one toolchain supports
+all targets (normally).  I still use gnu binutils to do the assembling
+and linking when using clang/llvm as a compiler (that part is target
+specific for llvm).  So for this last solution you still need binutils
+(which is easier to get built and working than gcc).  And my build_gcc
+repo has a build_llvm script that I use for clang/llvm.
+
 -----------------
 
 Start with the blinker examples, sram builds.
@@ -174,4 +239,4 @@ Start with the blinker examples, sram builds.
 My examples do not initialize .bss nor do I use .data.  To understand
 how that affects you see the bssdata directory in my raspberry pi repo
 http://github.com/dwelch67/raspberrypi  then go to the bssdata repo and
-read the README.
+read the README. (TODO write another)

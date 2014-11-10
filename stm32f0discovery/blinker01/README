@@ -23,4 +23,10 @@ the post-reset boot scheme of the cortex-m.
 The flash version does have a vector table that allows this program
 to boot from flash.
 
-
+Note that the sram version is at the mercy of whatever was booted from
+flash, so first we assume that didnt crash such that openocd downloading
+wouldnt work.  Also if whatever was on the flash for example multiplies
+the main clock then the blink rate may vary compared to the flash
+version.  Likewise if you use the sram version first, then flash
+the flash version, that may cause both to slow down the blink rate.
+Later examples will cover speeding up the chips clocks.
