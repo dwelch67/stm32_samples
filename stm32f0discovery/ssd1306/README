@@ -1,0 +1,19 @@
+
+See the top level README for schematic and programmers reference information.
+
+This example uses PA9 AF1 as USART1_TX.
+This example uses PA10 AF1 as USART1_RX (not really used)
+
+I did a search on ebay for ssd1306 and found some white 0.96" 128x64 I2C
+OLED LCD display modules.
+
+I have a raspberry pi example that uses spi on a sparkfun display that
+is smaller that uses the ssd1306.  So I lifted the list of commands
+and stuff from that and replaced the spi command and data writes with
+i2c command and data writes.
+
+Seems to work fine, need to fill the screen with stuff still...right
+now it is staying in a 64x48 region because that is what the other
+display size was.
+
+
