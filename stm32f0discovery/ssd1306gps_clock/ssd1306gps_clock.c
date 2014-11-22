@@ -78,6 +78,9 @@ void dummy ( unsigned int );
 unsigned char xstring[16];
 unsigned int lasttime;
 
+unsigned int locked;
+unsigned int valid;
+
 #define SETCONTRAST         0x81
 #define DISPLAYALLONRESUME  0xA4
 #define DISPLAYALLON        0xA5
@@ -680,6 +683,12 @@ void show_time ( void )
             for(re=0;re<8;re++) send_data(rf);
         }
     }
+    SetPageStart(ra);
+    SetColumn(0);
+    if(valid==0) rf=0x80; else rf=0;
+    for(rb=0;rb<0x40;rb++) send_data(rf);
+    if(locked==0) rf=0x80; else rf=0;
+    for(rb=0;rb<0x40;rb++) send_data(rf);
 }
 //------------------------------------------------------------------------
 void timer_delay ( unsigned int d )
@@ -702,8 +711,6 @@ int notmain ( void )
     unsigned int off;
     unsigned int state;
     unsigned int ncom;
-    unsigned int locked;
-    unsigned int valid;
 
     clock_init();
     uart_init();
@@ -825,7 +832,7 @@ hexstring(0x12345678);
 
     //toggle_seconds=0;
     valid=0;
-    locked=1;
+    locked=0;
     state=0;
     off=0;
     ncom=0;
@@ -863,7 +870,7 @@ hexstring(0x12345678);
             case 4:
             {
                 if(ra=='R') state++;
-                //else if(ra=='G') state=100;
+                else if(ra=='G') state=100;
                 else state=0;
                 break;
             }
@@ -914,8 +921,8 @@ hexstring(0x12345678);
                         uart_send(0x30+locked);
                         uart_send(0x20);
 #endif
-                        if((valid)&&(locked))
-                        //if(1)
+                        //if((valid)&&(locked))
+                        if(1)
                         {
 
                             //002329.799,V
@@ -953,7 +960,7 @@ hexstring(0x12345678);
                         else
                         {
                             xstring[0]=0x31;
-                            xstring[1]=0x37;
+                            xstring[1]=0x39;
                             xstring[2]=0x37;
                             xstring[3]=0x30|(valid)|(locked<<1);
                             xstring[4]=0;
@@ -1003,53 +1010,53 @@ hexstring(0x12345678);
                 break;
             }
 //$GPGSA,A,1,,,,,,,,,,,,,,,*1E
-            //case 100:
-            //{
-                //if(ra=='S') state++;
-                //else state=0;
-                //break;
-            //}
-            //case 101:
-            //{
-                //if(ra=='A') state++;
-                //else state=0;
-                //break;
-            //}
-            //case 102:
-            //{
-                //if(ra==',') state++;
-                //else state=0;
-                //break;
-            //}
-            //case 103:
-            //{
-                //if(ra=='A') state++;
-                //else state=0;
-                //break;
-            //}
-            //case 104:
-            //{
-                //if(ra==',') state++;
-                //else state=0;
-                //break;
-            //}
-            //case 105:
-            //{
-                //switch(ra)
-                //{
-                    //default:
-                    //case 0x31:
-                        //locked=0;
-                        //break;
-                    //case 0x32:
-                    //case 0x33:
-                        //locked=1;
-                        //break;
-                //}
-                ////hexstring(ra|(locked<<16));
-                //state=0;
-                //break;
-            //}
+            case 100:
+            {
+                if(ra=='S') state++;
+                else state=0;
+                break;
+            }
+            case 101:
+            {
+                if(ra=='A') state++;
+                else state=0;
+                break;
+            }
+            case 102:
+            {
+                if(ra==',') state++;
+                else state=0;
+                break;
+            }
+            case 103:
+            {
+                if(ra=='A') state++;
+                else state=0;
+                break;
+            }
+            case 104:
+            {
+                if(ra==',') state++;
+                else state=0;
+                break;
+            }
+            case 105:
+            {
+                switch(ra)
+                {
+                    default:
+                    case 0x31:
+                        locked=0;
+                        break;
+                    case 0x32:
+                    case 0x33:
+                        locked=1;
+                        break;
+                }
+                //hexstring(ra|(locked<<16));
+                state=0;
+                break;
+            }
         }
     }
 
