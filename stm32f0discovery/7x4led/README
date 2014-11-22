@@ -1,0 +1,38 @@
+
+See the top level README for schematic and programmers reference information.
+
+So I have a display like this one
+
+https://www.sparkfun.com/products/9480
+https://www.sparkfun.com/datasheets/Components/LED/7-Segment/YSD-439AY2B-35.pdf
+
+And remember you have to add some resistors inline, I kinda messed up
+my first board (have not made the second board yet), and put 10K
+resistors everywhere, that was WAY overkill.  So I ended up with no
+resistor on DIG1, DIG2, DIG3, and DIG4, and a resistor each between
+A,B,C,D,E,F,G,DP1 and the respective pins on the microcontroller (PA0-7
+respectively).  I would have preferred a resistor on the DIG1-4 side
+and none on the A-G side.  Note DIG1-4 are connected to PC0-3 on the
+microcontroller.
+
+So how this works is you need for example DIG1 high, and whatever leds
+you want ON on the first digit to be LOW.  So if you want to show
+the number 7 then DIG1,D,E,F,G are HIGH, and A,B,C are LOW.  The
+difference between the high DIG1 and the low A,B,C causes current to
+flow through the led.  But because DIG1 is high and D,E,F,G are also
+high then no current flows as they are at the same voltage level.
+
+So I made myself a little chart and computed for each digit which of
+PA0-7 to reset and which to set, and made an array to write to GPIOA.
+
+Now you may be looking at the data sheet and wonder, how do I make more
+than one of the digits a different value?  Well how this works is the
+leds are faster than your eyes/brain.  So you turn off DIG1-4 combined
+with the diode (LED=light emitting DIODE) no current will flow backwards
+so even though DIGx may be low and some A-G will be high the leds
+will be off.  You change A-G to the next digit you want to show and
+you blink DIGx.  Repeat for each digit.  There is a pretty wide range
+of blink rates that your eyes/brain will see the leds as on, even though
+they are actually blinking.
+
+
