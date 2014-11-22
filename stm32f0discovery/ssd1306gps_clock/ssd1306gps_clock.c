@@ -825,7 +825,7 @@ hexstring(0x12345678);
 
     //toggle_seconds=0;
     valid=0;
-    locked=0;
+    locked=1;
     state=0;
     off=0;
     ncom=0;
@@ -863,7 +863,7 @@ hexstring(0x12345678);
             case 4:
             {
                 if(ra=='R') state++;
-                else if(ra=='G') state=100;
+                //else if(ra=='G') state=100;
                 else state=0;
                 break;
             }
@@ -892,17 +892,12 @@ hexstring(0x12345678);
                 if((ncom)&&(ra==','))
                 {
                     valid=0;
-                    ra=0;
                     for(rb=0;rb<off;rb++)
                     {
                         if(xstring[rb]==',')
                         {
-                            ra++;
-                            if(ra==2)
-                            {
-                                if(xstring[rb+1]=='A') valid=1;
-                                break;
-                            }
+                            if(xstring[rb+1]=='A') valid=1;
+                            break;
                         }
                     }
                     //012345678901
@@ -1008,53 +1003,53 @@ hexstring(0x12345678);
                 break;
             }
 //$GPGSA,A,1,,,,,,,,,,,,,,,*1E
-            case 100:
-            {
-                if(ra=='S') state++;
-                else state=0;
-                break;
-            }
-            case 101:
-            {
-                if(ra=='A') state++;
-                else state=0;
-                break;
-            }
-            case 102:
-            {
-                if(ra==',') state++;
-                else state=0;
-                break;
-            }
-            case 103:
-            {
-                if(ra=='A') state++;
-                else state=0;
-                break;
-            }
-            case 104:
-            {
-                if(ra==',') state++;
-                else state=0;
-                break;
-            }
-            case 105:
-            {
-                switch(ra)
-                {
-                    default:
-                    case 0x31:
-                        locked=0;
-                        break;
-                    case 0x32:
-                    case 0x33:
-                        locked=1;
-                        break;
-                }
-                //hexstring(ra|(locked<<16));
-                state=0;
-                break;
-            }
+            //case 100:
+            //{
+                //if(ra=='S') state++;
+                //else state=0;
+                //break;
+            //}
+            //case 101:
+            //{
+                //if(ra=='A') state++;
+                //else state=0;
+                //break;
+            //}
+            //case 102:
+            //{
+                //if(ra==',') state++;
+                //else state=0;
+                //break;
+            //}
+            //case 103:
+            //{
+                //if(ra=='A') state++;
+                //else state=0;
+                //break;
+            //}
+            //case 104:
+            //{
+                //if(ra==',') state++;
+                //else state=0;
+                //break;
+            //}
+            //case 105:
+            //{
+                //switch(ra)
+                //{
+                    //default:
+                    //case 0x31:
+                        //locked=0;
+                        //break;
+                    //case 0x32:
+                    //case 0x33:
+                        //locked=1;
+                        //break;
+                //}
+                ////hexstring(ra|(locked<<16));
+                //state=0;
+                //break;
+            //}
         }
     }
 
