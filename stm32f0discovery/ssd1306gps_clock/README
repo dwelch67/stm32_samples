@@ -1,0 +1,12 @@
+
+See the top level README for schematic and programmers reference information.
+
+This example uses PA9 AF1 as USART1_TX.
+This example uses PA3 AF1 as USART2_RX.
+
+derived from uart03 and ssd1306b
+
+similar to the other gps clock, but uses this display instead of the
+other.
+
+

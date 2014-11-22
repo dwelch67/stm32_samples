@@ -11,9 +11,3 @@ I have a raspberry pi example that uses spi on a sparkfun display that
 is smaller that uses the ssd1306.  So I lifted the list of commands
 and stuff from that and replaced the spi command and data writes with
 i2c command and data writes.
-
-Seems to work fine, need to fill the screen with stuff still...right
-now it is staying in a 64x48 region because that is what the other
-display size was.
-
-
