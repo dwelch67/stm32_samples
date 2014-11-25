@@ -683,12 +683,12 @@ void show_time ( void )
             for(re=0;re<8;re++) send_data(rf);
         }
     }
-    //SetPageStart(ra);
-    //SetColumn(0);
-    //if(valid==0) rf=0x80; else rf=0;
-    //for(rb=0;rb<0x40;rb++) send_data(rf);
-    //if(locked==0) rf=0x80; else rf=0;
-    //for(rb=0;rb<0x40;rb++) send_data(rf);
+    SetPageStart(ra);
+    SetColumn(0);
+    if(valid==0) rf=0x80; else rf=0;
+    for(rb=0;rb<0x40;rb++) send_data(rf);
+    if(locked==0) rf=0x80; else rf=0;
+    for(rb=0;rb<0x40;rb++) send_data(rf);
 }
 //------------------------------------------------------------------------
 void timer_delay ( unsigned int d )
