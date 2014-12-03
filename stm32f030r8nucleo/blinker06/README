@@ -1,0 +1,24 @@
+
+See the top level README for schematic and programmers reference information.
+
+Derived from prior blinker examples.  First the gpio for the leds is
+setup.  Then the external 8mhz clock is enabled and selected.  The leds
+are blinked a few times using this clock driving the system.  Then
+the pll is setup to multiply the external clock by 6, 8*6=48MHz the
+fastest rate for this part.  Then the leds are blinked using that
+system clock.  Notice the blink rate change by using a different
+clock.
+
+Note this is not a hack or anything, these parts have a pll based
+clock multiplier, which is in fact very common, the computer you
+are probably reading this text on, likely has a 100MHz clock tied
+into the processor which is multiplied internally into the gigahertz
+desired for your processor to run fast.  Not all microcontrollers
+nor microcontroller families do this.  While you may want the
+processor to perform faster by speeding it up, it does consume more
+power, which for microcontroller based applications may or may not be a
+bad thing, if this were battery powered, running faster drains the
+battery faster, so in that case you would want to run the processor as
+slow as possible (and depending on the application take advantage of
+any power down features if any, another topic not covered in this
+repo).

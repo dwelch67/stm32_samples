@@ -1,0 +1,16 @@
+
+See the top level README for schematic and programmers reference information.
+
+Same as blinker03 except it switches to the external clock first.
+
+The schematic shows that the external clock is 8MHz, so we have to wonder
+if we really switched or not since the internal clock is also 8MHz.
+
+As described in blinker04 a safety measure is in place.  If this
+bricks the microcontroller, then press and hold the user button, then
+press the reset button, when it comes out of reset it will see the
+user button pressed and not enter the code that messes with clocks
+(and is likely what bricked the board).  This is mostly for me since
+if you are reading this then this code works and does not brick the
+board, and here if you change this code to protect you.
+

@@ -1,0 +1,8 @@
+
+See the top level README for schematic and programmers reference information.
+
+Simlar to blinker02 except this uses a very simple timer in the chip
+but outside the arm core.  One of the on chip peripherals.
+
+This is a 16 bit timer with a 16 bit prescaler.  No change to the
+system clock so 8000000/0xFFFF is 122 timer ticks per second.

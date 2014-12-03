@@ -1,0 +1,15 @@
+
+See the top level README for schematic and programmers reference information.
+
+This expands on the blinker01 example by using a timer in the cortex-m.
+
+The cortex-m0 has a system timer in the arm core itself, one that is
+very simple to use.  There are actually two examples here one simply
+looks at a bit in the timer which is a state change about once a second.
+
+The other uses the timer to count out multiple seconds assuming an 8MHz
+clock.  The docs tell us that the internal clock is 8MHz, and the external
+clock from the schematic is also 8MHz.
+
+The experiment shows that the clock is 8Mhz with 10 seconds on one led and
+1 second on the other then repeat.
