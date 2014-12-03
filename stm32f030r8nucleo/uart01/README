@@ -1,0 +1,38 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+PA9 is USART1_TX alternate function 1
+PA10 is USART1_RX alternate function 1
+
+PA2 is USART2_TX alternate function 1
+PA3 is USART2_RX alternate function 1
+
+This example uses USART2 instead of USART1 because USART2 is by default
+tied to the debug side of the board, the debug side of the board has
+a virtual com port.  So basically a dumb terminal program (minicom,
+hyperterm, teraterm, putty) and no additional hardware you can
+interact with the microcontrollers uart.  This is a very cool feature
+that you dont often see, usually you have to buy and wire up extra
+hardware for this.
+
+This example uses the external 8MHz clock to run the microcontroller
+at 8MHz.  This gives us a more accurate clock than the internal 8MHz
+clock which would/should mostly work as well if you prefer.
+
+The GPIO and UART are enabled, the PA2/3 pins are switched to alternate
+function 1 which is USART2 rx and tx.
+
+This is a TX only example, another example will cover RX.  No interrupts
+are required/used for this example.
+
+The uart is setup for 115200 baud, 8000000Hz/115200 = 69.4, so basically
+the main clock is divided by 69 and a fraction to get that speed.  OVER8
+is set to zero in this example so we dont modify the 69 value any
+further.
+
+This example blasts the characters 0123456701234567... forever as
+fast as it can.  If using minicom you need to alt-a then w to switch
+to wraparound mode so you can see them.
+
+

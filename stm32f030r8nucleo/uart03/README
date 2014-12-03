@@ -1,0 +1,15 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This demonstrates using both usart1 and usart2.  Whatever is received
+in one is transmitted out the other.  Carriage returns are cooked.
+if you dont have something to hook PA9/PA10 to then you can take a
+paperclip or something and connect D2 to D8 on the arduino connectors
+or the corresponding male pins (see the users manual for the nucleo
+boards to find PA9 and PA10 for this board).  If you do that loopback
+and the virtual port on usart2 then what is typed on your host goes
+into usart2 tx, goes out usart1 tx, comes back in usart1 rx, goes out
+usart2 tx.  In this configuration each carriage return gets cooked
+twice so you get double spaced output on your terminal.
+

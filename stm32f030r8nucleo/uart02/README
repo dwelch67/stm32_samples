@@ -1,0 +1,8 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Derived from uart01.  This demonstrates RX and TX.  Whatever is typed
+into the dumb terminal is echoed out.  A carriage return is cooked into
+a carriage return and line feed.
+

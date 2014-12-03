@@ -1,0 +1,5 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Same as uart03 except it uses a 48MHz system clock instead of 8MHz
