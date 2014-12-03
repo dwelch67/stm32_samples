@@ -1,0 +1,61 @@
+
+This directory contains examples for the stm32f0 nucleo board
+specifically the stm32 f030r8 nucleo board.
+
+Starting page for all of the nucleo boards
+
+http://www.st.com/stm32nucleo
+
+Then navigate to the NUCLEO-F030R8 page by clicking on that name in
+the graph, as of this writing it is a black on yellow box.
+
+As of this writing you will need the UM1724: STM32 Nucleo Boards users
+manual.
+
+As of this writing there is no direct link to the microcontroller page
+so do a search on the st website for STM32F030R8
+
+Under Part Number Results there is one hit and select that link
+to get to the part page.
+
+Click on the Design Resources tab.
+
+We need the Reference Manual
+RM0360: STM32F030x4/x6/x8 advanced ARM-based 32-bit MCUs
+
+Unlike older/original mbed boards, it does not appear that you have
+to press the reset button after copying the .bin file to run the
+new program.  But, at least for me it sometimes takes a while before
+the newly copied program is loaded and started in the microcontroller.
+
+You can certainly press reset as much as you like after it is loaded
+to try the new program again and again.
+
+In the old days the .bin file would stay there, my experience today
+is that the .bin file goes away.  Historically I would choose a specific
+file name (flash.bin for example) and copy to that filename on the
+mbed (nucleo) device.  I think there is actually a preferred name but
+I didnt research that just yet.
+
+Understand these are bare metal examples that DO NOT use the mbed
+development environment, these use gnu and or llvm toolchains.
+See the stm32f0discovery top README for more on getting the tools.  The
+way these mbed boards work is the debugger microcontroller emulates
+a flash drive which we copy a file to when that .bin file arrives it
+loads it into the evaluation microcontroller and starts it.  There is
+no magic to the .bin files that know where or how they were created,
+you can certainly try these examples on your board, and return to using
+the mbed gui/sdk as well.
+
+This is perhaps the board I have been waiting for for some time.  The
+only drawback is on one of my computers it doesnt recognize the card
+as a flash drive, worse, the card kills usb on my host at least for
+that card type and/or that usb port (it recovers with a reboot of
+the computer, no damage to the hardware, just a software problem).
+The key feature of this board that makes it so great is that there
+is a virtual serial port in the debugger side that connects to the
+eval microcontroller, so that no additional hardware is required to
+use the uart to develop/debug stuff (very important/useful for
+bare metal work).  Usually you have to get another $10 to $15 board
+and some jumper wires.
+
