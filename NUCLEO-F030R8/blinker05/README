@@ -3,8 +3,9 @@ See the top level README for schematic and programmers reference information.
 
 Same as blinker03 except it switches to the external clock first.
 
-The schematic shows that the external clock is 8MHz, so we have to wonder
-if we really switched or not since the internal clock is also 8MHz.
+The documentation tells us that the HSE external clock comes from an
+MC0 output of the stlink controller.  This example demonstrates switching
+from the HSI internal 8MHz clock to the external HSE 8MHz clock.
 
 As described in blinker04 a safety measure is in place.  If this
 bricks the microcontroller, then press and hold the user button, then

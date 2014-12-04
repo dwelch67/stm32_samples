@@ -31,11 +31,11 @@ the newly copied program is loaded and started in the microcontroller.
 You can certainly press reset as much as you like after it is loaded
 to try the new program again and again.
 
-In the old days the .bin file would stay there, my experience today
-is that the .bin file goes away.  Historically I would choose a specific
-file name (flash.bin for example) and copy to that filename on the
-mbed (nucleo) device.  I think there is actually a preferred name but
-I didnt research that just yet.
+In the old (mbed) days the .bin file would stay there, my experience
+today is that the .bin file goes away.  Historically I would choose a
+specific file name (flash.bin for example) and copy to that filename on
+the mbed (nucleo) device.  I think there is actually a preferred name
+but I didnt research that just yet.
 
 Understand these are bare metal examples that DO NOT use the mbed
 development environment, these use gnu and or llvm toolchains.
@@ -47,15 +47,23 @@ no magic to the .bin files that know where or how they were created,
 you can certainly try these examples on your board, and return to using
 the mbed gui/sdk as well.
 
-This is perhaps the board I have been waiting for for some time.  The
-only drawback is on one of my computers it doesnt recognize the card
-as a flash drive, worse, the card kills usb on my host at least for
-that card type and/or that usb port (it recovers with a reboot of
-the computer, no damage to the hardware, just a software problem).
-The key feature of this board that makes it so great is that there
-is a virtual serial port in the debugger side that connects to the
-eval microcontroller, so that no additional hardware is required to
-use the uart to develop/debug stuff (very important/useful for
-bare metal work).  Usually you have to get another $10 to $15 board
-and some jumper wires.
+This is perhaps the board I have been waiting for for some time. The
+key feature of this board is that the debugger portion basically
+provides a virtual serial port for the host computer that is connected
+to the uart on the eval microcontroller.  So basically we can use
+a dumb terminal on the host (minicom, hyperterm, teraterm, putty, etc)
+to develop and debug programs without buying any additional hardware.
+Normally you would need to spend $10 to $15 on up for a usb to serial
+and maybe some additional jumper wires.
 
+This chip uses a cortex-m0 core from ARM.  The cortex-m3 and cortex-m4
+cores support the thumb instruction set and ARMv7-M thumb2 extensions
+to the thumb instruction set.  The cortex-m0 (and m0+) only support the
+ARMv6-M thumb2 extensions which is a much smaller set of additional
+instrucitons compared to the ARMv7-M thumb2 extensions.  So folks that
+are used to using the cortex-m3 for example may have problems on the
+cortex-m0 where many of the thumb2 extensions are considered undefined
+instructions (to get the extensions they took formerly undefined
+instructions and defined them) and those programs wont run.  The
+examples in this directory are built without thumb2 extensions so that
+they will run on this cortex-m0.
