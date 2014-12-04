@@ -8,7 +8,6 @@ User LD2: the green LED is a user LED connected to Arduino signal D13
 corresponding to MCU I/O PA5 (pin 21) or PB13 (pin 34) depending on
 the STM32 target. Please refer to Table 10 to Table 17.
 
-
 And looking at those tables for the F401RE board D13 is PA5 on this
 board.  So that is the gpio pin to target.
 
