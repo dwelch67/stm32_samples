@@ -7,7 +7,9 @@ void dummy ( unsigned int );
 
 #define GPIOABASE 0x48000000
 #define GPIOCBASE 0x48000800
-#define RCCBASE 0x40021000
+#define RCCBASE   0x40021000
+#define FLASHBASE 0x40022000
+#define FLASH_ACR (FLASHBASE+0x00)
 
 static void led_init ( void )
 {
@@ -137,6 +139,10 @@ int notmain ( void )
     ra|=(1<<24);
     PUT32(RCCBASE+0x00,ra);
     while(1) if((GET32(RCCBASE+0x00)&(1<<25))!=0) break;
+    //We cannot overclock the flash, so slow down the flash first
+    //then speed up the clock
+    //PUT32(FLASH_ACR,0x01); //>24Mhz no prefetch
+    PUT32(FLASH_ACR,0x11); // >24MHZ with prefetch.
     //switch system to use pll clock
     ra=GET32(RCCBASE+0x04);
     ra&=~3;

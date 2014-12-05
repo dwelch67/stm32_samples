@@ -60,6 +60,9 @@ void dummy ( unsigned int );
 #define USART2_RDR      (USART2BASE+0x24)
 #define USART2_TDR      (USART2BASE+0x28)
 
+#define FLASHBASE 0x40022000
+#define FLASH_ACR (FLASHBASE+0x00)
+
 //PA9 is USART1_TX alternate function 1
 //PA10 is USART1_RX alternate function 1
 
@@ -199,6 +202,10 @@ static int clock_init ( void )
     ra|=(1<<24);
     PUT32(RCC_CR,ra);
     while(1) if((GET32(RCC_CR)&(1<<25))!=0) break;
+    //We cannot overclock the flash, so slow down the flash first
+    //then speed up the clock
+    //PUT32(FLASH_ACR,0x01); //>24Mhz no prefetch
+    PUT32(FLASH_ACR,0x11); // >24MHZ with prefetch.
     //switch system to use pll clock
     ra=GET32(RCC_CFGR);
     ra&=~3;
