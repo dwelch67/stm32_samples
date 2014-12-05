@@ -1,0 +1,14 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Well this was an interesting exercise.  There are chicken and egg
+problems in the document, after enabling the power block and the write
+protect bit that is in there.  Then you are supposed to have to unlock
+the rtc writes with an rtc register, but the rtc is not enabled so
+how do you talk to the rtc unlock register to unlock the bit you need
+to power the rtc to talk to the rtc unlock register to power the rtc
+to talk to the rtc unlock register to power the rtc...
+
+I got something to work.  
+
