@@ -54,3 +54,27 @@ ARMv6-M thumb2 extensions which is a much smaller set of additional
 instrucitons compared to the ARMv7-M thumb2 extensions.  The examples
 in this directory compile for thumb and thumb+thumb2 in separate
 binaries.
+
+
+Start with the blinker examples then move on to ...
+
+blinker01 turns led on and off, burns cpu cycles to delay
+blinker02 turns led on and off, cortex-m systick
+blinker03 turns led on and off, tim5 timer
+blinker04 turns led on and off based on user button
+blinker05 turns led on and off, tim5 timer uses HSE clock instead of internal
+blinker06 turns led on and off, uses the rtc to count seconds
+blinker07 turns led on and off, uses systick interrupt
+
+uart01 sends 01234567 in a loop.
+
+
+
+
+
+
+
+
+
+
+
