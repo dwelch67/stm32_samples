@@ -1,0 +1,18 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+So this is the start of a clock that uses the DS3231 Extremely Accurate
+RTC.  This is not part of this board but an add on.  Can find boards
+with batteries under $5 on ebay.  A couple of jumper (male to male or
+male to female) at sparkfun or adafruit for not too much.
+
+Going to see how accurate it really is or at least compare it to
+an atomic clock or gps.  Eventually.
+
+For now just the basics of bit banged i2c.  Also want to try to use
+the i2c peripheral in the st chip, let the hardware do some of the
+work, eventually.
+
+For now the time is sent serially out usart2 which is connected to
+the stlink virtual serial port (see uart01 example).
