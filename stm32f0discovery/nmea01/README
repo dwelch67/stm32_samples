@@ -1,0 +1,9 @@
+
+See the top level README for schematic and programmers reference information.
+
+This example uses PA9 AF1 as USART1_TX.
+This example uses PA10 AF1 as USART1_RX.
+
+This is derived from uart02.  It parses nmea strings (entering USART1_RX
+9600 baud), adjusts time and date.  And outputs just the time and
+date to USART1_TX.
