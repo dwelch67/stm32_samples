@@ -32,6 +32,7 @@ void dummy ( unsigned int );
 
 #define USART1BASE 0x40013800
 #define USART1_CR1      (USART1BASE+0x00)
+#define USART1_CR3      (USART1BASE+0x08)
 #define USART1_BRR      (USART1BASE+0x0C)
 #define USART1_ISR      (USART1BASE+0x1C)
 #define USART1_RDR      (USART1BASE+0x24)
@@ -39,6 +40,7 @@ void dummy ( unsigned int );
 
 #define USART2BASE 0x40004400
 #define USART2_CR1      (USART2BASE+0x00)
+#define USART2_CR3      (USART2BASE+0x08)
 #define USART2_BRR      (USART2BASE+0x0C)
 #define USART2_ISR      (USART2BASE+0x1C)
 #define USART2_RDR      (USART2BASE+0x24)
@@ -123,6 +125,7 @@ int uart_init ( void )
     PUT32(RCC_APB2RSTR,ra);
 
     PUT32(USART1_BRR,69);
+    PUT32(USART1_CR3,1<<12);
     PUT32(USART1_CR1,(1<<3)|(1<<2)|1);
 
     return(0);
@@ -197,6 +200,7 @@ int uart2_init ( void )
     PUT32(RCC_APB1RSTR,ra);
 
     PUT32(USART2_BRR,69);
+    PUT32(USART2_CR3,1<<12);
     PUT32(USART2_CR1,(1<<3)|(1<<2)|1);
 
     return(0);

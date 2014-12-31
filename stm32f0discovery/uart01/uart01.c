@@ -64,6 +64,7 @@ int notmain ( void )
     PUT32(RCCBASE+0x0C,ra);
 
     PUT32(USART1BASE+0x0C,69);
+    PUT32(USART1BASE+0x08,1<<12);
     PUT32(USART1BASE+0x00,(1<<3)|1);
 
     for(rx=0;;rx++)
