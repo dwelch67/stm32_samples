@@ -1,0 +1,6 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This is a simple branch to self infinite loop with some nops up front
+to see if we can actually load and run a program.
