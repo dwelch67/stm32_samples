@@ -1,0 +1,117 @@
+
+See the README in the above directory for more information on
+documentation for this board.
+
+In particular AN2606 and AN3155 were used to develop/verify this
+program.
+
+You will want to connect your host uart to these pins.  NOT RS232
+levels but 3 or 3.3V TTL.
+
+PA9 is USART1_TX alternate function 1
+PA10 is USART1_RX alternate function 1
+
+Then you have to tie BOOT0 to 3V to pull it up.  Power on or press
+the reset button and the part will boot into the internal bootloader.
+
+We detect the bootloader by sending a 0x7F byte.  The bootloader detects
+our baud rate from that and returns 0x79.  You can do this only once
+per reset or power cycle of the part, after this first time detect the
+bootloader is now waiting for non-0x7F commands (kinda dumb they should
+have just added a few lines of code to send 0x79 back again).
+
+In progstmp the detect_chip() function does this write 0x7F wait for 0x79
+thing.
+
+AN3155 shows flow charts for each of the commands.  For each command
+there is a command byte, optional data then a check byte that is an
+xor of all the other bytes.
+
+void xor_data ( unsigned char *sdata, unsigned int len )
+{
+    unsigned int ra,rc;
+
+    rc=0;
+    for(ra=0;ra<len;ra++) rc^=sdata[ra];
+    sdata[ra]=rc&0xFF;
+}
+
+For the get command the command byte is 0x00 and there are no other bytes
+so 0x00^0xFF is 0xFF so we send 0x00,0xFF.
+
+Then we wait for ACK(0x79) or NACK(0x1F).
+
+The first byte we get after ACK is the number of bytes-1.
+And for the GET command the list of bytes is the list of commands
+that this version of bootloader accepts
+
+79  ACK
+0B  number of bytes-1  (0xB+1 = 12 bytes)
+31 bootloader version
+00 get
+01 get version and read protection status
+02 get ID
+11 Read Memory
+21 Go
+31 Write Memory
+44 Extended Erase
+63 Write Protect
+73 Write Unprotect
+82 Readout Protect
+92 Readout Unprotect
+
+Now a chip will either have Erase or Extended Erase but not both so the
+docs say.
+
+The difference is the parameters, Erase is a one byte parameter Extended
+is a two byte parameter.
+
+Note the docs say that this part should ship with v2.1 of the bootloader
+but using the get version and read protection status the part I have
+says it contains v3.1 of the bootloader.
+
+I know it is painful but my program requires you modify the ser_open
+function in ser.c to change the serial port.  I take care of the baud
+rate (57600) and parity and everyting else (this is for linux/unix btw
+not windows).
+
+unsigned char ser_open ( void )
+{
+  struct termios options;
+
+  ser_hand=open("/dev/ttyUSB0",O_RDWR|O_NOCTTY|O_NDELAY);
+                ^^^^^^^^^^^^^
+
+Likewise using this tool to do other stuff requires modifications, it is
+not a generic tool with command line switches, wasnt interested in that.
+
+For this chip to bulk erase:
+
+    if(extended_erase_flash()) return(1);
+
+Then I read a little to see that it is erased
+
+    if(read_mem_32(0x08000000,&rc)) return(1);
+    if(read_mem_32(0x08000004,&rc)) return(1);
+    if(read_mem_32(0x08000008,&rc)) return(1);
+
+Then I program the flash with the new binary
+
+    for(ra=0;ra<bindatalen;ra++)
+    {
+        if(write_mem_32(0x08000000+(ra<<2),bindata[ra])) return(1);
+    }
+
+And read back a few things to make sure that worked
+
+    for(ra=0;ra<10;ra++)
+    {
+        if(read_mem_32(0x08000000+(ra<<2),&rc)) return(1);
+    }
+
+Then remove the BOOT0 jumper and reset or power cycle.
+
+
+
+
+

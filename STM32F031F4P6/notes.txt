@@ -1,0 +1,32 @@
+
+STM32F031F4P6
+
+1  BOOT0        20 PA14  SWCLK
+2  PF0-OSC_IN   19 PA13  SWDIO
+3  PF1-OSC_OUT  18 PA10  USART1_RX
+4  NRST         17 PA9   USART1_TX
+5  VDDA         16 VDD
+6  PA0          15 VSS
+7  PA1          14 PB1
+8  PA2          13 PA7
+9  PA3          12 PA6
+10 PA4          11 PA5
+
+
+SWD
+
+1   VDD TARGET
+2   SWCLK
+3   GND
+4   SWDIO
+5   NRST
+6   SWO/UNUSED
+
+
+BOOT0 0 main flash 1 sram/other
+
+
+SRAM 0x20000000 0x1000 bytes for this part.
+16Kbytes of flash probably starting at zero
+
+
