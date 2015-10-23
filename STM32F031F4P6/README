@@ -1,0 +1,203 @@
+
+This is not for beginners.
+
+I bought some loose TSSOP20 STM32F031F4P6 parts.  Why that part?
+Not really scientific, was looking for something I could solder myself
+and went for the lowest everything part in the STM32F0 class at mouser
+that day.  Yes I bought a number of them.  I also bought a number of
+TSSOP20 breakout boards.
+
+I have done this a few times now and am getting better at it.  I
+also have access to a good soldering iron and a microscope, I am at
+that age that I cant eyeball this stuff directly, the younguns can
+but I cant.  I started by looking at this page on how to solder down
+these kinds of ICs
+
+http://goodfet.sourceforge.net/construction/
+
+Now the first mistake I made on the first part way back when was he
+says things like rub the iron...rub the pins with the braid...That
+second one trashed the first part.  I moved the braid sideways
+perpendicular to the direction of the pins and it bent all the pins
+on that side of the part.
+
+I use the clear tape method I can see both sides of the part, with
+the breakout I actually taped it to the work surface, then separately
+taped the chip to the board lining up all 20 pins, leaving one side
+exposed so I could solder.
+
+I liberally apply sider to that side, I dont really rub or apply any
+real force to the pins for fear of messing them up.  Also be careful
+of yanking on the solder as it may have cooled stuck to the pins.
+
+When cleaning off the solder with wick...A new rule I didnt think about
+before, dont use your fingers to pull more wick out, use something
+like pliers or tweezers, something that doesnt have oils or other
+chemicals on it, something clean, your fingers are not clean.  or
+another way to say it is put your fingers on the used part pull out
+some more, then cut off the used part that you touched.  Then you
+carefully heat up and remove the excess solder, ideally keeping the
+iron to the wick as you pull away and/or pull away along the direction
+of the pins not against the grain.
+
+Remove the tape and repeat on the other side.  THEN I soldered in
+a couple of rows of pins.
+
+I bought the microcontrollers from mouser I think, digikey is fine
+too if they have them, I like mouser slightly better maybe because
+you get to know the shipping before hand (although when first
+looking at the cart the $70 or whatever shipping is bogus, keep
+going to find/choose the real shipping price) not after you get the
+receipt days later.  And I think I can use paypal with mouser too.
+Anyway, bought the breakout boards on ebay, much cheaper, and they
+work just fine so far.
+
+TODO: docs you need
+
+TSSOP20 20-pin package pinout
+
+1  BOOT0        20 PA14
+2  PF0-OSC_IN   19 PA13
+3  PF1-OSC_OUT  18 PA10
+4  NRST         17 PA9
+5  VDDA         16 VDD
+6  PA0          15 VSS
+7  PA1          14 PB1
+8  PA2          13 PA7
+9  PA3          12 PA6
+10 PA4          11 PA5
+
+Bare minimum
+
+VDD is digital power (3.3V)
+VDDA is analog power (3.3V), and is needed, thought I could get away
+without it
+VSS is ground
+NRST is reset
+BOOT0 is a strap that determines how the chip boots.
+PA14 we will dedicate to the JTAG SWCLK
+PA13 we will dedicate to the JTAG SWDIO
+
+With an unprogrammed part I think you can get away with leaving BOOT0
+high or low (didnt try letting it float).
+
+I bought one of the stlink/v2 boards from adafruit, but I may have
+fried it.  Using the stm32f4 discovery (or some other stm32 discovery
+board) was much more useful as you need more than one 3.3v pin and
+more than one ground.  Assuming the stlink/v2 dongle could supply
+the power (maybe that is how I fried it) you would need something like
+a breadboard with jumpers, which many folks have (I do too but buried
+somewhere).  I like to use the loose female to female jumpers from
+sparkfun (I know pricy, you can get them elsewhere) and use them
+as flying wires from one pin to another dangling there.  yes a
+breadboard is probably better...
+
+Using the stm32f4 discovery board, any of the discovery boards from
+st should work.
+
+Disconnect the jumpers on the top rightish that say ST-LINK and DISOCVERY
+
+On the top left SWD connector
+
+1 VDD_TARGET  we dont actually use this
+2 SWCLK       pin 20  PA14
+3 GND         pin 15  VSS
+4 SWDIO       pin 19  PA13
+5 NRST        pin 4   NRST
+
+We need more things hooked up too
+
+VDDA  to one of the VDD pins on the left side of the stm32f4disco board
+VDD   to the other VDD pin
+BOOT0 probably wants to be ground
+
+find/get/install/configure/build openocd
+
+using openocd (not sure what the minimum version is likely need
+to build with stlink configured, I am using version 10).
+
+openocd -f stlink-v2.cfg -f target.cfg
+
+target.cfg is a combination of the files stm32f0x.cfg and swj-dp.tcl
+wanted both files here in the repo.  if you are using an stlink-v1
+or some other tool, then you will need to find that cfg file.
+
+$ openocd -f stlink-v2.cfg  -f target.cfg
+Open On-Chip Debugger 0.10.0-dev-00001-g70a14db (2015-06-01-22:59)
+Licensed under GNU GPL v2
+For bug reports, read
+    http://openocd.org/doc/doxygen/bugs.html
+Info : auto-selecting first available session transport "hla_swd". To override use 'transport select <transport>'.
+Info : The selected transport took over low-level target control. The results might differ compared to plain JTAG/SWD
+adapter speed: 1000 kHz
+adapter_nsrst_delay: 100
+none separate
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : clock speed 950 kHz
+Info : STLINK v2 JTAG v14 API v2 SWIM v0 VID 0x0483 PID 0x3748
+Info : using stlink api v2
+Info : Target voltage: 2.907282
+Info : stm32f0x.cpu: hardware has 4 breakpoints, 2 watchpoints
+
+in another window
+
+$ telnet localhost 4444
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+Open On-Chip Debugger
+>
+
+then in that same second window halt the microcontroller
+
+> halt
+target state: halted
+target halted due to debug-request, current mode: Handler HardFault
+xPSR: 0xc1000003 pc: 0xfffffffe msp: 0xffffffd8
+
+excellent a sign of life
+
+another sign of life, build the self example then after running openocd
+(FROM THE SAME DIR AS THE OPENOCD CFG FILES) follow these steps
+
+$ telnet localhost 4444
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+Open On-Chip Debugger
+> reset halt
+target state: halted
+target halted due to debug-request, current mode: Thread
+xPSR: 0xc1000000 pc: 0xfffffffe msp: 0xfffffffc
+> load_image self/self.gcc.thumb.sram.elf
+8 bytes written at address 0x20000000
+downloaded 8 bytes in 0.008021s (0.974 KiB/s)
+> resume 0x20000000
+> halt
+target state: halted
+target halted due to debug-request, current mode: Thread
+xPSR: 0xc1000000 pc: 0x20000006 msp: 0xfffffffc
+>
+
+pc: 0x20000006 indicates we ran to the branch to self.
+
+this is all Linux of course, have to translate to windows if that is
+where you run or just use a thumb drive to run a live version of linux
+on your windows machine.
+
+the directory where you run openocd which I assume is the base directory
+of the repo, the dir where the target.cfg file is.  the paths are
+relative to the openocd command window.  NOT the telnet window.  you
+dont have to be in any particular directory or for that matter on
+the same machine you just need to telnet to the machine that has the
+openocd server running.
+
+next try blinker01
+
+
+
+
+
+
+
