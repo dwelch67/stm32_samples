@@ -1,0 +1,30 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+So no leds on a breakout board.  I have some of the wee bitty led boards
+used by the lillypad folks for wearable whatever.  added two pins so
+I have a nice little led and resistor.  you can fashion the same thing
+on a breadboard or whatever. if brave can tie the led directly from
+pin to ground, but that does stress the part (not on this part but
+I have been doing that kind of thing for years, again bad, but I have
+gotten lucky).
+
+for sanity I hook the led up between power (3.3) and ground to see
+it come on then move the 3.3 jumper to the gpio pin of interest, if you
+have the led backwards you can spend all day going crazy not getting it
+to turn on.
+
+The stm32f0discovery board has a similar part to this so I modified
+the blinker01 example to use PA1 instead of the leds that the
+stm32f0discovery board uses.
+
+in the telnet window
+
+> reset halt
+> load_image blinker01/blinker01.gcc.sram.elf
+> resume 0x20000000
+
+dont mess with the flash version yet just the sram one, we have to
+figure out how to program the flash first.
+

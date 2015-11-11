@@ -1,0 +1,20 @@
+
+See the README in the above directory for more information on
+documentation for this board.
+
+In particular AN2606 and AN3155 were used to develop/verify this
+program.  See the erase example for more information on starting
+to talk to the bootloader.
+
+This example takes the blinker01 program, flash version, and programs
+it into the flash on the part.  You have to hold boot0 then press
+and release reset, then release boot0 to boot the part using the
+internal bootloader.  Once you run this loader then press and
+release reset (without boot0) to run it, the leds should blink.  To
+erase use the erase program or modify this one, using the boot0 button
+with reset.
+
+This is not a generic program with command line options, but instead
+a library of tools if you will with an example test program.
+
+

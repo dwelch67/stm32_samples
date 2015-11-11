@@ -1,0 +1,20 @@
+
+       GND TX RX VCC
+
+BOOT0                SWCLK
+PF0                  SWDIO
+PF1                  RX
+NRST                 TX
+VDDA                 VCC
+PA0                  GND
+PA1                  PB1
+PA2                  PA7
+PA3                  PA6
+PA4 (led)            PA5 (led)
+
+
+1 VDD_TARGET  we dont actually use this
+2 SWCLK       pin 20  PA14
+3 GND         pin 15  VSS
+4 SWDIO       pin 19  PA13
+5 NRST        pin 4   NRST

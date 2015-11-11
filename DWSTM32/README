@@ -1,0 +1,132 @@
+
+So I had bought a handful or so STM32F031F4P6 parts, loose parts not
+on a board.  The STM32F031F4P6 I put them on a generic breakout that
+I found on ebay for about a buck a board.  Since then I went and
+made a breakout design that was under a buck a board and a slightly
+more complicated breakout that this directory will cover.  The DWSTM32.brd
+file you can open with eagle and see the board.  I have a pdf here
+as well.  I am currengly using 130 Ohm resistors with the leds and
+10K for the pull up/down.
+
+Not obvious necessarily but the top pins are for my favorite ftdi board
+
+https://www.sparkfun.com/products/retired/718
+
+Now retired, not that it is an exceptional board, just that I bought
+a handful of them and have them always within arms reach.
+
+Bare minimum ou only need to hookup GND TX RX and VCC.  Can use any
+ftdi or other breakout board or similar cable that you might use on a
+raspberry pi or other 3.3V board.  Like the STM32F031F4P6 examples
+you can certainly use an SWD Jtag solution like an stlink.
+
+       GND TX RX VCC
+
+BOOT0                SWCLK
+PF0                  SWDIO
+PF1                  RX
+NRST                 TX
+VDDA                 VCC
+PA0                  GND
+PA1                  PB1
+PA2                  PA7
+PA3                  PA6
+PA4 (led)            PA5 (led)
+
+All this breakout basically did was what I did on the STM32F031F4P6
+grounding some stuff, wiring some stuff to 3.3, etc.  I put a reset
+and boot0 button on here making that so much easier.  Hold the boot0
+and press reset and you are in the ST bootloader, no jtag required.
+
+I work with a number of folks that can do good soldering work, but
+wanted to learn on my own.  My first SMT IC was done by reading this
+
+http://goodfet.sourceforge.net/construction/
+
+and I made mistakes.  When he says run across, you need to not use
+any friction the pins bend really easy, esp when hot.
+
+I use some sort of clear tape kapton or scotch so I can see both sides
+of the part and line all the pins up on the pads.  and enough tape to
+go off the board and tape it to the workbench.
+
+Again I am a long long way from an expert on boards (notice the lack
+of any kind of bulk capacitance or signal conditioning) or soldering.
+
+I did the IC first, tape over half of it to do one side, then take the
+tape off carefully and do the other side.  I put a generous amount
+of solder blobbed over all the pins on one side, one big solder blob
+is fine.  then CAREFULLY wick up everything, there will be some
+that remains between the pins and pads and that is all you need.  dont
+need a super blob like I did this time but enough to get solder on/under
+each pin.  DO NOT pull the wick or move it side to side it will bend
+pins. you do want to lift the wick off while hot if you take the iron
+off even for a short bit and it cools it can grab pins/pads when you
+lift.
+
+I like to put a little solder on one pad for two pad things like
+resistors and leds.  Did those next.  get the part close warm up
+the solder on the pad and if lucky it just sucks it into place.
+get it good enough and then solder the other side.  you can use the
+wick to clean up any excess here as well (assuming the part is not
+floating in air on a solder bridge).  leds be a little more careful
+as you can melt the lens.
+
+The through hole pins were next, my trick with that is solder one
+of the ones in the middle of the row.  then eyeball if it is at a
+right angle, if not carefully hold the iron to it while pinching
+the row into the board (but not touching the hot one) both positioning
+the pins fully inserted and setting the right angle, let it cool
+for a second after removing the iron.
+
+For pins like this, you want the iron on the pin and pad ideally
+to warm one/both.  Then give it a little solder.  Not a whole lot
+is needed.  This board isnt an issue but boards with large power
+or ground planes take a lot of heat, this can be a problem for many
+reasons, if nothing else your pin may get to hot and melt the plastic
+and fall through.  Other than ground plane issues, you can get pretty
+good and fast at pins with a little practice.
+
+Again I am far from an expert, I have soldered MANY rows of pins into
+boards and the bright leds give me headaches so I have replaced tons
+of surface mount leds by hand.  And I have access to a good iron, tips,
+and a microscope.  ICs like these, this is maybe number 4 or 5 all
+told so far.  when I get through this pack of parts though that will
+have doubled.
+
+Last I did the buttons, they were super easy, they held themselves in
+place turned the board over solder like through hole pins, done.
+
+And the first board worked first time...dumb luck...
+
+You will want the documentation on the STM32F031F4P6 part from ST
+for information on how to write programs for the part.
+
+erase is actually the first example, erases the part using the internal
+bootloader, sign of life for the board.
+
+Then uloader takes the blinker01 flash output and programs it into the
+part.
+
+For both of these press and hold boot0, then press and release reset,
+then release boot0 to put it in the internal bootloader.  After using
+uloader to program the flash, press and release reset without touching
+boot0 and it will start blinking the leds (did you solder them on
+right? 50/50 chance unless you do the research/testing first)
+
+The flash and sram binaries are slightly different.  The issue is
+that ARM switched from the full sized 32 bit processors scheme of
+the reset vector is an instruction you execute (a branch basically)
+but the cortex-m processors use a traditional table of addresses.
+So on flash you have to boot using the table of addresses and that is
+the first thing.  For sram, you dont have to but what I have is the
+first instruction in the binary is the first one you want to execute.
+The sram version is for use with jtag (maybe later with my own
+bootloader will see), doesnt make sense otherwise.  You could arguably
+know the offset where the reset vector code lives and start the
+jtag execution there, but the second difference is the flash version
+is linked for the flash address space and sram for the sram address
+space.  So blinker01 and other examples will have both sram and flash
+versions.
+
+For using the jtag, see the STM32F031F4P6 directory README.
