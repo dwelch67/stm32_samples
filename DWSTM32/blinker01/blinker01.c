@@ -19,7 +19,7 @@ int notmain ( void )
     ra&=~(3<<8); //PA4
     ra&=~(3<<10); //PA5
     ra|=1<<8; //PA4
-    ra|=1<<8; //PA5
+    ra|=1<<10; //PA5
     PUT32(GPIOABASE+0x00,ra);
     //OTYPER
     ra=GET32(GPIOABASE+0x04);

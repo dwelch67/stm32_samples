@@ -23,7 +23,7 @@ unsigned char ser_open ( void )
 {
   struct termios options;
 
-  ser_hand=open("/dev/ttyUSB2",O_RDWR|O_NOCTTY|O_NDELAY);
+  ser_hand=open("/dev/ttyUSB7",O_RDWR|O_NOCTTY|O_NDELAY);
   if(ser_hand==-1)
   {
     fprintf(stderr,"open: error - %s\n",strerror(errno));
