@@ -1,0 +1,59 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+The STM32LO53 Discovery board has two user LEDs one on PA5 the other
+on PB4.
+
+Before we can talk to the gpio we need to enable the clocks for the
+gpio in the RCC_IOPENR register.  bit 0 for gpio a and bit 1 for gpio b
+
+Then we setup the gpio pins and can turn them on and off.
+
+The chip comes out of reset using the MSI clock at 2.097 MHz so says
+the documentation.  Later if/when we use an on chip timer we can
+confirm that.
+
+why this
+        for(ra=0;ra<200000;ra++) dummy(ra);
+
+instead of this?
+        for(ra=0;ra<200000;ra++) continue;
+
+Because any decent opimizer will completely remove that line of code
+as it does nothing.  But the dummy() function is not defined in this
+.c file it is in another object, so external, so the compiler cannot
+optimize out the series of calls to dummy.  To honestly implement
+the code as written the compiler has to generate that many calls to
+dummy in that order with those values.  If for example you had this
+
+        for(ra=0;ra<2;ra++) dummy(ra);
+
+the compiler probably would not make a loop but instead implement
+   dummy(0);
+   dummy(1);
+
+and that is fine.  This line
+        for(ra=0;ra<200000;ra++) dummy(ra);
+
+Is basically burning 200000*N number of clock cycles where N is some
+small number like 7 or something.  It can vary based on the compiler
+version and command line options so we cannot use this to accurately
+time anything, not worth trying when you have timers on the chip we
+can learn to use in a later example that are accurate (as good as
+the clocks we are using at least).
+
+Anyway, just a very simple trick I use to prevent the optimizer from
+optimizing out that line, some folks like to do this instead
+
+volatile unsigned int x;
+...
+        for(x=0;x<200000;x++) continue;
+
+and that should work as well, I like my trick better so I use it.
+
+
+
+
+
+

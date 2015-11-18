@@ -1,0 +1,14 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Same as blinker04 but is using timer6.  the delay internals waits
+for the msbit of the timer to change state twice, so basically 65536
+counts the way we are using it here.  repeat that 1000 times or
+65536000.  divided by 8000000 is 8.192 seconds, but the led is
+changing more like 16 or 17 seconds 16.384 perhaps.  Post-reset the
+peripheral clocks should not be divided so, here again I think the
+HSE, external input clock which is an output from the stlink, is
+possibly 4MHz not 8MHz as they have documented, trying to find a
+divide by 2 somewhere.
+

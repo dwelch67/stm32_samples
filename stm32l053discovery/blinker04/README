@@ -1,0 +1,9 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Same as blinker03 but is using the systick timer built into the
+cortex-m0+.  Counting to 40Million should give 5 seconds at 8MHz
+but is giving 10 seconds.  So there is a divide by 2 in there
+somewhere.  It could be that the clock from the stlink MCO is not
+really 8MHz but instead 4.  Further debug is required here.

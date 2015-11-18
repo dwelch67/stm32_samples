@@ -1,0 +1,7 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Same as blinker01 but the internal 16MHz clock is selected as the
+system clock so blinker02 should blink around 8 times faster than
+blinker01.

@@ -1,0 +1,7 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Same as blinker02 but the external 8MHz clock is selected, so this
+should blink faster than blinker01 but slower than blinker02.  if you
+use the same compiler and options for all three.

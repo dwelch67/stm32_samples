@@ -1,0 +1,126 @@
+
+This directory is a collection of bare metal examples for the
+STM32L053 discovery board.
+
+All links to st or other websites are subject to change you may need
+to just search that website or use google if the links dont work.
+
+http://www.st.com/stm32l0-discovery
+
+You will want the users manual if nothing else, this has a schematic
+in it plus descriptions of where buttons and leds are, for example
+leds on PA5 and PB4 are described here.
+
+That page says this board uses the STM32L053C8T6 part, searching for
+that part has one part number result for the STM32L053C8 family.
+
+Under design resources tab you will need the Data Sheet (DS something
+right now DS10152, first pdf).
+
+And the Reference Manual.
+
+And any other you think interesting
+
+The Reference Manual is your primary document for programming this
+chip.
+
+This is an MBED type board so when you plug it in, among other things
+it should show up as a usb removable drive.  To run one of these programs
+for example blinker01, copy the blinker01.gcc.thumb.flash.bin file to
+that usb drive, and it should load the program and reset the chip to
+start running it automatically.
+
+Start with the blinker01 example.  Then blinker02 and so on through
+the blinker examples.
+
+Unfortunately and I dont know why ST continues to do this, just stupid
+for folks that might want to use this board but do not have soldering
+equipment, and/or the desire to solder on a board.  They should have
+this configured by default then for folks that dont want it they can
+unsolder the bridge.  This kind of thing makes me recommend (a few)
+of the TI launchpads as they (well some) dont need solder or jumpers
+to start using.  The uart is your primary bare metal debug tool, okay
+second to an led which they did provide here, but if you dont want
+to morse code to debug then you need the uart.  for another $10 you
+can get a ftdi usb cable with male jumper ends on it (search for an
+ftdi cable for a raspberry pi, same one works here) figure out the tx
+and rx on the cable and PA9/PA10 (figure out which one is tx and rx)
+on this board.  connect rx to tx and tx to rx.
+
+I will try the solder bridges SB14 and SB15 to see if they work.  And
+add some uart examples.
+
+The schematic indicates the board does not have an external 32KHz
+oscillator which is most likely for the RTC so maybe we dont have
+an RTC.  But between the schematic and the manual for the discovery
+kit it appears that the MCO from the stlink microcontroller which they
+say is 8MHz and that MCU is fed by an 8MHz crystal, I guess they are
+using one crystal for both parts.  The first couple of blinkers use
+the internal clocks, blinker03 starts to use the 8MHz external and
+most other examples should use the 8MHz example unless otherwise
+stated.
+
+Messing with the clock is dangerous business in general for bare metal
+if you dont get it right you can possibly brick the chip. How?  Say
+you fail to do all the steps right but you manage to tell it to
+switch to some other clock, but because of a mistake you made that
+clock is not there, so now the chip is dead.  If the logic that is
+used to reprogram the chip needs that clock, then you cannot jtag in
+for example which is often what the debug end of a board like this
+does.  Hitting reset if your program is run from flash just runs your
+program again and crashes the same way every time.  Fortunately for
+me/us there is a boot0 pin, if you take a jumper or some bit of metal
+and short it to the vdd pin next to it, then hit reset, it does not run
+our program it runs the bootloader programmed into the part by ST during
+manufacturing of the part.  Basically not our program, jtag can now
+come in and reprogram the user portion of the flash, and we get
+another chance.  I have bricked a few MCU boards like these that dont
+have a bootloader or alternate boot mode by making mistakes.  Unless
+you have a stack of spare boards or parts it is often better to have a
+way out.  Basically you should always start with an led blinker without
+changing clocks.  Then figure out how to read an input, use the led to
+indicate the state of the input, if the input is a button like on
+this board, great if not then tie the other end of that input to VDD and
+GND and see the led go on or off.  Now use that knowledge to provide
+an if-then-else in the code if input is one way then go ahead and try
+to change the clocks, if not then dont.  This chip has a input strap
+that chooses the boot source already, the boot0 pin so we dont have
+to add our own.
+
+This chip is cortex-m0+ based, which is a cortex-m0 but a smaller
+and/or lower powered version, I think they said it was only a few
+pipeline stages.  It has been plenty of time now but the cortex-m3
+was the first one out, and the cortex-m3 is ARMv7m based, the
+cortex-m4 is also ARMv7m based.  cortex-m3 for example is the
+name of a specific ARM processor core product.  ARMv7m is the name
+of the general architecure that that specific product is designed to
+meet, other cores that are also from that archtecture are similar in
+how they work, they all conform.  The cortex-m0 and m0+ though come
+from the ARMv6m architecture.  Why that matters is because the
+instruction set used by all of the cortex-m cores so far is called
+thumb, a reduced version of the full blown ARM instruction set.
+Originally (started with the ARMv7T or ARM7TDMI core) thumb was strictly
+16 bit instructions.  The ARMv4T and ARMv5 used this, ARMv6m though
+which is a special cortex-m subset/relation to the full ARMv6 took
+some of the undefined instruciton patterns, and implemented them such
+that they became a variable length instruction.  Basically they added
+a small number of 32 bit instructions but these are NOT 32 bit ARM
+instructions but 32 bit thumb2 extensions to the thumb instruction
+set, different encoding.  If you look at the ARMv7m documentation
+they show different encodings for each instruciton, some of the T1 or
+T2 or whatever encodings will say all thumb variants or list a long
+list of ARMvwhatever numbers.  Some will list only ARMv6m and ARMv7m
+and some will say ARMv7m only.  I counted one day and the difference
+between ARMv6m thumb2 extensions and ARMv7m is over 100 new instructions
+added to ARMv7m.  So if you are working at the assembly level or you
+are compiling you have to be careful to tell the compiler to use the
+correct instruction set, if you think that all cortex-ms are the same
+and build for a cortex-m3 for example and try to run that on a
+cortex-m0 it will crash when it hits instructions it doesnt recognize
+(trigger the undefined instruction exception).  Long story short, dont
+do that, second part of the story is although ST provides a cortex-m0+
+programmers reference manual, you probably should get the TRM from
+arm for the cortex-m0+ (assume the latest rev but that has bitten
+me before) and the ARMv6m architectural reference manual.
+
+
