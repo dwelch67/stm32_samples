@@ -1,9 +1,11 @@
 
 So I had bought a handful or so STM32F031F4P6 parts, loose parts not
-on a board.  The STM32F031F4P6 I put them on a generic breakout that
-I found on ebay for about a buck a board.  Since then I went and
-made a breakout design that was under a buck a board and a slightly
-more complicated breakout that this directory will cover.  The
+on a development/eval board.  The least featured stm32 I could find in
+a tssop package (something I/you/we could hand solder).
+
+The for the STM32F031F4P6 examples I put them on a generic breakout that
+I found on ebay for about a buck a board.  I since went and made my
+own board fairly cheap and built a few of those boards.  The
 DWSTM32.brd file you can open with eagle and see the board (go to
 oshpark and make some yourself).  I have a pdf here as well.  I am
 currently using 130 Ohm resistors with the leds and 10K for the pull
