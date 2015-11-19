@@ -1,6 +1,6 @@
 
 ARMGNU = arm-none-eabi
-#ARMGNU = arm-linux-gnueabi-gcc
+#ARMGNU = arm-linux-gnueabi
 
 AOPS = --warn --fatal-warnings -mcpu=cortex-m0
 COPS = -Wall -Werror -O2 -nostdlib -nostartfiles -ffreestanding  -mcpu=cortex-m0
@@ -9,7 +9,9 @@ LOPS = -Wall -m32 -emit-llvm -target arm-none-eabi -mcpu=cortex-m0 -mthumb
 LLCOPS = -march=thumb -mcpu=cortex-m0
 #LLCOPS = -mcpu=cortex-m0
 COPS = -Wall  -O2 -nostdlib -nostartfiles -ffreestanding
-OOPS = -std-compile-opts
+#at some point they changed this option, gee thanks
+#OOPS = -std-compile-opts
+OOPS = -std-link-opts
 
 gcc : blinker01.gcc.thumb.flash.bin blinker01.gcc.thumb.sram.bin
 
