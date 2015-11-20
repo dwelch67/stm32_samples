@@ -25,6 +25,7 @@ clean:
 	rm -f *.bc
 	rm -f *.opt.s
 	rm -f *.norm.s
+	rm -f *.hex
 
 #---------------------------------
 
