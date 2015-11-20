@@ -1,0 +1,39 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+So far I have thorougly enjoyed using this little board I made.
+
+Press and hold boot0
+press and release reset
+release boot0
+run progstm
+press and release reset
+
+But moving into using the uart then it is
+
+exit minicom
+Press and hold boot0
+press and release reset
+release boot0
+run progstm
+run minicom
+press and release reset
+
+With this bootloader you can then stay in miniloader
+
+press and release reset
+download hex file to bootloader
+press g to go
+
+It is sram based programs not flash, but can still do a lot of things
+with the simpler number of steps.  Then later use progstm to try the
+flash version if desired.
+
+This bootloader accepts intel hex formatted files, so you do an ascii
+or raw download of an intel hex version of the program.  Going to go
+back through and add this to these examples.  the sram.hex file in the
+examples basically.
+
+I have xmodem flavor bootloaders as well but not necessarily planning
+to make one for this platform.

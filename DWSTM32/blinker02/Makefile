@@ -47,6 +47,7 @@ blinker02.gcc.thumb.flash.bin : flash.ld flash.o blinker02.gcc.thumb.o
 blinker02.gcc.thumb.sram.bin : sram.ld sram.o blinker02.gcc.thumb.o
 	$(ARMGNU)-ld -o blinker02.gcc.thumb.sram.elf -T sram.ld sram.o blinker02.gcc.thumb.o
 	$(ARMGNU)-objdump -D blinker02.gcc.thumb.sram.elf > blinker02.gcc.thumb.sram.list
+	$(ARMGNU)-objcopy blinker02.gcc.thumb.sram.elf blinker02.gcc.thumb.sram.hex -O ihex
 	$(ARMGNU)-objcopy blinker02.gcc.thumb.sram.elf blinker02.gcc.thumb.sram.bin -O binary
 
 #---------------------------------
@@ -78,6 +79,7 @@ blinker02.clang.thumb.norm.sram.bin : sram.ld sram.o blinker02.clang.bc
 	llc $(LLCOPS) blinker02.clang.bc -filetype=obj -o blinker02.clang.thumb.norm.o
 	$(ARMGNU)-ld -o blinker02.clang.thumb.norm.sram.elf -T sram.ld sram.o blinker02.clang.thumb.norm.o
 	$(ARMGNU)-objdump -D blinker02.clang.thumb.norm.sram.elf > blinker02.clang.thumb.norm.sram.list
+	$(ARMGNU)-objcopy blinker02.clang.thumb.norm.sram.elf blinker02.clang.thumb.norm.sram.hex -O ihex
 	$(ARMGNU)-objcopy blinker02.clang.thumb.norm.sram.elf blinker02.clang.thumb.norm.sram.bin -O binary
 
 blinker02.clang.thumb.opt.sram.bin : sram.ld sram.o blinker02.clang.bc
@@ -87,6 +89,7 @@ blinker02.clang.thumb.opt.sram.bin : sram.ld sram.o blinker02.clang.bc
 	llc $(LLCOPS) blinker02.clang.thumb.opt.bc -filetype=obj -o blinker02.clang.thumb.opt.o
 	$(ARMGNU)-ld -o blinker02.clang.thumb.opt.sram.elf -T sram.ld sram.o blinker02.clang.thumb.opt.o
 	$(ARMGNU)-objdump -D blinker02.clang.thumb.opt.sram.elf > blinker02.clang.thumb.opt.sram.list
+	$(ARMGNU)-objcopy blinker02.clang.thumb.opt.sram.elf blinker02.clang.thumb.opt.sram.hex -O ihex
 	$(ARMGNU)-objcopy blinker02.clang.thumb.opt.sram.elf blinker02.clang.thumb.opt.sram.bin -O binary
 
 

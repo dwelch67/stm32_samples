@@ -1,0 +1,8 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Another simple uart example 115200 8N1, it echos back whatever it
+receives.
+
+
