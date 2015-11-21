@@ -266,24 +266,6 @@ int notmain ( void )
     ra=ASMDELAY(200,LPTIMER1BASE+0x1C);
     hexstring(ra&0xFFFF);
 
-
-    ra=0x20000000;
-    PUT16(ra,0x680a); ra+=2;
-    PUT16(ra,0x46c0); ra+=2;
-    PUT16(ra,0x46c0); ra+=2;
-    PUT16(ra,0x46c0); ra+=2;
-    PUT16(ra,0x46c0); ra+=2;
-    PUT16(ra,0x46c0); ra+=2;
-    PUT16(ra,0x3801); ra+=2;
-    PUT16(ra,0xd1fa); ra+=2;
-    PUT16(ra,0x680b); ra+=2;
-    PUT16(ra,0x1a9b); ra+=2;
-    PUT16(ra,0x1c18); ra+=2;
-    PUT16(ra,0x4770); ra+=2;
-
-    ra=BRANCHTOR2(100,LPTIMER1BASE+0x1C,0x20000001);
-    hexstring(ra&0xFFFF);
-
     return(0);
 }
 //------------------------------------------------------------------------

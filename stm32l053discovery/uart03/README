@@ -152,7 +152,9 @@ also may move heavily used sections around interfering with other
 things causing the odds of a cache collision to increase or decrease).
 10% difference, sometimes 20% difference in performance just by adding
 or removing nops, same compiler, same version, same source code other
-than the nops.
+than the nops.  (that is what happened here one nop everything else
+the same, same compiler, assembler, etc noticeable performance
+difference).
 
 I still think this benchmark demonstrates the original problem, that
 simply upping the clock by some factor does not automatically make
