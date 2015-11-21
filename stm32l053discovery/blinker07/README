@@ -1,0 +1,22 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This demonstrates using the pll to run at 32MHz.  First switching
+to HSI16 then sets PLL to (HSI16*6)/3 = 96/3.  One thing you have to
+pay attention to is that the flash on the mcus cant always run at these
+relatively faster speeds, so you need wait states.  This specific part
+has only one bit for wait states, basically two speeds.  Some may have
+a number of speeds, and what you need to think about is that if your
+program runs from the flash, but the flash is divided down some
+number of wait states.  If you run at zero wait states at speed N,
+the processor can fetch at one speed.  If you double the clock but
+half the flash speed the flash is still the same speed, so although
+it can execute faster, it cannot fetch any faster so the instruction
+rate into the processor has not increased.  If you have more speed
+choices (not this part or family but some parts or brands) so maybe
+the flash is running twice as fast and the clock four times as fast
+that would be a win.
+
+See uart03 example
+

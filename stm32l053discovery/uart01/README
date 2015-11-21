@@ -13,3 +13,10 @@ The uart is setup for 115200 baud, 16000000Hz/115200 = 138.88
 This example blasts the characters 0123456701234567... forever as
 fast as it can.  If using minicom you need to alt-a then w to switch
 to wraparound mode so you can see them.
+
+Unfortunately the board as-is does not have a nice way to get at the
+uart. they have two solder bridges SB2 and SB3, that are easy to solder
+bridge across, and that will connect PA9/PA10 to RX/TX.  Or you can
+put pins in the RX TX holes, or otherwise somehow connect PA9
+to the RX and PA10 to the TX.  Then you can use the /dev/ttyACM0 serial
+interface to see what is going on.

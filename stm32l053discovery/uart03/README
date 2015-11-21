@@ -1,0 +1,159 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+So this started from blinker07 which uses the pll to get the maximum
+32MHz out of this part, to do that you have to set a latency on the
+flash.
+
+This demonstrates what I was talking about, this part only has one bit
+so two settings, other families, or other brands I have seen a number
+of settings and rules for how many wait states.
+
+The output I get is
+12345678
+0000025B
+0000025B
+000004B3
+0000025B
+00000387
+0000070B
+0000012D
+000001C3
+00000386
+0000012E
+
+and in decimal these numbers are
+
+0000025B 603
+0000025B 603
+000004B3 1203
+
+0000025B 603
+00000387 903
+0000070B 1803
+
+0000012D 301
+000001C3 451
+00000386 902
+
+What this is telling us is that when the flash latency is 0 executing
+from sram and from flash runs the same speed.
+
+When the flash latency is a 1, this does not change the sram speed,
+it does slow the speed of code run from flash by 50%.
+
+Doubling the clock from 16MHz to 32MHz, running from flash and sram
+are twice as fast as 16Mhz with latency of 1.
+
+But this does demonstrate the point, running from sram, we double the
+clock it takes half the time.  But from flash we double the clock means
+we have to slow the flash, so instead of taking half as long it takes
+3/4ths as long.  Faster sure but not twice as fast.  Before doubling
+the clock sram and flash were the same, after flash is 50% slower than
+sram.
+
+Microcontrollers generally have more flash than ram, the idea being
+the program runs from flash and there is some ram for non-static data.
+So if you use sram for program and data limits the amount of each.  Also
+if you use a bootloader for development which loads the program into
+ram to run it, debug that way then try to load the same program into
+flash and run from there, simply running from possibly slower flash
+may affect your results.
+
+Notice I had to be careful to use the only timer that runs off of a
+clock other than the system clock.  If you use one of the other timers
+then for example the sram speed gives the same number because the
+timer is now running twice as before along with the sram and everything
+else.
+
+Something else to be careful about.  Benchmarks.  Notice I had 5
+instructions per loop
+
+ASMDELAY0:
+    nop
+    nop
+    nop
+    sub r0,#1
+    bne ASMDELAY0
+
+and 100 loops from sram took 603 clocks.  500 instructions 603
+clocks.  603/500 = 1.2
+
+the pll based times can vary by a clock or two, not getting into that
+but another run
+
+0000012E
+000001C4
+00000385
+0000012F
+
+12E is with three nops  12F with five, adding two nops 700 instructions
+instead of 500 added one tick (on a clock running on clock running
+half the speed)  303 instead of 302
+
+This one is way more interesting:
+
+The .align caused the function to start on a known alignment
+but adding a nop changes the alignment of the loop.
+
+
+08000088 <ASMDELAY>:
+ 8000088:   46c0        nop         ; (mov r8, r8)
+ 800008a:   680a        ldr r2, [r1, #0]
+
+0800008c <ASMDELAY0>:
+ 800008c:   46c0        nop         ; (mov r8, r8)
+ 800008e:   46c0        nop         ; (mov r8, r8)
+ 8000090:   46c0        nop         ; (mov r8, r8)
+ 8000092:   3801        subs    r0, #1
+ 8000094:   d1fa        bne.n   800008c <ASMDELAY0>
+ 8000096:   680b        ldr r3, [r1, #0]
+ 8000098:   1a9b        subs    r3, r3, r2
+ 800009a:   1c18        adds    r0, r3, #0
+ 800009c:   4770        bx  lr
+ 800009e:   46c0        nop         ; (mov r8, r8)
+
+12345678         12345678
+0000025B         0000025B
+0000025B         0000025B
+000004B3         000004B3
+0000025B         0000025B
+00000387 903     00000325 805
+0000070B 1803    00000645 1605
+0000012D         0000012E
+000001C3 451     00000193 403
+00000386 902     00000323 803
+0000012E         0000012E
+
+What is going on there?
+
+Well we wont every truly know unless we worked there and had more
+visibility into the internals.  It could be that perhaps the memory
+is not 16 bits wide but 32 or 64.  And maybe that causes an extra
+fetch cycle due to the nature of how far ahead it fetches.  It could
+also be a branch prediction thing, I have see in other non-cortex-ms
+that they fetch a bunch of instructions in one transfer, and have
+a deeper pipe than they tell us the cortex-m0+ has, and there is a
+sweet spot for the branch predictor.  They say the cortex-m0+ has a
+tiny pipe to keep the amount of logic down or power or some such feature
+that results.  So I dont think it is branch prediction, but it
+could be that 2 or 4 or 8 or 16 instructions are fetched in one transfer
+and the size and alignment of the loop affect the ratio between fetched
+things and the number of those things actually executed.  Using a
+longer truck to haul the same size box, that much less efficient use
+of space, and or overall weight, etc.
+
+I cant see this thing having a cache, but caches play a huge role in
+messing up your benchmarks.  Adding a nop in your bootstrap and another
+and another, can greatly affect the performance of the entire project
+as it messes with alignment of the code relative to the cache (and
+also may move heavily used sections around interfering with other
+things causing the odds of a cache collision to increase or decrease).
+10% difference, sometimes 20% difference in performance just by adding
+or removing nops, same compiler, same version, same source code other
+than the nops.
+
+I still think this benchmark demonstrates the original problem, that
+simply upping the clock by some factor does not automatically make
+your program run faster by that factor.
