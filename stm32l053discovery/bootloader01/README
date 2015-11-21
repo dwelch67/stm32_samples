@@ -13,3 +13,14 @@ get it to work I trashed an ftdi breakout board and either rx or tx
 (likely, dont remember now) on the stlink side of one of these boards.
 Good thing I bought more than one.
 
+This is an intel hex based loader, download in binary or ascii mode
+whatever your dumb terminal calls it.  Once downloaded press g to go.
+
+The examples, blinkers and such, build a sram.hex file, this is the
+file you want to download here.
+
+To run another program using the bootloader
+
+press reset
+download file
+press g
