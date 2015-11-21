@@ -9,7 +9,8 @@ LOPS = -Wall -m32 -emit-llvm -target arm-none-eabi -mcpu=cortex-m0 -mthumb
 LLCOPS = -march=thumb -mcpu=cortex-m0
 #LLCOPS = -mcpu=cortex-m0
 COPS = -Wall  -O2 -nostdlib -nostartfiles -ffreestanding
-OOPS = -std-compile-opts
+#OOPS = -std-compile-opts
+OOPS = -std-link-opts
 
 gcc : blinker05.gcc.thumb.flash.bin blinker05.gcc.thumb.sram.bin
 
@@ -25,6 +26,7 @@ clean:
 	rm -f *.bc
 	rm -f *.opt.s
 	rm -f *.norm.s
+	rm -f *.hex
 
 #---------------------------------
 
@@ -45,6 +47,7 @@ blinker05.gcc.thumb.flash.bin : flash.ld flash.o blinker05.gcc.thumb.o
 blinker05.gcc.thumb.sram.bin : sram.ld sram.o blinker05.gcc.thumb.o
 	$(ARMGNU)-ld -o blinker05.gcc.thumb.sram.elf -T sram.ld sram.o blinker05.gcc.thumb.o
 	$(ARMGNU)-objdump -D blinker05.gcc.thumb.sram.elf > blinker05.gcc.thumb.sram.list
+	$(ARMGNU)-objcopy blinker05.gcc.thumb.sram.elf blinker05.gcc.thumb.sram.hex -O ihex
 	$(ARMGNU)-objcopy blinker05.gcc.thumb.sram.elf blinker05.gcc.thumb.sram.bin -O binary
 
 #---------------------------------
@@ -76,6 +79,7 @@ blinker05.clang.thumb.norm.sram.bin : sram.ld sram.o blinker05.clang.bc
 	llc $(LLCOPS) blinker05.clang.bc -filetype=obj -o blinker05.clang.thumb.norm.o
 	$(ARMGNU)-ld -o blinker05.clang.thumb.norm.sram.elf -T sram.ld sram.o blinker05.clang.thumb.norm.o
 	$(ARMGNU)-objdump -D blinker05.clang.thumb.norm.sram.elf > blinker05.clang.thumb.norm.sram.list
+	$(ARMGNU)-objcopy blinker05.clang.thumb.norm.sram.elf blinker05.clang.thumb.norm.sram.hex -O ihex
 	$(ARMGNU)-objcopy blinker05.clang.thumb.norm.sram.elf blinker05.clang.thumb.norm.sram.bin -O binary
 
 blinker05.clang.thumb.opt.sram.bin : sram.ld sram.o blinker05.clang.bc
@@ -85,6 +89,7 @@ blinker05.clang.thumb.opt.sram.bin : sram.ld sram.o blinker05.clang.bc
 	llc $(LLCOPS) blinker05.clang.thumb.opt.bc -filetype=obj -o blinker05.clang.thumb.opt.o
 	$(ARMGNU)-ld -o blinker05.clang.thumb.opt.sram.elf -T sram.ld sram.o blinker05.clang.thumb.opt.o
 	$(ARMGNU)-objdump -D blinker05.clang.thumb.opt.sram.elf > blinker05.clang.thumb.opt.sram.list
+	$(ARMGNU)-objcopy blinker05.clang.thumb.opt.sram.elf blinker05.clang.thumb.opt.sram.hex -O ihex
 	$(ARMGNU)-objcopy blinker05.clang.thumb.opt.sram.elf blinker05.clang.thumb.opt.sram.bin -O binary
 
 

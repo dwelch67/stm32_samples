@@ -1,0 +1,15 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+PA9 is USART1_TX alternate function 4
+PA10 is USART1_RX alternate function 4
+
+This example switches to internal HSI16 16MHz clock.  Enables port A
+configures PA9 as the UART1_TX output.
+
+The uart is setup for 115200 baud, 16000000Hz/115200 = 138.88
+
+This example blasts the characters 0123456701234567... forever as
+fast as it can.  If using minicom you need to alt-a then w to switch
+to wraparound mode so you can see them.

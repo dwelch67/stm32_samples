@@ -16,9 +16,8 @@ void dummy ( unsigned int );
 
 int delay ( unsigned int n )
 {
-    unsigned int ra,rb,rc;
+    unsigned int ra;
 
-    rb=GET32(STK_CVR);
     while(n--)
     {
         while(1)

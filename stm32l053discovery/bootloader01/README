@@ -1,0 +1,15 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Derived from uart02.  Not really needed for this board since you can
+simply copy a .bin to the virtual flash drive.  But still, got the
+uart working so why not.
+
+The uart turned out to be trickly only because there is an LPUSART1
+and a USART1 and I had them confused, was enabling one in one place and
+the other in another, had to get all the ducks in a row.  In trying to
+get it to work I trashed an ftdi breakout board and either rx or tx
+(likely, dont remember now) on the stlink side of one of these boards.
+Good thing I bought more than one.
+

@@ -1,0 +1,12 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+PA9 is USART1_TX alternate function 4
+PA10 is USART1_RX alternate function 4
+
+This example configures USART1_TX and RX
+
+The uart is setup for 115200 baud, 16000000Hz/115200 = 138.88
+
+Whatever is received is then echoed back out.
