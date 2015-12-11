@@ -1,0 +1,23 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+so starting to mess with the e-paper display, which is really why
+I bought this board
+
+PA8     BUSY
+PB2     RESET
+PB11    D/C
+PA15    CS
+PB3     SCK
+PB5     MOSI
+PB10    PWR_EN
+
+I still have not figured out if PWR_EN is really doing anything.
+
+Still bit banging the spi.
+
+But I have the data format figured out, you can basically flip the
+x or y or both giving 4 setups.  Picked the one I liked, my font file
+was pretty much set for that already.  So this draws the beginning
+of the alphabet in three sizes.
