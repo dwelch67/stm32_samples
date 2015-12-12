@@ -1,0 +1,29 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Derived from uart02 and epd02
+
+PA10 is USART1_RX alternate function 4
+
+This is a very simple gps based clock, in theory highly accurate.
+
+Uses the epaper display, need to work on the font to make it bigger/
+better.
+
+I am not bothering to check the checksum, nor if it is even locked,
+quick and dirty.
+
+change this for your timezone.  or daylight savings
+
+                        ra=5; //time zone adjustment
+
+Not attempting to be low power.  Supposedly the blink on screen refresh
+is the nature of the beast, it has been hostorically for these displays
+because they are mechanical and that wiping in theory prevents pixels
+from sticking.  but as you may know from a modern kindle or other they
+now will go for some to several refreshes before they do a wipe.  So
+printing seconds on this display would not make sense.
+
+TODO better font of course, add the date, maybe a thermal sensor and
+the temp.
