@@ -1,0 +1,61 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This uses spi to talk to a pair of Nordic nRF24L01+ modules.  One
+setup for RX the other for TX.
+
+Sparkfun has one
+
+https://www.sparkfun.com/products/691
+
+But the ones I am using are from China bought on ebay.  Cost less than
+a buck each, with about $2 for shipping you might as well buy a 5 or
+10 pack and still pay $2 for shipping.  I think I paid $10 for 10 all
+said and done.
+
+      GND TX RX VCC
+
+BOOT0                SWCLK
+PF0                  SWDIO
+PF1                  RX
+NRST                 TX
+VDDA                 VCC
+PA0                  GND
+PA1                  PB1
+PA2                  PA7
+PA3                  PA6
+PA4 (led)            PA5 (led)
+
+stm to nordic module
+
+PA3 CE
+PA4 CSN
+PA5 SCK
+PA6 MISO
+PA7 MOSI
+GND GND
+VCC VCC
+
+Now I tried all kinds of settings and they were unreliable as hell.
+Only some of the transfers would go through.  I reduced it to only
+disable auto ack (ShockBurst) and leave the rest defaulted, and I
+think everything is going through now.
+
+I dont know what the range is on these, but pretty damn simple to
+use.  Pretty damn cheap to buy.
+
+bit banging the spi for now, using the same pins used by the hardware
+spi so I can switch back and forth when I get around to using the
+spi peripheral.
+
+I do have one of the sparkfun boards linked above and one
+of these
+
+https://www.sparkfun.com/products/retired/8602
+
+And I can mess with some registers that I cant mess with with the
+china modules, and it works great, or to say it another way, if
+I use the settings in the fob page examples the sparkfun board works
+great for receiving fob data, but the other boards do not.  I assume
+it may have to do with the antenna.
