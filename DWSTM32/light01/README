@@ -1,0 +1,14 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+On par with the blinkers, a quick and dirty to measure pulses from a
+light sensor
+
+https://www.sparkfun.com/products/9768
+
+I am using GND and VCC from VSS and VDD, and using PA0 as the input.
+
+It measures the pulse using the ARMs systick timer, lower is more
+light below a threshold it turns on the leds (PA4 and PA5), above that
+it turns them off.  It also outputs the measurement on the uart.
