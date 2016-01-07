@@ -1,0 +1,53 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+derived from blinker02
+
+This example uses the pll.  They make it pretty easy to use.
+
+Something to note.  Messing with or otherwise changing the clock input
+is dangerous business.  I have bricked devices doing this, completely
+unusable after that.  Normally what you want to do before trying this
+is to have a way to avoid the code under test.  Either learn how to
+use a button/strap/jumper input (use an led or uart to see that you
+can detect a high or a low on the input when booting).  If the input
+is one state then allow the code under test to run, otherwise spin
+in an infinite loop or jump over the code under test.  Not specific
+to stm32 but in general if you make a mistake and switch the chip
+to using a clock that isnt there, then the chip is basically hung,
+if your code is in flash then when it powers up it hits that code
+pretty quickly and you hang.  Likely with jtag you still cannot get
+in and erase the flash with the bad program.
+
+An alternative is to use the uart instead of an input pin, wait for
+a keystroke and only then try the code under test.  Basically allowing
+for jtag to capture the processor while in the loop waiting for a
+keystroke.
+
+There are exceptions, some chip vendors have built in bootloaders
+that often operate off of a strap (an input pin you tie high or
+low to indicate how you want it to boot).  The STM32 is an example
+of that, there are other brands as well.  Some AVR chips have a spi
+based programming mode where the reset line is held asserted and you
+program the part, so for that family no matter what you cannot brick
+the chip with bad code as you can always reprogram it.  (if you dont
+physically destroy the chip that is with your code).  So for this case
+an stm32, we dont have to worry about it, the boot0 pin is our strap
+to save us from code under test,
+
+Basically do your research.
+
+I assume this code is booting from reset, so we know the state of the
+chip is using the HSI8 clock.  For this chip we cannot use the
+hsi prediv and predivide by 1, we have to accept the forced divide by
+2.  So to get to the maxium 48 starting with 8 we end up with (8/2)*12.
+
+Pretty straight forward, program the input and multiplier.  Turn the
+pll on and wait for it to be ready.  Then switch the system clock
+to use the pll, and wait for that to switch over.
+
+If we assume 48MHz then 5*48 million clocks would be 5 seconds per
+led state change, and that is what we get.  Or if you leave the
+blinker02 code you would instead see the led blink faster.
+

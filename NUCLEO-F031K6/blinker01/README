@@ -1,0 +1,6 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+PB3 on this board has leds.  This is a very basic blinker, blink time
+is not meant to be accurate or deterministic, but long enough to be seen.

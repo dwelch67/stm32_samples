@@ -1,0 +1,21 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Derived from blinker02, using whatever clock it comes up with.
+
+Tried to use a timer6 example from another stm32, but this chip doesnt
+have a timer6 even though the reference manual documents, it note
+at the top of the section the list of parts the timer6/7 section covers.
+Not this one,  there is a general purpose timer14 and it programs the
+same basically as timer6, and worked great.
+
+As written here changes state every 8 seconds give or take
+
+65536000 / 8 = 8192000
+65536000 / 8000000 = 8.192
+
+The datasheet indicates the internal timer is used to boot, naturally,
+and that is an 8Mhz oscillator, so both this and the prior examples
+demonstrate this.  Both also demonstrate that without messing with
+things these timers/clocks are not divided/prescaled from the 8MHz.

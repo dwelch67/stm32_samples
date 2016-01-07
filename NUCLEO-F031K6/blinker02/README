@@ -1,0 +1,13 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+derived from blinker01, using whatever clock it comes up with.
+
+The cortex-m0 has a systick timer built in.  This example is counting
+to 50Million clocks then toggling the led.  It changes state every 6
+seconds give or take.  Basically it appears this is an 8Mhz clock.
+50000000/80000000 = 6.25 seconds.
+
+There is an HSI8 (internal rc based) clock in this chip, so this must
+be the one being used.

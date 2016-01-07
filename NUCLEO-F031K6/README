@@ -1,0 +1,75 @@
+
+This directory contains examples for the stm32f0 nucleo board
+specifically the stm32 f030r8 nucleo board.
+
+Starting page for all of the nucleo boards
+
+http://www.st.com/stm32nucleo
+
+Then navigate to the NUCLEO-F031K6 page by clicking on that name in
+the graph, as of this writing it is a black on yellow box.
+
+YOu will need the users manual for the board.
+
+You will need the reference manual for the specific microcontroller
+(search by part number within st.com)
+
+Unlike older/original mbed boards, it does not appear that you have
+to press the reset button after copying the .bin file to run the
+new program.  But, at least for me it sometimes takes a while before
+the newly copied program is loaded and started in the microcontroller.
+
+You can certainly press reset as much as you like after it is loaded
+to try the new program again and again.
+
+In the old (mbed) days the .bin file would stay there, my experience
+today is that the .bin file goes away.  Historically I would choose a
+specific file name (flash.bin for example) and copy to that filename on
+the mbed (nucleo) device.  I think there is actually a preferred name
+but I didnt research that just yet.
+
+Understand these are bare metal examples that DO NOT use the mbed
+development environment, these use gnu and or llvm toolchains.
+See the stm32f0discovery top README for more on getting the tools.  The
+way these mbed boards work is the debugger microcontroller emulates
+a flash drive which we copy a file to when that .bin file arrives it
+loads it into the evaluation microcontroller and starts it.  There is
+no magic to the .bin files that know where or how they were created,
+you can certainly try these examples on your board, and return to using
+the mbed gui/sdk as well.
+
+This is perhaps the board I have been waiting for for some time. The
+key feature of this board is that the debugger portion basically
+provides a virtual serial port for the host computer that is connected
+to the uart on the eval microcontroller.  So basically we can use
+a dumb terminal on the host (minicom, hyperterm, teraterm, putty, etc)
+to develop and debug programs without buying any additional hardware.
+Normally you would need to spend $10 to $15 on up for a usb to serial
+and maybe some additional jumper wires.  (for the moment this virtual
+com port does not work)
+
+This chip uses a cortex-m0 core from ARM.  The cortex-m3 and cortex-m4
+cores support the thumb instruction set and ARMv7-M thumb2 extensions
+to the thumb instruction set.  The cortex-m0 (and m0+) only support the
+ARMv6-M thumb2 extensions which is a much smaller set of additional
+instrucitons compared to the ARMv7-M thumb2 extensions.  So folks that
+are used to using the cortex-m3 for example may have problems on the
+cortex-m0 where many of the thumb2 extensions are considered undefined
+instructions (to get the extensions they took formerly undefined
+instructions and defined them) and those programs wont run.  The
+examples in this directory are built without thumb2 extensions so that
+they will run on this cortex-m0.
+
+I only bought this board because it is very closely related to the chip
+used on my DWSTM32 directory examples.  Same internals just my little
+breakout board has less pins.  The led on this board is on a pin that
+the DWSTM32 board does not have.  So had to modify those.  The uart01
+example does work if you hook up an external 3.3 level uart up but
+it says that the solder bridges are in place by default, I see them
+in place but /dev/ttyACM0 is not getting anything.  And i should have
+done my research in that I dont think we can mess with boot0 so you
+cant experience the serial bootloader like you can with a simple
+breakout board.  This mbed thing makes it really easy that you just
+copy the flash.bin file over.
+
+
