@@ -1,0 +1,22 @@
+
+See the top level README for schematic and programmers reference information.
+
+It is a good practice that before messing with clock sources we have
+a way to back out.  I dont know if this part is brickable.  So
+this example lights the led when the user button is pressed, later we
+will use the button to change the path of the program to not allow it
+to touch the clocks, and allow us to recover from a bug that might
+otherwise brick the board.
+
+The board manual says
+
+B1 USER: the user button is connected to the I/O PC13 (pin 2) of the STM32
+microcontroller.
+B2 RESET: this push button is connected to NRST, and is used to RESET
+the STM32 microcontroller.
+
+So we need to monitor PC13.
+
+It appears that PC13 is pulled high so when not pressed we get a 1
+and pressed we get a 0.
+

@@ -1,0 +1,31 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+The generic nucleo board documentation says
+
+User LD2: the green LED is a user LED connected to Arduino signal D13
+corresponding to MCU I/O PA5 (pin 21) or PB13 (pin 34) depending on
+the STM32 target. Please refer to Table 10 to Table 17.
+
+And looking at those tables for the F411RE board D13 is PA5 on this
+board.  So that is the gpio pin to target.
+
+First we have to enable the peripheral (enable clocks, power it up if
+you will).
+
+Then setup the gpio for push pull out.
+
+Then toggle the gpio pin on and off.
+
+Once built take one of the .bin files and copy it to the mounted
+NUCLEO drive, preferrably using the same name as a destination every
+time (flash.bin for example).  It appears that it loads and resets
+the target mcu right away rather than having to press a reset button
+like the old days with the original mbed.
+
+To verify that it is you blinking the led and not some stale software
+change the last loop to 800000 instead of 200000 and see the off
+time is longer than the on time, then put it back and see that the
+on and off times are again the same.
+

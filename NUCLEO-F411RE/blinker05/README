@@ -1,0 +1,23 @@
+
+See the top level README for schematic and programmers reference information.
+
+The internal clock (HSI) for this part is 16MHz, that is what we have
+been using so far in the blinker examples.  This example starts by
+blinking the led using a 4 million timer tick delay so 1/4th of a second
+on and 1/4th of a second off.
+
+The stlink end of the board outputs an 8MHz clock which to us is the
+external HSE clock input.  The example switches to this HSE input with
+no multiplication (PLL) and no division, so we should basically slow
+down to half speed, then it blinks the led some more, at half speed
+that means the blinking should be half the rate, 1/2 second on, 1/2
+second off.
+
+As described in blinker04 a safety measure is in place.  If this
+bricks the microcontroller, then press and hold the user button, then
+press the reset button, when it comes out of reset it will see the
+user button pressed and not enter the code that messes with clocks
+(and is likely what bricked the board).  This is mostly for me since
+if you are reading this then this code works and does not brick the
+board, and here if you change this code to protect you.
+
