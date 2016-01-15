@@ -1,0 +1,9 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Derived from uart02.  The difference is I dont have the safety button
+in there and am using the 16MHz internal clock not the 8MHz external.
+
+Prints out 12345678 then echos back whatever you type, cooks the CR
+
