@@ -1,0 +1,12 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Derived from uart02.  This takes what it receives from rx and sends
+echos it out tx.
+
+So this is the baseline for projects.  The chip comes up using HSI
+at 16Mhz, the HSE is 8MHz, this example uses the PLL to multiply that
+to 16MHz.  If you have the HSE of 8Mhz then use this example if not
+then you can use uart03 which uses the HSI.  or use this one and
+comment out the clock init.
