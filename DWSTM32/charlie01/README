@@ -1,0 +1,10 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+derived from blinker02
+
+I made a little charlieplexed board with 12 leds, 4 I/O pins.  This
+just demonstrates lighting each one up at a time.
+
+
