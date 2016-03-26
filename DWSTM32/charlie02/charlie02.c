@@ -55,22 +55,34 @@ static int delay ( unsigned int n )
 #define LED31MODER ((1<<(3<<1))|(1<<(1<<1)))
 #define LED32MODER ((1<<(3<<1))|(1<<(2<<1)))
 
-
 //[y][x]
 static const unsigned char ledout[4][4]=
 {
-    {LED00OUT,LED01OUT,LED02OUT},
-    {LED10OUT,LED11OUT,LED12OUT},
-    {LED20OUT,LED21OUT,LED22OUT},
-    {LED30OUT,LED31OUT,LED32OUT},
+    {LED00OUT,LED01OUT,LED02OUT,0},
+    {LED10OUT,LED11OUT,LED12OUT,0},
+    {LED20OUT,LED21OUT,LED22OUT,0},
+    {LED30OUT,LED31OUT,LED32OUT,0},
 };
 static const unsigned char ledmoder[4][4]=
 {
-    {LED00MODER,LED01MODER,LED02MODER},
-    {LED10MODER,LED11MODER,LED12MODER},
-    {LED20MODER,LED21MODER,LED22MODER},
-    {LED30MODER,LED31MODER,LED32MODER},
+    {LED00MODER,LED01MODER,LED02MODER,0},
+    {LED10MODER,LED11MODER,LED12MODER,0},
+    {LED20MODER,LED21MODER,LED22MODER,0},
+    {LED30MODER,LED31MODER,LED32MODER,0},
 };
+
+static void quicky ( unsigned int moder, unsigned char o, unsigned char m )
+{
+    unsigned int ra;
+    PUT32(GPIOABASE+0x14,o);
+    PUT32(GPIOABASE+0x00,moder|m);
+    while(1)
+    {
+        ra=GET32(STK_CSR);
+        if(ra&(1<<16)) break;
+    }
+    PUT32(GPIOABASE+0x00,moder);
+}
 
 int notmain ( void )
 {
@@ -116,7 +128,7 @@ int notmain ( void )
     PUT32(GPIOABASE+0x0C,ra);
 
     PUT32(STK_CSR,4);
-    PUT32(STK_RVR,1000000-1);
+    PUT32(STK_RVR,10000-1);
     PUT32(STK_CVR,0x00000000);
     PUT32(STK_CSR,5);
     moder=GET32(GPIOABASE+0x00);
@@ -125,22 +137,21 @@ int notmain ( void )
     {
         for(ry=0;ry<4;ry++)
         {
-            for(rx=0;rx<3;rx++)
+            for(rx=0;rx<100;rx++)
             {
-                PUT32(GPIOABASE+0x14,ledout[ry][rx]);
-                PUT32(GPIOABASE+0x00,moder|ledmoder[ry][rx]);
-                delay(1);
-                PUT32(GPIOABASE+0x00,moder);
+                quicky(moder,ledout[ry][0],ledmoder[ry][0]);
+                quicky(moder,ledout[ry][1],ledmoder[ry][1]);
+                quicky(moder,ledout[ry][2],ledmoder[ry][2]);
             }
         }
         for(rx=0;rx<3;rx++)
         {
-            for(ry=0;ry<4;ry++)
+            for(ry=0;ry<75;ry++)
             {
-                PUT32(GPIOABASE+0x14,ledout[ry][rx]);
-                PUT32(GPIOABASE+0x00,moder|ledmoder[ry][rx]);
-                delay(1);
-                PUT32(GPIOABASE+0x00,moder);
+                quicky(moder,ledout[0][rx],ledmoder[0][rx]);
+                quicky(moder,ledout[1][rx],ledmoder[1][rx]);
+                quicky(moder,ledout[2][rx],ledmoder[2][rx]);
+                quicky(moder,ledout[3][rx],ledmoder[3][rx]);
             }
         }
     }

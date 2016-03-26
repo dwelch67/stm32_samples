@@ -1,0 +1,24 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+I made a little charlieplexed board with 12 leds, 4 I/O pins.
+
+Like charlie03, but more of the data is pre-computed.  So there is
+less code from a lines of code sense.  But more tables, the binaries
+are actually a little bit bigger than the charlie03 approach.  With
+less executed code it should be quicker getting from one led blinking
+to the next so they should be on a little longer.
+
+Just another way to do it.
+
+This is trivial for me to convert to hex
+
+//....
+//00..
+//0...
+0x0C8,
+
+but maybe not for everyone, so one could also have written a program
+to parse hand made strings of characters representing on and off, and
+created the hex from that.

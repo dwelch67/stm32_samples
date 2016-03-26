@@ -1,0 +1,15 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+I made a little charlieplexed board with 12 leds, 4 I/O pins.
+
+The prior ones just lit one led at a time which still requires
+understanding how charlieplexing works.  But the one led was on for
+the duration of the time period.  If you want more than one led "on"
+at a time.  You need to blink each of them briefly over and over
+again, fast enough that the eye cannot detect it, but slow enough
+that they get enough light out.  If you blink them as fast as you
+can then you get more of a glow than them looking fully on.  They
+are still not as intense as being fully on for the duration.
+
