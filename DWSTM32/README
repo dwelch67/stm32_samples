@@ -88,3 +88,10 @@ space.  So blinker01 and other examples will have both sram and flash
 versions.
 
 For using the jtag, see the STM32F031F4P6 directory README.
+
+I built a charlieplexed board and have some examples.  See led.brd in
+this directory.  Started with a sparkfun board and cut it down to
+a quarter the size.  Using the same leds and resistors I used on the
+stm32 board.
+
+
