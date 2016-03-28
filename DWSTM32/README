@@ -3,7 +3,7 @@ So I had bought a handful or so STM32F031F4P6 parts, loose parts not
 on a development/eval board.  The least featured stm32 I could find in
 a tssop package (something I/you/we could hand solder).
 
-The for the STM32F031F4P6 examples I put them on a generic breakout that
+Then for the STM32F031F4P6 examples I put them on a generic breakout that
 I found on ebay for about a buck a board.  I since went and made my
 own board fairly cheap and built a few of those boards.  The
 DWSTM32.brd file you can open with eagle and see the board (go to
