@@ -84,14 +84,14 @@ int notmain ( void )
     PUT32(RCCBASE+0x14,ra);
     //moder
     ra=GET32(GPIOABASE+0x00);
-    ra&=~(3<<0); //PA0
-    ra&=~(3<<2); //PA1
-    ra&=~(3<<4); //PA2
-    ra&=~(3<<8); //PA3
-    //ra|=1<<0; //PA0
-    //ra|=1<<2; //PA1
-    //ra|=1<<4; //PA2
-    //ra|=1<<6; //PA3
+    ra&=~(3<<(0<<1)); //PA0
+    ra&=~(3<<(1<<1)); //PA1
+    ra&=~(3<<(2<<1)); //PA2
+    ra&=~(3<<(3<<1)); //PA3
+    //ra|=1<<(0<<1); //PA0
+    //ra|=1<<(1<<1); //PA1
+    //ra|=1<<(2<<1); //PA2
+    //ra|=1<<(3<<1); //PA3
     PUT32(GPIOABASE+0x00,ra);
     //OTYPER
     ra=GET32(GPIOABASE+0x04);
@@ -102,17 +102,17 @@ int notmain ( void )
     PUT32(GPIOABASE+0x04,ra);
     //ospeedr
     ra=GET32(GPIOABASE+0x08);
-    ra|=3<<0; //PA0
-    ra|=3<<2; //PA1
-    ra|=3<<4; //PA2
-    ra|=3<<6; //PA3
+    ra|=3<<(0<<1); //PA0
+    ra|=3<<(1<<1); //PA1
+    ra|=3<<(2<<1); //PA2
+    ra|=3<<(3<<1); //PA3
     PUT32(GPIOABASE+0x08,ra);
     //pupdr
     ra=GET32(GPIOABASE+0x0C);
-    ra&=~(3<<0); //PA0
-    ra&=~(3<<2); //PA1
-    ra&=~(3<<4); //PA2
-    ra&=~(3<<8); //PA3
+    ra&=~(3<<(0<<1)); //PA0
+    ra&=~(3<<(1<<1)); //PA1
+    ra&=~(3<<(2<<1)); //PA2
+    ra&=~(3<<(3<<1)); //PA3
     PUT32(GPIOABASE+0x0C,ra);
 
     PUT32(STK_CSR,4);
