@@ -1,0 +1,115 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+I created a smaller version of this sparkfun board
+https://www.sparkfun.com/products/13795
+3x4 instead of 8x7.
+
+It uses charlieplexing (just google it).  Four GPIO pins are used in
+a way that each led has a unique combination of one of the four on
+the top side of the led, and one of the other three connected to the
+bottom.  The idea being you can drive a single led if you have one
+gpio high, another low, and the other two floating, basically set
+them as inputs.  If you want it to appear that more than one led is
+"on" at the same time, you have to blink them faster than the eye
+can detect, but leave them on long enough to get enough light out.
+
+Now add to this a GPS, because other than WWVB or tapping into CDMA
+or GSM, the only other way to get accurate time.  RTC's drift too much
+for my taste.  WWVB these days you pretty much have to harvest from
+an atomic clock.  And then do a lot of work.  CDMA/GSM receivers are
+not as cheap as GPS receivers.
+
+https://www.sparkfun.com/products/13740
+
+And I figured I could do hours, tens of minutes, ones of minutes on
+the three rows in binary.  A binary clock but I have combined the
+tens and ones of minutes into one row of four leds.
+
+so with O on and . off
+
+O.OO
+..O.
+.O.O
+
+would be 11:25
+
+The hours is always non-zero so if you cant see the board and just light
+then you know at least the first row is the hours.
+
+Of course there is this problem
+
+O.O
+..O
+.OO
+
+Is that
+
+O.O.
+..O.
+.OO.
+
+10:26
+
+Or is it
+
+.O.O
+...O
+..OO
+
+5:13?
+
+If you cant see the board then you may not know.
+
+
+I didnt add the logic to make sure the gps was locked, basically a V
+is not, A is.
+
+$GPRMC,231237.98,V,
+$GPRMC,020707.00,A,
+
+So until it locks, depending on your receiver, it may show a time that
+is wrong but increments or show nothing.
+
+The time variables are initialized to 11:23 just to see something
+happen when it starts.  If it never changes from that then your receiver
+is not putting out the right string.
+
+    lasttim[0]=1;
+    lasttim[1]=1;
+    lasttim[2]=2;
+    lasttim[3]=3;
+
+I also do not check the checksum for the string, quick and dirty.
+
+
+To adjust to your timezone
+
+//ra=5; //time zone adjustment winter
+ra=4; //time zone adjustment summer
+
+Use whatever your offset from UTC is.  These are subtract 4 or 5 if
+you need to add then modify the code accordingly.
+
+
+I prefer my leds dimmer, you can make it a little brighter.
+
+    if(1) //0 makes it brighter
+
+I use very low mcd leds too, so it depends on what leds you used on the
+charlieplexed led board to start with.
+
+Now, I have not tried this, but in order to power this board without
+it enumerating on a bus.  Meaning just using a usb phone charger type
+brick, you have to short SB1.
+
+From the board manual:
+
+In case the board is powered by a USB charger, there is no USB
+enumeration, so the LED LD2 remains set to OFF permanently and the
+target STM32 is not powered. In this specific case the SB1 must be set
+ON, to allow the target STM32 to be powered anyway.
+
+And if I end up actually using this clock, then this is the last
+example for this board unless I buy another.
