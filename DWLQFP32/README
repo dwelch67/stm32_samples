@@ -1,0 +1,96 @@
+
+After having fun with the DWSTM32 board, I wanted to make one with
+more pins, so the next least expensive one I could solder was the
+LQFP32 package.  And as with the DWSTM32 board/part I made a breakout
+with a few other things.
+
+These examples are for the STM32F030K6T6 part.  The documentation
+you need starts at st.com search for the part number, STM32F030K6T6.
+As of this writing there is a list of products then a list of search
+results, you want the one part number hit (above not below the
+search results). The hit being STM32F030K6  without the T6.
+Download the datasheet.  Then press on the DESIGN tab which currently
+takes you down the page slide down to the referene manual, that is
+your primary manual.
+
+The datasheet says the core is a Cortex-M0.  So the next two documents
+you need any time you use an ARM core are the Technical Reference
+Manual (ARM TRM) and the Architectural Reference Manual (ARM ARM).  Each
+core has a TRM.  http://infocenter.arm.com, you will need to sacrifice
+an email address.  On the left expand Cortex-M series processors, then
+expand the Cortex-M0, not the M0+.  Expand the most recent Revision
+for now and then select the TRM.  At the bottom of the stuff on the
+right side of the page is a pdf link.  In the TRM says it implements
+the ARMv6-M architecture.  So you need the ARMv6-M ARM ARM.  Back
+to the ARM page higher up on the left expand ARM Architecture then
+Reference Manuals then ARMv6-M.  And like the TRM you find a pdf
+link on the right side of the page.
+
+I have included the brd file and the pdf for the board.  This board
+is too simple to make schematics, board file made with eagle.  I use
+osh park to make my boards.  I used 10K ohm resistors for the pull up
+and pull downs, and 130 Ohm for the led.  Remember this LED is
+configured with the PB1 pin sinking not sourcing.
+
+
+        BOOT 0
+01 VDD (3.3)    32 VSS (GND)
+02 PF0          31 BOOT0
+03 PF1          30 PB7
+04 NRST         29 PB6
+05 VDDA         28 PB5
+06 PA0          27 PB4
+07 PA1          26 PB3
+08 PA2          25 PA15
+09 PA3          24 PA14
+10 PA4          23 PA13
+11 PA5          22 PA12
+12 PA6          21 PA11
+13 PA7          20 PA10  USART1_RX
+14 PB0          19 PA9   USART1_TX
+15 PB1 (LED)    18 PA8
+16 VSS (GND)    17 VDD (3.3)
+        RESET
+
+
+Pin 1,5,17 VDD and VDDA are connected together on the board you only
+have to connect 3.3V to one of them
+
+Pin 16,32 are connected together VSS, you only have to connect GND to
+one of them.
+
+Pin 15 is the gnd end of the LED so to turn the led on you want to
+write a 0 to that pin, writing a 1 puts 3.3 on both sides and it
+turns it off.
+
+
+These parts contain a factory programmed bootloader.  It uses the
+USART1 uart.  The progstm directory contains source for the tool
+that I use to program these parts.   I have an assortment of ftdi
+breakout boards (3.3V), you can get them at sparkfun or adafruit
+or ebay.  Boards and use jumpers or they have a cable with the
+ftdi part built in.  Whatever so long as it is 3.3.  So as shown
+above VDD gets 3.3v, VSS gets GND and connect your uart boards RX
+to PA9 TX and your uart board RX to PA10.
+
+Press and hold the boot0 button, press and release reset, then
+release boot0.  Then use the flash.bin version of the example you
+want to try.
+
+The flash and sram binaries are slightly different.  The issue is
+that ARM switched from the full sized 32 bit processors scheme of
+the reset vector is an instruction you execute (a branch basically)
+but the cortex-m processors use a traditional table of addresses.
+So on flash you have to boot using the table of addresses and that is
+the first thing.  For sram, you dont have to but what I have is the
+first instruction in the binary is the first one you want to execute.
+The sram version is for use with jtag (maybe later with my own
+bootloader will see), doesnt make sense otherwise.  You could arguably
+know the offset where the reset vector code lives and start the
+jtag execution there, but the second difference is the flash version
+is linked for the flash address space and sram for the sram address
+space.  So blinker01 and other examples will have both sram and flash
+versions.
+
+For using the jtag, see the STM32F031F4P6 directory README.
+
