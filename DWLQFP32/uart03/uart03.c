@@ -11,11 +11,14 @@ void dummy ( unsigned int );
 #define RCC_BASE 0x40021000
 #define USART1_BASE 0x40013800
 
+#define FLASH_ACR 0x40022000
+
 //-------------------------------------------------------------------
 void clock_init ( void )
 {
     unsigned int ra;
 
+    PUT32(FLASH_ACR,0x11);
     //HSI8 based 48MHz.  (8/2)*12
     ra=0;
     ra|=10<<18; //times 12

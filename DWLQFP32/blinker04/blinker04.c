@@ -14,11 +14,14 @@ void dummy ( unsigned int );
 #define STK_CVR 0xE000E018
 #define STK_MASK 0x00FFFFFF
 
+#define FLASH_ACR 0x40022000
+
 //-------------------------------------------------------------------
 void clock_init ( void )
 {
     unsigned int ra;
 
+    PUT32(FLASH_ACR,0x11);
     //HSI8 based 48MHz.  (8/2)*12
     ra=0;
     ra|=10<<18; //times 12
