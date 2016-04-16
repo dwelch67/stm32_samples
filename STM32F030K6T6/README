@@ -1,0 +1,44 @@
+
+So I had started with some of these STM32F031F4P6 and an ebay TSSOP20
+breakout board, figured out what more I wanted in a breakout board.
+Made a couple, then made the DWSTM32 breakout with some buttons and
+such.  And then eventually wanted more pins, so made the DWLQFP32
+board, on which I am using this part, the STM32F030K6T6.
+
+Understand that st's peripherals are pretty much if not identical from
+one part to another.  Learn how to program the gpio on any of the
+stm32s from a cortex-m0 to a cortex-m4 and you can cut and paste
+the code and simply change the base addresses and maybe not even that.
+
+These little breakouts I am using the lowest cost cortex-m0 chips
+from st at mouser.
+
+The NUCLEO-F031K6 is closely related to the microcontrollers used
+on these breakouts.  The programs were identical between that board
+and the DWSTM32, so you can use that NUCLEO with these examples too
+is what I assume, if not easy to modify.  So you can buy a ready to
+use board rather than making one of these yourself.
+
+The STM32F031F4P6 covers jtag stuff if you want to go that route and
+some chit chat about soldering.  A popular way to do things is to use
+a board like this
+
+https://www.sparkfun.com/products/112
+
+and you would need a breakout board for a package like this that
+results in two rows.  the breadboard then gives you multiple connection
+points per pin.  But I dont do that, did with my first through hole/
+dip microcontrollers, but dont anymore.  I just fly some female/female
+jumper wires between things
+
+https://www.sparkfun.com/products/10898
+
+so I need a few pins to have multiple connections, so if you look
+at the pdf of this breakout or the board file (eagle pcb has a free
+version that will show you this board) I have four four pin rails
+there.  so basically I can connect power and then connect it to three
+other pins, and also connect the grounds.
+
+Basically the examples for this one are the same as the DWLQFP32
+board examples since it is the same part, I bought a handful of them
+and put one on this board and some on the other.
