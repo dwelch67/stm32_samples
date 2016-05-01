@@ -18,3 +18,15 @@ PA4 (led)            PA5 (led)
 3 GND         pin 15  VSS
 4 SWDIO       pin 19  PA13
 5 NRST        pin 4   NRST
+
+BOOT0 via R3 to GND
+BOOT0 via normally open switch to VCC
+
+NRST via R4 to VCC
+NRST via normally open switch to GND
+
+VDDA tied to VCC
+
+PA9 TX
+PA10 RX
+

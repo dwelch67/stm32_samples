@@ -1,15 +1,24 @@
 
+I am using a part in the same family as the NUCLEO-F031K6, so any of
+the examples here should work on that board as well, other than the
+pinouts are different, and you can simply drag and drop the .bin
+file onto the virtual flash drive with the NUCLEO board.
+
 So I had bought a handful or so STM32F031F4P6 parts, loose parts not
 on a development/eval board.  The least featured stm32 I could find in
 a tssop package (something I/you/we could hand solder).
 
 Then for the STM32F031F4P6 examples I put them on a generic breakout that
-I found on ebay for about a buck a board.  I since went and made my
-own board fairly cheap and built a few of those boards.  The
-DWSTM32.brd file you can open with eagle and see the board (go to
-oshpark and make some yourself).  I have a pdf here as well.  I am
-currently using 130 Ohm resistors with the leds and 10K for the pull
-up/down.
+I found on ebay for about a buck a board.
+
+I made my own breakout board under a buck a board at oshpark.  File
+named breakout_too.brd.  (and pdf)
+
+And I made a more complicated board fairly cheap and built a few of
+those boards.  The DWSTM32.brd file you can open with eagle and see the
+board (go to oshpark and make some yourself).  I have a pdf here as
+well.  I am currently using 130 Ohm resistors with the leds and 10K for
+the pull up/down.
 
 Not obvious necessarily but the top pins are for my favorite ftdi board
 
@@ -47,15 +56,18 @@ wanted to learn on my own.  My first SMT IC was done by reading this
 
 http://goodfet.sourceforge.net/construction/
 
-and I made mistakes.  When he says run across, you need to not use
+And I made mistakes.  When he says run across, you need to not use
 any friction the pins bend really easy, esp when hot.  First time
 I tried it I slid the wick across and bent all the pins on one side.
-Oops...buy multiples of everything, expect to mess up.
+Oops...buy multiples of everything, expect to mess up.  I simply
+hold the wick over the pins, press down hold for a while for it to
+absorb and lift up in the air.  No sliding around.
 
 I still need to read up on the right way to know the orientation of
 the leds.  I got lazy and put one one way, one the other, the one
 that lit up was right, removed the other and put another on the
-same way as the working one.
+same way as the working one.  I have access to handheld meters that
+can test the diode and it lights up when you get it right.
 
 For these samples you will want the documentation on the STM32F031F4P6
 part from ST for information on how to write programs for the part.
@@ -66,11 +78,16 @@ bootloader, sign of life for the board.
 Then uloader takes the blinker01 flash output and programs it into the
 part.
 
-For both of these press and hold boot0, then press and release reset,
-then release boot0 to put it in the internal bootloader.  After using
-uloader to program the flash, press and release reset without touching
-boot0 and it will start blinking the leds (did you solder them on
-right? 50/50 chance unless you do the research/testing first)
+And the real loader is in the progstm directory.  Like the two
+before but it takes a flash.bin file as a command line.  I personally
+use this one for all of these examples.  Use the flash.bin binary not
+the sram.bin binary.
+
+For all three of these press and hold boot0, then press and release
+reset, then release boot0 to put it in the internal bootloader.  After
+using progstm to program the flash, press and release reset without
+touching boot0 and it will start running your program.  Start with
+blinker01.
 
 The flash and sram binaries are slightly different.  The issue is
 that ARM switched from the full sized 32 bit processors scheme of
