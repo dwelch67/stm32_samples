@@ -1,0 +1,387 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+derived from uart02 and blinker02.
+
+It really bugs me when I see the blinker example you are supposed to
+run first be interrupt based.  Or any notion that interrupts is how
+you do that.  While true you CAN use interrupts.  It should most
+definitely not be the first or fifth or 20th thing you do.  Start with
+polling, you can sometimes, often?, make your entire project without
+using interrupts.  Just depends some on the problem and some on your
+design.  Saying that, eventually you will want/need to know.  So this
+is the first interrupt example.
+
+Even with decades of experience interrupts can be challenging.  The
+designers of this core made your life a little bit easier, but we will
+get to that.
+
+Interrupt means just that, to get interrupted.  Just like when you
+are doing something at home and the doorbell rings.  What you are doing
+gets interrupted and you go service that interrupt by seeing who or
+what is at the door.  And just like that example the notion is that if
+you stopped whatever you were doing to check on the door, then whatever
+you were doing is not as high of a priority as answering the door.  So
+interrupts are a way to have you service a higher proirity thing.
+Polling in this example would be every chance you get while doing the
+other thing you look out the window to see if someone is at the door,
+you have no doorbell and cant hear anyone knock because you arent
+listening for that, so you check.  And if you were a tireless
+microcontroller and didnt have much to do, you wouldnt mind doing that
+constantly.
+
+So in general, not specific to this chip, but to any processor or
+microcontroller, you have a peripheral of some sort, that peripheral
+has one or more events that can happen that are interrupt worthy,
+something that the designers decided you might want to have an
+interrupt for.  A timer going off, a uart gets a new character or
+the fifo is about to overflow.  A gpio input has had a rising edge or
+has changed state, the ADC has a new sample ready.  Not necessarily
+in this order, the order depends on the design, but you will need to
+configure the peripheral to have it interrupt when that event
+occurs.  Often somewhere between the peripheral and the processor core
+(and sometimes there are multiple places) you need to enable that
+interrupt to pass through an interrupt controller or some gate basically
+that enables or disables it to pass.  Then, usually the processor core
+has an interrupt enable, that you can disable for sections of code
+you dont want to be interrupted and for other reasons (when you are
+setting up or dont have code to handle the interrupt).  Then there is
+a processor specific mechanism that causes the processor to stop what
+it was doing, often finishing the instruction it is executing first
+then dealing with the interrupt, but not always the case you have to
+read up on how the processor works.  And again in a processor specific
+way there is a table with an address or a known address where the
+processor finds the code you have written to be the interrupt handler.
+
+Depending on the design the interrupt handler has to do a few things,
+not uncommon the first thing is save state, you may have to push the
+registers and flags onto the stack, so that when you return to the
+application the code that was running doesnt know that the interrupt
+happened, its registers are not changed, the flags are as they were.
+Next you need to figure out what caused the interrupt as it is not
+uncommon to have a processor core with only one shared interrupt line
+that the enables upstream combine the separate interrupt inputs into.
+Once you determine that then you go to the peripheral and deal with
+what it needs, or you use some sort of shared resource (chunk of memory
+or variables) to have the application continue the handling of the
+peripheral.  And you then tell the peripheral to clear its interrupt,
+and you may need to clear the interrupt in the interrupt handlers
+between the peripheral and the processor core.  You may need to clear
+the interrupt in the processor core as well.  You may need to re-arm
+the peripheral for another interrupt.  Depending on the design you
+might need to do this in a loop and poll the interrupt controller to
+see if there are any more interrupts pending, and not return until they
+are all handled.  Next to last return the state of the machine, if you
+saved registers and flags, put them back.  And lastly you may have a
+special way that you return from an interrupt that is different from a
+return from a normal function.
+
+And as you can imagine, figuring all of this out getting it just right
+and debugging it is not easy or fun.  You forget to clear the interrupt
+in one place and you might endlessly call the interrupt handler.
+
+Interrupt handlers need to be lean and mean, they need to be fast,
+because there may be other interrupts that come along.  The processor
+and system design determines "what happens if another interrupt happens
+while I am in an interrupt".  Some systems with only one interrupt you
+likely will not interrupt the interrupt.  Some systems with more than
+one interrupt or a priority system may very well interrupt a lower
+priority interrupt with a higher priority.  Absolutely if you have
+a peripheral that can interrupt every N amount of time, you need to
+handle each one in less than tha time just to keep up.  If you have
+other foreground or other interrupt tasks to handle then each handler
+needs to be fast enough so that everything can get done and not get
+backed up.  Often you will simply lose interrupts and lose the data
+or the event, sometimes losing an interrupt means you dont re-arm the
+peripheral and it is game over for whatever you were using that
+peripheral for.
+
+We are fortunate with the cortex-m that there is no special return
+required, the full sized ARM cores do, but not the cortex-m.  As you
+can imagine if you have looked at my stuff that I am not a fan of the
+ghee whiz look at this cool feature of my compiler.  Often you will
+find compilers from a vendor that have a special directive that you
+use when defining an interrupt handler function that basically creates
+the frame around a normal function, if saving the registers and flags
+are needed this special function definition tells the compiler to do
+that for this processor, if a special interrupt return instruction is
+needed it uses that rather than a normal return.  I dont like compiler
+specific stuff like that, code is not portable, have to keep touching
+it, etc.  I much rather write the few lines of assembly language myself
+and if needed then call a C function, if not then dont.  Far more
+portable, and I am in control, I dont have to rely on the compiler
+getting it right.  This is how I do things, you can do them yourself
+however you prefer.
+
+The full sized ARM chips, the ARM7, ARM9, ARM10, ARM11, Cortex-A,
+Cortex-R, (well the 32 bit ones, the aarch64 bit ones are a different
+story) are a little strange compared to many other processors in that
+the exceptions and interrupt handlers start executing at a hardcoded
+address.  A more traditional way is a table, with the table being
+at a hardcoded well known address, and the table we fill in directly
+or indirectly with addresses to the handlers for those events or
+interrupts.  The cortex-m as we have already seen in prior examples
+conforms to the latter.  Interestingly it starts with address 0x0000000
+containing the address we want to pre-load the stack pointer with
+and then address 0x00000004 contains the address to our reset handler.
+I happen to use a little bit of assembly language for my reset handler
+but so long as you dont return (or maybe you can have to read the docs
+to see what happens) you can put your main program address as the
+reset handler and not need any asm or any more asm than is required to
+build the vector table.  Here again you know that I use some asm
+for other things, but could easily create an example that has none
+other than the vector table.  Some folks argue you dont need any
+assembly langauge for the cortex-m.  And that is technically true, but
+you still have to build the vector table somehow, and although you use
+the assembler it is just directives with some function names, and the
+assembler is already there, so it makes the most sense to just use it
+and not create yet another tool in the toolchain for that one special
+use case.  (yet some toolchains do so that they or their users can
+claim they didnt use any assembly language)
+
+Normally you need to get the ARM Architectural Reference Manual (ARM ARM)
+and/or the ARM Technical Reference Manual (ARM TRM) for the architecture
+or family you are using.  In this case we are using a cortex-m0 (not the
+m0+) so we would need the ARM TRM for the cortex-m0 core and we would
+need the ARM ARM for the ARMv6-m architecture.  Ideally you want the TRM
+that exactly matches the revision used by the chip designer, even if
+there is a new revision and manual.  But sometimes you dont initially
+know what that is.  Often there is an indentification register you can
+read and from that determine what core you have, what manual to get
+and what bugs in that core you have to deal with.  It is a VERY
+common mistake to see bug fixes incorrectly applied to ARM (and no doubt
+other) processors.  The linux sources in particular constantly have
+this problem, part of porting linux to your chip is constantly fixing
+the linux bugs for the core you are using, each new release of linux
+yet some other company or person has incorrectly fixed or applied a
+patch.  I am so glad I dont do that, I have had to help out and seen
+just how horrible of a job it is.  Sometimes, rarely, the chip vendor
+(ARM does not make chips they make processor cores and other IP that
+chip vendors buy and compile into their chip designs) will provide a
+programmers manual for the processor.  In this case ST has done that
+and in that manual, as well as in the ARM documentation, is a list of
+exceptions.  The cortex-m docs tend to use exception number, although
+I am seeing that this ARM CMSIS stuff is undermining what has been
+used for years and messing it up.  Anyway, somewhere there is a table
+that is often in order showing starting with reset what the exceptions
+and interrupts are.  This is the table you have to build.  Now as the
+software engineer you know what your project is designed to handle
+and what it doesnt need to handle.  This table normally sits at the
+beginning of ram and consumes space, if you are not using everything
+in it, then only put just enough to cover the things you need to
+support.  Using the st document I went ahead and made a complete table.
+I think, but would have to read up, that the first 16 are what you
+would call exceptions (well the zeroeth is the stack pointer address),
+and the same ones are in the same place, reset is always the first one
+after the stack pointer.  the hard falt is two after that and so on.
+Then after those first 16 addresses then the interrupt vectors start
+for the interrupts starting with interrupt 0 and then 1 and so on.  The
+cortex-m's can have MANY interrupts, 32, 64, 128...Seems like it is
+up to the chip designers.  Or maybe the m0 has this and the m3 has that
+and the m4 has another amount.  In any case, according to the st doc,
+there are 48 total, the 16 exceptions, and 32 interrupts.
+
+So you will see that I start the flash in this example with those 48.
+
+  .global _start
+_start:
+stacktop: .word 0x20001000
+.word reset             //  1 reset
+.word hang              //  2 NMI
+.word hang              //  3 hard fault
+.word hang              //  4 Reserved
+.word hang              //  5 Reserved
+.word hang              //  6 Reserved
+.word hang              //  7 Reserved
+.word hang              //  8 Reserved
+.word hang              //  9 Reserved
+.word hang              // 10 Reserved
+.word hang              // 11 SVCall
+.word hang              // 12 Reserved
+.word hang              // 13 Reserved
+.word hang              // 14 PendSV
+.word systick_handler   // 15 SysTick
+.word hang              // 16 irq  0
+.word hang              // 17 irq  1
+.word hang              // 18 irq  2
+
+For each you need to place a handler, or at least for each you plan
+to support or expect to see (if you get one you didnt expect and you
+have code there then that code will be treated by the hardware as
+an interrupt vector).
+
+So here is the kicker.  ARM in the cortex-m designs (definitely not
+in the full sized ARM 32 bit designs) saves the state of the machine
+for us.  When an exception or an interrupt occurs, they push all the
+registers and the flags on the stack.  The address they save for
+the link register is special so that they know this is a return from
+an interrupt and they can clean the stack up for us.  What this means
+is we can put the C function name in the table if we want, we dont
+have to have some assembly that does all of this and we dont have to
+tell the compiler using some compiler specific adjective, that this
+is a special function.  You dont have to but you can and I have.  This
+is atypical, as mentioned above either you or the compiler based on
+what you told it, has to do this work and/or like with the big brother
+ARMs you might have banked registers such that the processor when
+switching to handle an interrupt uses a different set of registers so
+that you dont have to save them.  Normally assume you are going to
+do this and then find shortcuts later as desired.
+
+I have made this example simpler in that I am starting with the systick
+timer built into the core.  It has an interrupt enable in the control
+register and uses the term interrupt there, but we have to not get
+confused with the table documentation that says interrupts start 17
+down in the table.  As shown above and in flash.s the systick vector is
+at address 0x0000003C.  Unlike an interrupt there are no interrupt
+controllers required to make this work, one of the make this first
+example simple features.
+
+In that same document from ST or in the ARM documentation, the systick
+timer is one of the core peripherals.  Bit 1 of the control and status
+register is used to enable the exception.
+
+1: Counting down to zero to asserts the SysTick exception request.
+
+In the blinker02 example we check bit 16
+
+Returns 1 if timer counted to 0 since last time this was read.
+
+Which also tells us we got to zero.  The first part of this example
+does not use the exception/interrupt.  It polls bit 16 of the status
+register.  It both blinks leds if you have them on those pins as well
+as prints stuff to the uart, if you have that hooked up.  Note you
+shouldnt/cant change this example to interrupt too fast otherwise
+the code that spits stuff out to the uart will not finish and you will
+lose interrupts.
+
+The second half of this example does set bit 1 and since this is
+techically a processor core exception and not an interrupt we dont have
+to deal with an interrupt controller, if/when that fires the core
+reacts.  This portion of the example relies on the interrupt handler
+to blink the leds and write stuff to the uart.  It is generally NOT
+a good idea to print stuff like this inside an interrupt handler, but
+since I know that this chip powers up with an 8MHz, clock, I know
+how long it takes for everything to happen, there is enough time,
+the uart code is safe to call in this situation.  But again can easily
+become unsafe if the systick timer interval gets too short by changing
+either the processor core speed or how often it times out.
+
+In the docs we see:
+
+Reading STK_CSR clears the COUNTFLAG bit to 0.
+
+Now we normally need to clear the pending interrupt in order to either
+not get stuck in an infinite interrupt loop and/or to allow us to get
+another one later.  BUT, at least for the specific chip I am using,
+if I comment out the line that reads the status register, I still get
+the interrupt every N timer ticks, so that makes this example even
+simpler.
+
+With that line commented out
+
+
+12345678
+00000000
+00000001
+00000002
+00000003
+00000004
+00000005
+00000000
+00000001
+00000002
+00000003
+00000004
+00000005
+00000006
+00000007
+00010007 <----
+12345678
+
+And the last read outside the ISR shows that the flag is still set.
+
+00010007
+
+Put the line back in
+
+
+12345678
+00000000
+00000001
+00000002
+00000003
+00000004
+00000005
+00000000
+00010007
+00000001
+00010007
+00000002
+00010007
+00000003
+00010007
+00000004
+00010007
+00000005
+00010007
+00000006
+00010007
+00000007
+00010007
+00000007 <----
+12345678
+
+And the read in the handler clears it.
+
+Since the ARM documentation is not more clear on what you have to do
+but implies that this bit is connected to counting to zero which is what
+triggers the interrupt.  It is probably safer to leave that read in.
+You dont have to print out the result obviously, just perform the read.
+Just because this one chip didnt need it doesnt mean that all the
+cortex-m0's or worse all the cortex-ms of any kind and any revision
+dont.  Would really have preferred ARM to be more clear on this.
+
+Other examples will move forward from this point and use a real
+interrupt and deal with the NVIC.
+
+One last thing, in the ARMv6-m ARM"
+
+The vector table contains the initialization value for the stack pointer
+on reset, and the entry point addresses for all exception handlers. The
+exception number, defined in Table B1-3, also defines the order of
+entries in the vector table, as Table B1-4 shows.
+
+
+Depending on the implementation, the vector table base is adjustable.
+The range of values that the VTOR can accept is IMPLEMENTATION DEFINED .
+Implementations not providing configurability of the table base provide
+a VTOR with RAZ/WI behavior. See Vector Table Offset Register, VTOR on
+page B3-267 for more information.
+
+Me again, what is this vector table offset register?  Well lets say
+for example your processor boots up on flash (hey just like this one)
+but you want to change the vector table at runtime, well you have
+to do some tricks like have the flash based one call addresses in ram
+then put handlers there. Or, implementation defined, you might have
+a register in the core that you can write to to change the base address
+of the table, with some limitations, but still that could be very useful.
+Searching for VTOR in the ST cortex-m0 programmers document though
+returns nothing so perhaps we dont have a changeable VTOR.
+
+The address for VTOR is.
+
+0xE000ED08 VTOR RW 0x00000000 a Vector Table Offset Register, VTOR on page B3-267
+
+If I read and change and read the VTOR on this chip
+
+hexstring(GET32(0xE000ED08));
+PUT32(0xE000ED08,0x1000);
+hexstring(GET32(0xE000ED08));
+
+I still get a zero back, and it doesnt break this example, so for
+this chip the VTOR does not appear to be implemented.  If it was then
+I would make this or another example use an address other than zero,
+doesnt mean it has to be ram, it doesnt.  For demonstration purposes
+I could have simply put it somewhere else in the flash.
+
