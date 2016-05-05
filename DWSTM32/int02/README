@@ -1,0 +1,197 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+derived from int01 and blinker03
+
+So you need to read the README for int01, this picks up from there.
+
+I find that before you start working with interrupts you need to get
+the uart working, need the ability to dump registers to the terminal.
+Documentation is never perfect, never expect it to be, nor is the
+hardware usually, but you can at least see how the chip you have
+appears to be working, and then combine that with the documentation,
+read between the lines.  And maybe you get something that works.
+
+Int01 used the systick timer in the core itself.  Now we are going
+to use timer 14, which is outside the core but within the chip.
+Probably other places too, but certainly in the Interrupts and
+events chapter of the ST reference manual for this part, is a nice
+vector table, better than what I looked at for int01.  This table
+quickly shows the core interrupts, and then starting with position 0
+starts to cover the irq interrupts to the core.
+
+this transition between SysTick and irq 0
+
+.word hang              // 13 Reserved
+.word hang              // 14 PendSV
+.word hang              // 15 SysTick
+.word hang              // 16 irq  0
+.word hang              // 17 irq  1
+.word hang              // 18 irq  2
+
+Irq0 being the WWDG.  So we see position 19 is TIM14, basically irq 19
+is TIM14.
+
+so we will need a handler there
+
+.word hang              // 34 irq 18
+.word tim14_handler     // 35 irq 19
+.word hang              // 36 irq 20
+
+Another thing I prefer to do is in as many steps as I can slowly work
+my way from the peripheral to the processor core.  Starting without
+enabling interrupts if possible in the peripheral.  Then enable them
+and see them happen perhaps at the interrupt controller, but not
+have interrupts enabled, just see a pending interrupt, then figure out
+how to clear it.  Then eventually let it through the interrupt controller
+possibly not enabling the core itself, and then lastly the core.  This
+time I skipped one of those steps as soon as I enabled the NVIC it
+went to the core and that is perhaps expected.
+
+So the first part of this example
+
+if(1)
+{
+    PUT16(TIMER14BASE+0x00,0x0000);
+    PUT16(TIMER14BASE+0x2C,0x7A11);
+    PUT16(TIMER14BASE+0x24,0x0000);
+    PUT16(TIMER14BASE+0x28,0x00FF);
+    PUT16(TIMER14BASE+0x00,0x0001);
+
+    for(rx=0;rx<6;)
+    {
+        ra=GET16(TIMER14BASE+0x10);
+        if(ra&(1<<1))
+        {
+            PUT16(TIMER14BASE+0x10,0);
+            if(rx&1)
+            {
+                PUT32(GPIOABASE+0x18,(1<<(5+0))|(1<<(4+16)));
+            }
+            else
+            {
+                PUT32(GPIOABASE+0x18,(1<<(5+16))|(1<<(4+0)));
+            }
+            hexstring(rx);
+            rx++;
+        }
+    }
+}
+
+starts by setting up the timer.  we are coming out of reset and running
+from flash so I assume the registers I dont touch are their reset
+values.
+
+We have figured out from the blinker examples that we start off on this
+chip running at 8Mhz, so 8Million is 0x007A1200.  TIM14 is a 16 bit
+timer, so we cant count that high.  But we have a 16 bit prescaler so
+we can divide by 0x100 in the prescaler and count to 0x7A12.
+
+The status register 0x10 CC1IF
+
+1: The content of the counter TIMx_CNT matches the content of the TIMx_CCR1 register.
+When the contents of TIMx_CCR1 are greater than the contents of TIMx_ARR, the CC1IF bit
+goes high on the counter overflow.
+
+And we see that bit get set when the timer basically rolls over at
+the value we set.
+
+The CC1IF bit is documented as rc_w0 from the legend means we can
+read that bit, and write 0 to clear (writing 1 does nothing).  So
+I just wrote the whole register with 0, my example, dont care about
+the other bits.
+
+And this works, we can use the rollover interrupt inside the peripheral
+and clear it.  Could stop here if all we want to do is blink, but this
+is an interrupt example.
+
+The next example is what you need the uart for, and in fact I did this
+for the first loop too.  Basically I figured out
+
+//12345678
+//00000000 00000000 00000000
+//00000000 00000000 00000003
+//00400000 00080000 00000003
+//00400000 00080000 00000003
+//00400000 00080000 00000003
+//00400000 00080000 00000003
+//00400000 00080000 00000003
+//00400000 00080000 00000003
+//00400000 00080000 00000003
+//00400000 00080000 00000003
+//00400000 00080000 00000000
+//00000000 00000000 00000000
+//12345678
+
+That by enabling the interrupt in the timer, it is making it to the
+NVIC.  I got sidetracked in the interrupt chapter with the EXTI stuff,
+and what I think is going on there is that that you can use the EXTI
+to take external gpio pins and turn them into interrupts and basically
+override the internal interrupt connections to the core/NVIC.  I didnt
+mess with that, realized didnt need to care about that, it is not
+part of this problem.
+
+Also notice that clearing the interrupt at the peripheral does not clear
+the pending interrupt in the SBC/NVIC.  Need to ask the NVIC to clear
+it.  So the next example I changed the prescaler so it blinks twice
+as fast, if just using the led you see some slow ones, some fast ones
+and some slow ones.
+
+    PUT16(TIMER14BASE+0x28,0x007F);
+
+I use the NVIC plus the timer to poll for the timer rollover.
+
+And the last one is the goal of this example.  Actually interrupting
+the core.  We have figured out that TIM14 is connected to irq19 in
+this chip.  So we enable irq 19.  And when that timer rolls over
+tim14_handler is called.
+
+Again using our uart, and again it is a bad idea in general to do this
+but I know how much time I have in the interrupt handler and what the
+hexstring function does, so it was safe to print out stuff in the isr.
+
+00000023 00000000
+00000023 00000001
+00000023 00000002
+00000023 00000003
+00000023 00000004
+00000023 00000005
+00000023 00000006
+00000023 00000007
+
+Note the SBC_ICSR register (in the cortex-m0 documentation not the
+chip docs) no longer shows interrupt pending, instead it has information
+telling us what interrupt this is.  We really dont actually care
+even if we had multiple handlers.  You might/would need this if you
+had a single irq line and had to sort out who called you and the big
+ARM NVICs that is just what you do, but with the cortex-m we have
+a separate entry in the vector table for each interrupt, so if you
+have one vector to one function, then you dont need this, if you have
+one interrupt service routine handle more than one of your interrupts
+this SBC_ICSR register is a very quick way to figure out who caused
+the interrupt.  Now this is the core not the NVIC, so instead of seeing
+the number 19 (0x13) we see 0x23 (35)
+
+.word hang              // 34 irq 18
+.word tim14_handler     // 35 irq 19
+.word hang              // 36 irq 20
+
+Which is expected, irq19 is vector number 35 (16+irq number).  Note
+that register does not work that way for the systick, being internal
+it shows something different.
+
+So we dont have to clear the NVIC since we have the interrupt enabled
+I guess and it is calling the handler it does that for us?  And since
+we have the interrupt enabled and are calling a handler it changes
+that SBC_ICSR register contents to be different than when we had the
+irq disabled.
+
+We do have to clear the interrupt in the peripheral though.  If you
+comment that out, we basically keep reentering the handler we dont
+run forground code.
+
+Since I dont have other interrupts I did not need to mess with the
+interrupt priority.  It is the only one it will always be the highest
+proirity.  That would make for an interesting example perhaps to see
+that a higher priority irq actually interrupts a lower priority one.
