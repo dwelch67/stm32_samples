@@ -1,0 +1,17 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+derived from blinker04
+
+This also uses the PLL to bump the frequency to 48MHz.  This example
+uses the TIM2 timer, which is a 32 bit timer.
+48000000 = 0x02DC6C00
+So we can easily count each of those clocks without rolling over the
+clock for a while.  89 seconds before it rolls over.
+
+Three examples in one.  First one just checks one bit to see that it is
+working.  The second subtracts the difference between prior and current
+to see how many have elapsed.  And then third a more realistic example
+that you set the rollover value to the time you want, and checking
+status.
