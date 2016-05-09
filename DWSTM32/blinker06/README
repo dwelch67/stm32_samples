@@ -1,0 +1,23 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Derived from blinker03
+
+This uses TIM14.  At least on my board PA4 is one of the leds, and
+that also is one of the output pins for TIM14.  Alternate function 4.
+
+So we have to set the PA4 to AF4, and to use the timer output you have
+to use capture/compare 1.  And enable CC1 to output.
+
+Multiple examples in this one example, the first one forces the output
+high or low.  The rest toggle the output.
+
+CC1 is independent-ish of the timer.  We setup the timer like before
+in this case to auto-reload when it rolls over.  We pick some value,
+in this case just left 0x0000 in the compare register.  When that
+matches the timer we have it configured to toggle the output.
+
+The last setup shows that we have set a compare value that the timer
+never reaches and as a result we dont toggle.  So you have to manage
+both parts, the timer and how it runs, and the compare value.
