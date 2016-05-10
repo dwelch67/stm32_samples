@@ -23,11 +23,15 @@ int notmain ( void )
     ra=GET32(GPIOABASE+0x00);
     ra&=~(3<<8); //PA4
     ra|=(2<<8); //PA4 alternate function
+    ra&=~(3<<14); //PA7
+    ra|=(2<<14); //PA7 alternate function
     PUT32(GPIOABASE+0x00,ra);
     //AFRL
     ra=GET32(GPIOABASE+0x20);
     ra&=~(0xF<<16); //PA4
     ra|=4<<16; //PA4
+    ra&=~(0xF<<28); //PA7
+    ra|=4<<28; //PA7
     PUT32(GPIOABASE+0x20,ra);
 
     ra=GET32(RCCBASE+0x1c);
@@ -37,7 +41,7 @@ int notmain ( void )
 
 if(1)
 {
-    
+
     PUT16(TIMER14BASE+0x00,0x0000);
     PUT16(TIMER14BASE+0x2C,0xFFFF);
     PUT16(TIMER14BASE+0x24,0x0000);
@@ -68,7 +72,7 @@ if(1)
 
 if(1)
 {
-    
+
     PUT16(TIMER14BASE+0x00,0x0000);
     PUT16(TIMER14BASE+0x2C,0xFFFF);
     PUT16(TIMER14BASE+0x24,0x0000);
@@ -151,6 +155,6 @@ if(1)
     //PUT16(TIMER14BASE+0x00,0x0000);
 
 
-    
+
     return(0);
 }

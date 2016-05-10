@@ -1,0 +1,36 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This example primarily demonstrates the IRTIM interface, which is
+simply a NAND gate on the outputs of TIM16 and TIM17  (could also
+use uart1 on this chip).
+
+PA13 AF1 IR_OUT
+PA6  AF5 TIM16_CH1
+PA7  AF5 TIM17_CH1
+
+This example actually enables all three, so on PA6 you can see the
+TIM16 output, PA7 the TIM17 output and PA13 the inverted and of these
+two.
+
+I have the other gpios as inputs, so on my board I can jumper one of
+these outputs to either PA4 or PA5 and it lights up the led that is
+there.
+
+The blink rates are at human speeds, but it is basically what
+you see in the IRTIM picture in the manual.  It is arbitrary which
+one you make go fast, but for sake of argument and how they designed
+it TIM17 is the carrier frequency, so for an infrared remote you
+need to set this to match the carrier frequency of your components.
+They are NOT all the same 40KHz and 38KHz although kinda work together
+and kinda work if you dont hit the right frequency, you dont
+get the range and proper signal you would get if you used the right
+frequency.  Then basically whatever you do with TIM16 is anded together
+to either make it blink or not.
+
+You could use yet another timer and simply force TIM16 on or off using
+the CCMR1 register with a OC1M of 4 or 5.  Or you could carefully
+time with TIM16 the pulse, for example you could use the PWM feature
+set the ARR for the complete on off period, and set the CCR1 to set the
+on vs off time for that period, repeat for each period in the waveform.
