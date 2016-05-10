@@ -1,0 +1,23 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Derived from blinker06
+
+TIM14 has a PWM mode that is pretty easy to use.  The timer itself
+has a reload register for when it rolls over, independent of that
+there is a compare register.  The PWM operates such that in one
+mode if the timer count is less than the compare register the output
+is on, otherwise off.  (the other mode is vice vers on if greater than).
+
+So the timer is used to set your period, and the compare register to
+determine the duty cycle.
+
+I have the timer fast enough to not see it blink, but not so fast
+that it overwhelms the led.  Using another, independent, timer I
+change the compare value adjusting the duty cycle over time making
+the led glow brighter and dimmer.
+
+not changing the compare register of course the hardware drives the
+output at that duty cycle and frequency without any software involved
+other than setup.
