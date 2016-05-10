@@ -1,0 +1,67 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+derived from spi01 and spi02
+
+It uses the hardware spi master rather than bit banging.  spi01
+is bit banged, spi02 was very useful for "seeing" what the spi
+master was doing for various settings.
+
+I have one of these
+
+https://www.sparkfun.com/products/10168
+http://www.adafruit.com/products/338
+
+Can get them from china on ebay for much less, but can take a while
+to get here.
+
+      GND TX RX VCC
+
+BOOT0                SWCLK
+PF0                  SWDIO
+PF1                  RX
+NRST                 TX
+VDDA                 VCC
+PA0                  GND
+PA1                  PB1
+PA2                  PA7       MOSI
+PA3                  PA6       MISO
+PA4 (led) NSS        PA5 (led) SCK
+
+STM32 to Nokia 5110 display connections
+
+PA7 DIN
+PA5 CLK
+PA4 CE
+PA3 D/C
+GND GND
+VCC VCC
+RST RST
+
+This works out great as the hardware chip select (NSS) seems to only
+work on the data size units.  This device is geared toward 8 bit things
+so no problem there.  From spi02, I figured out that you could do
+an 8 bit write to the data register if you wanted to send 8 bits if
+you did a 16 bit you got two 8 bit transmissions.  I dont think the
+STM32 doc mentions that, not in obvious places.
+
+It of course has this extra D/C signal that is not part of spi.  so
+we use another gpio pin and bit bang that.
+
+As with spi01 the example doesnt do too much interesting but it does
+demonstrate that we are talking to the device without having to bit
+bang.  The Nokia datasheet says it supports up to 4MHz, this example
+us using an internal 8MHz, not super accurate, so I wouldnt want to
+gamble on 4MHz, but this sets it to divide by 4, 2Mhz and that works
+fine.
+
+You may also wish to control reset with yet another gpio pin.
+
+I have more elaborate Nokia 5110 examples in other repos, writing various
+things on the display.
+
+These displays are quite cheap and quite useful, and there are a TON
+of them out there.  I assume many are recycled from old phones, but
+who knows, they appear to be new, not beat up so who knows why there
+are so many.

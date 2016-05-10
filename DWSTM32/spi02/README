@@ -1,0 +1,53 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+The purpose of this example is to visually see what is going on with
+hardware spi.  There are three divisors in front of the spi output
+clock that we can max out and get the spi clock slow enough for us
+to see if tied to an led.  With my board the two leds are NSS and SCK
+add a third and you can see data.  Or dont set the alternate function
+for one of them (leave it an input!) and jumper over to use that led
+relative to the other.
+
+I didnt know there was such a thing as TI mode vs Motorola mode.  I
+personally dont ever care.  The datasheet for a slave device (as well
+as a master) document how they behave, you _simply_ make the master
+change the output on the correct edges, and sample on the correct edges
+unfortunately this SPI controller is too closely tied to the four
+modes folks like to talk about rather than giving you freedom to choose
+your edges (8 combinations minimum not 4, and the hardware nss is hosed
+for half of them).
+
+For the first thing I was going after, it ended up working fine.
+
+Using the leds was very informative, normally you want to use a scope
+if this didnt work I was going to take some other board (raspberry pi
+probably or a C.H.I.P) and create a logic analyzer out of it to see
+what was going on since I dont own a 4 channel scope (yet).  And dont
+want to always have to use the one at work if it isnt busy.  But
+with this example I was able to figure out everything I needed to
+figure out.
+
+Okay well one thing I cant "see" the busy bit seems to go away at
+or before nss goes up.  If we have to manually control that then
+can we raise it right when busy goes away or do we have to add a
+delay.  To manually control it we need another timer somewhere.
+or we play games and use the spi controller itself, clock out some
+bits with nss high which shouldnt affect the target, and we dont need
+another timer.  With the systick timer built in and so may others
+which are so trivial to program though, other than knowing how
+busy works.  Here again the datasheet for your slave should document
+the time between nss falling and when your first clock edge can be
+so you may have to either use a scope on this or control that bit
+with software, and add a delay between dropping nss and starting
+the transmission.  Likewise on the nss going high edge.
+
+So anyway this example was very informative in "seeing" what you get
+when you program the hardware spi controller.
+
+I dont think the manual said you can do an 8 bit store to the data
+register. If you set for 8 data bits and do a 16 bit write which is
+what at least the size of the register implies you need to do you
+actually get two NSS cycles not one.  So I tried it and it worked.
+It should really be clear on this and isnt.
