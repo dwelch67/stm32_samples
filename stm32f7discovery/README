@@ -1,0 +1,23 @@
+
+stm32f0 discovery examples
+
+This directory is a collection of examples for use on the stm32f7
+discovery board.
+
+http://www.st.com/stm32f7-discovery
+
+You will want the users manual for the board  then search on the part
+
+STM32F746NGH6
+
+And get the data sheet and the reference manual for the part.
+
+The board users manual shows an led on PI1, through solder bridge 8.
+Solder bridge 8 came shorted on my board.  And the led works (start with
+blinker01).  This led is on the bottom next to the reset (black) button.
+
+Being MBED like/based, you simply copy the flash.bin file you create
+over to the virtual flash drive that pops up when you plug this into
+the board.
+
+The mini-b connector is the power, the micro-bs are OTG
