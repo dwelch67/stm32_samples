@@ -107,49 +107,85 @@ void hexstring ( unsigned int d )
 
 int notmain ( void )
 {
-    unsigned int ra;
+    //unsigned int ra;
     //unsigned int rb;
 
     uart_init();
     hexstring(0x12345678);
 
-    //The DWT unit suspends CYCCNT counting when the processor is in Debug state.
-    ra=GET32(DWT); hexstring(ra);
-    ra=GET32(DWT_CONTROL); hexstring(ra);
-    ra=GET32(DWT_CYCCNT); hexstring(ra);
-    ra=GET32(DWT_CYCCNT); hexstring(ra);
-    for(ra=0xE00FFFD0;ra<=0xE00FFFFC;ra+=4)
-    {
-        hexstrings(ra);
-        hexstring(GET32(ra));
-        
-    }
-    for(ra=0xE00FF000;ra<=0xE00FF018;ra+=4)
-    {
-        hexstrings(ra);
-        hexstring(GET32(ra));
-    }
-    for(ra=0xE00FFFCC;ra<=0xE00FFFCC;ra+=4)
-    {
-        hexstrings(ra);
-        hexstring(GET32(ra));
-    }
-    for(ra=0xE000EFD0;ra<=0xE000EFFC;ra+=4)
-    {
-        hexstrings(ra);
-        hexstring(GET32(ra));
-    }
-    for(ra=0xE0001FD0;ra<=0xE0001FFC;ra+=4)
-    {
-        hexstrings(ra);
-        hexstring(GET32(ra));
-    }
-    hexstrings(SCB_DEMCR); hexstring(GET32(SCB_DEMCR));
-    PUT32(SCB_DEMCR,0x01000000);
-    hexstrings(SCB_DEMCR); hexstring(GET32(SCB_DEMCR));
-    PUT32(DWT_CONTROL,0x40000000);
-    ra=GET32(DWT_CONTROL); hexstring(ra);
-    ra=GET32(DWT_CYCCNT); hexstring(ra);
-    ra=GET32(DWT_CYCCNT); hexstring(ra);
+    ////The DWT unit suspends CYCCNT counting when the processor is in Debug state.
+    //ra=GET32(DWT); hexstring(ra);
+    //ra=GET32(DWT_CONTROL); hexstring(ra);
+    //ra=GET32(DWT_CYCCNT); hexstring(ra);
+    //ra=GET32(DWT_CYCCNT); hexstring(ra);
+    //for(ra=0xE00FFFD0;ra<=0xE00FFFFC;ra+=4)
+    //{
+        //hexstrings(ra);
+        //hexstring(GET32(ra));
+
+    //}
+    //for(ra=0xE00FF000;ra<=0xE00FF018;ra+=4)
+    //{
+        //hexstrings(ra);
+        //hexstring(GET32(ra));
+    //}
+    //for(ra=0xE00FFFCC;ra<=0xE00FFFCC;ra+=4)
+    //{
+        //hexstrings(ra);
+        //hexstring(GET32(ra));
+    //}
+    //for(ra=0xE000EFD0;ra<=0xE000EFFC;ra+=4)
+    //{
+        //hexstrings(ra);
+        //hexstring(GET32(ra));
+    //}
+    //for(ra=0xE0001FD0;ra<=0xE0001FFC;ra+=4)
+    //{
+        //hexstrings(ra);
+        //hexstring(GET32(ra));
+    //}
+    //hexstrings(SCB_DEMCR); hexstring(GET32(SCB_DEMCR));
+    //PUT32(SCB_DEMCR,0x01000000);
+    //hexstrings(SCB_DEMCR); hexstring(GET32(SCB_DEMCR));
+    //PUT32(DWT_CONTROL,0x40000001);
+    //ra=GET32(DWT_CONTROL); hexstring(ra);
+    //ra=GET32(DWT_CYCCNT); hexstring(ra);
+    //ra=GET32(DWT_CYCCNT); hexstring(ra);
+    //hexstrings(0xE0000FB4); hexstring(GET32(0xE0000FB4));
+    //hexstrings(0xE0001FB4); hexstring(GET32(0xE0001FB4));
+    //hexstrings(0xE0002FB4); hexstring(GET32(0xE0002FB4));
+    //hexstrings(0xE0003FB4); hexstring(GET32(0xE0003FB4));
+    //hexstrings(0xE0000FB4); hexstring(GET32(0xE0000FB4));
+    //hexstrings(0xE0001FB4); hexstring(GET32(0xE0001FB4));
+    //hexstrings(0xE0002FB4); hexstring(GET32(0xE0002FB4));
+    //hexstrings(0xE0003FB4); hexstring(GET32(0xE0003FB4));
+
+    hexstring(GET32(0xE0001FB4));
+    hexstring(GET32(0xE0001000));
+    hexstring(GET32(0xE0001004));
+    hexstring(GET32(0xE0001004));
+
+    PUT32(0xE000EDFC,0x01000000);
+
+    hexstring(GET32(0xE0001FB4));
+    hexstring(GET32(0xE0001000));
+    hexstring(GET32(0xE0001004));
+    hexstring(GET32(0xE0001004));
+
+    PUT32(0xE0001000,0x40000001);
+
+    hexstring(GET32(0xE0001FB4));
+    hexstring(GET32(0xE0001000));
+    hexstring(GET32(0xE0001004));
+    hexstring(GET32(0xE0001004));
+
+    PUT32(0xE0001FB0,0xC5ACCE55);
+    PUT32(0xE0001000,0x40000001);
+
+    hexstring(GET32(0xE0001FB4));
+    hexstring(GET32(0xE0001000));
+    hexstring(GET32(0xE0001004));
+    hexstring(GET32(0xE0001004));
+
    return(0);
 }
