@@ -1,0 +1,17 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+blinker02 showed us that we are at 16MHz.  16000000/115200 = 138.8 or
+139
+
+With this board they have a virtual serial port using the same mini
+b usb as the one we power with so on linux it is /dev/ttyACM0.
+
+Unline other stm32 cards which normally use PA9 and PA10.  This one
+appears to be using PA9 for USART1_TX but PB7 for USART1_RX which this
+example does not use, but a future one will.
+
+This example sets up PA9 for alternate function 7 (USART1_TX) and
+sets up the uart and blasts 0123456701234567 forever.  At 115200 8N1.
+
