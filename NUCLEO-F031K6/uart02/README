@@ -1,0 +1,11 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Another simple uart example 115200 8N1, it echos back whatever it
+receives.
+
+When using the virtual com port in the debug interface
+#define DEBUGUART
+If you want to use pins PA9/PA10, then comment that out
+//#define DEBUGUART
