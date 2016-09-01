@@ -1,0 +1,9 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Bought some wee bitty stepper motors, I think they are used in cameras
+or lenses for focusing, have screws for shafts.  Probably shouldnt
+be driving them directly from the microcontroller but oh well, not
+blowing up.   One coil PA0/PA1 the other PA3/PA4.
+
