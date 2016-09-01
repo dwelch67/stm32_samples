@@ -24,21 +24,31 @@ int notmain ( void )
 
     //moder 10
     ra=GET32(GPIOABASE+0x00);
+    ra&=~(3<<4); //PA2
+    ra|=2<<4; //PA2
     ra&=~(3<<18); //PA9
     ra|=2<<18; //PA9
     PUT32(GPIOABASE+0x00,ra);
     //OTYPER 0
     ra=GET32(GPIOABASE+0x04);
+    ra&=~(1<<2); //PA2
     ra&=~(1<<9); //PA9
     PUT32(GPIOABASE+0x04,ra);
     //ospeedr 11
     ra=GET32(GPIOABASE+0x08);
+    ra|=3<<4; //PA2
     ra|=3<<18; //PA9
     PUT32(GPIOABASE+0x08,ra);
     //pupdr 00
     ra=GET32(GPIOABASE+0x0C);
+    ra&=~(3<<4); //PA2
     ra&=~(3<<18); //PA9
     PUT32(GPIOABASE+0x0C,ra);
+    //afr 0001
+    ra=GET32(GPIOABASE+0x20);
+    ra&=~(0xF<<8); //PA2
+    ra|=0x1<<8; //PA2
+    PUT32(GPIOABASE+0x20,ra);
     //afr 0001
     ra=GET32(GPIOABASE+0x24);
     ra&=~(0xF<<4); //PA9

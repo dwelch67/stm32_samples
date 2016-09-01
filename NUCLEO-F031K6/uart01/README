@@ -31,3 +31,12 @@ fast as it can.  If using minicom you need to alt-a then w to switch
 to wraparound mode so you can see them.
 
 
+Normally PA9/PA10 are used on all the chips I have tried for UART1 for
+bootloading using the internal bootloader, etc.  For this nucleo
+they naturally support those pins, but also we get PA2/PA15 tied
+to the debug interface so that you can use the debug usb interface
+as well, and dont need an extra usb to serial board/device.  Since
+this is a TX only example, I have enabled both PA2 and PA9, examples
+that receive that might work but perhaps should pick one or the other
+(PA15 or PA10), will see when we get there.  With linux you can use
+minicom  with device /det/ttyACM0 when plugged in.
