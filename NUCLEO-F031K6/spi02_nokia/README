@@ -1,0 +1,85 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This example uses the spi interface with a Nokia 5110 display, these
+are probably all recycled from old phones, who knows.  There seems
+to be a large quantity of the out there.
+
+https://www.sparkfun.com/products/10168
+http://www.adafruit.com/products/338
+
+I got 5 of them on ebay for $13 with pins.
+
+   USB
+
+PA9     VIN 
+PA10    GND
+NRST    NRST
+GND     +5V
+PA12    PA2
+PB0     PA7
+PB7     PA6
+PB6     PA5
+PB1     PA4
+PF0     PA3
+PF1     PA1
+PA8     PA0
+PA11    AREF
+PB5     +3V3
+PB4     PB3
+
+stm to nokia 5110 display connections
+
+PA7 DIN
+PA5 CLK
+PA4 CE
+PA3 D/C
+GND GND
+VCC VCC
+RST RST
+
+Your board may have a row of pins above and below the display, they
+are the same you only need one row.
+
+The various examples out there use the same init routine.
+
+    spi_command(0x21); //extended commands/horiz addressing/chip active
+    spi_command(0xB0); //vop
+    spi_command(0x04); //temp coef
+    spi_command(0x14); //bias mode 1:48
+    spi_command(0x20); //extended off/horizontal addressing, chip active
+    spi_command(0x0C); //display on
+
+So that set for horizontal addressing.  The display I bought on ebay
+said 84x84 but it is really 84x48 pixels, obviously a typo or maybe
+trying to sucker me in.  Doesnt matter wasnt holding my breath for a
+bigger display.  First lets set the address pointer to the top left
+
+    spi_command(0x80); //column left
+    spi_command(0x40); //row    top
+
+then if we just blast some bytes out start with a smaller number
+
+    for(ra=0;ra<32;ra++) spi_data(ra);
+
+you will see they swipe across the top left to right.  Each 8 bits
+draws a column with those 8 bits with the lsbit being on the top, this
+is also shown in the PCD8544 controller document that describes how
+to program this thing.
+
+and if you say write 100 bytes then after the 84th byte it
+drops down and writes the next 8 rows of pixels and so on.
+so 84*48 = 4032 pixels  4032 / 8 = 504 so if we write 504
+bytes in theory we cover the screen.
+
+    for(ra=0;ra<504;ra++) spi_data(ra);
+
+and that does work.
+
+I could spend a few seconds reading about it, but this chip is apparently
+faster than the DWSTM32 board/example which uses a similar processor,
+that one didnt need a delay this one does.  I also switched to using
+the pins used by the hardware spi, although this example is bit banged.
+That way can go back and forth between the bit banged and hardware
+examples.
