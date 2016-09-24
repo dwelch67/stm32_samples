@@ -1,0 +1,139 @@
+
+As of this writing there is an stm32 microcontroller board and/or many
+clones of the same board, for sale by many vendors.
+
+Search for
+
+STM32F103C8T6 board
+
+Mine were $2.52 with free shipping, so I bought a handful.
+
+Can buy them other places as well.
+
+Got some help here, there are pictures and pinouts too.
+http://cholla.mmto.org/computers/arm/stm32/
+We are still working out the magic to unlock the chip the first time.
+I didnt need to send the 0x92 command but when preparing to I had the
+uart hooked up, maybe it was something to do with that, a pulled up or
+down signal.
+
+I didnt repeat this research myself, but my understanding is you dont
+want to power via usb and the debug end of the board, one or the other.
+
+I have various/many stm32 nucleo and discovery boards, each has an
+stlink end of the board and most have jumpers you can use to disconnect
+the microcontroller on the nucleo/discovery board.  So I am getting
+my power and stlink from the nucleo board.  There are also standalone
+stlink usb dongles for $15, but a number of the nucleo boards are $10
+and the nucleo boards also can provide power and also have another
+microcontroller on them to play with, so I would go with a nucleo and
+then use that stlink for any other raw stm32 boards/projects.
+
+These various stm32 boards have different versions of the stlink as
+they evolved so I have simply copied the config files from openocd
+here, I prefer to have a local copy, many folks dont, just my thing.
+
+The stm32f1x.cfg sources other files, I combined all of those into
+the one file target.cfg.
+
+As pointed out in the cholla pages, the jumper next to the reset button
+is boot1, the one further away is boot0.  Move boot0 to the 1 side.
+In theory just needs a reset, but even better power cycle if you had
+it on before moving the jumper.
+
+openocd -f stlink_whatever.cfg -f target.cfg
+Open On-Chip Debugger 0.10.0-dev-00325-g12e4a2a (2016-07-05-23:15)
+Licensed under GNU GPL v2
+For bug reports, read
+    http://openocd.org/doc/doxygen/bugs.html
+Info : auto-selecting first available session transport "hla_swd". To override use 'transport select <transport>'.
+Info : The selected transport took over low-level target control. The results might differ compared to plain JTAG/SWD
+adapter speed: 1000 kHz
+adapter_nsrst_delay: 100
+none separate
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : clock speed 950 kHz
+Info : STLINK v2 JTAG v24 API v2 SWIM v11 VID 0x0483 PID 0x374B
+Info : using stlink api v2
+Info : Target voltage: 3.260407
+Info : stm32f1x.cpu: hardware has 6 breakpoints, 4 watchpoints
+
+In another terminal
+
+telnet localhost 4444
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+Open On-Chip Debugger
+> halt
+stm32f1x.cpu: target state: halted
+target halted due to debug-request, current mode: Thread
+xPSR: 0xa1000000 pc: 0x1ffff3b8 msp: 0x200000c4
+> flash write_image erase test.bin 0x08000000
+auto erase enabled
+device id = 0x20036410
+flash size = 64kbytes
+stm32f1x.cpu: target state: halted
+target halted due to breakpoint, current mode: Thread
+xPSR: 0x61000000 pc: 0x2000003a msp: 0x200000c4
+wrote 1024 bytes from file test.bin in 0.379937s (2.632 KiB/s)
+>
+
+I will leave a test.bin around to use.  Now here is where the trouble
+begins, you might instead get a
+
+stm32x device protected
+failed erasing sectors 0 to 0
+
+And still working on the proper solution for that.
+
+If you get it to work then, move the boot0 jumper back to zero.
+Reset didnt work for me, power cycled and reconnected.
+
+halt
+stm32f1x.cpu: target state: halted
+target halted due to debug-request, current mode: Thread
+xPSR: 0x41000000 pc: 0x08000046 msp: 0x20001000
+>
+
+the program counter indicates it was running a program in flash.
+
+test.bin does this
+
+    PUT32(0x20000800,0x12345678);
+
+> mdw 0x20000800
+0x20000800: 12345678
+>
+
+Nice!.
+
+And can re-flash without the boot0 jumper.  The boot0 jumper is your
+safety net.  If for example when you start messing with the clock
+sources, you can brick the board, there are other ways your program
+can cause problems. That the SWD may or may not be able to cope with.
+By moving the boot0 jumper you are asking it to boot from another
+bootloader on the chip, one that as far as we know, doesnt crash.
+
+You will want/need the datasheet and reference manual for this part
+go to st.com then search for this part STM32F103C8T6 as of this
+writing it gets a hit on the family STM32F103C8.  Datasheet is currently
+at the top of the page and the reference manual is deeper down the
+page RM0008 as of this writing.  The latter document being the
+main one you use to program this part.
+
+The board itself has port numbers next to the pins/holes.  The led
+has PC13 next to it.
+
+Start with blinker01
+Once built:
+
+> flash write_image erase blinker01/blinker01.gcc.thumb.flash.elf
+
+If you use the .elf file it contains address information (0x08000000)
+if you use the .bin file then you need to specify 0x08000000
+
+Press reset and the led blinks.
+
+See the TOOLCHAIN file for info on where to find a compiler.
