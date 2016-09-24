@@ -1,0 +1,8 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This uses the PLL to boost to 72MHz.  It uses the systick timer to
+count 500Million clocks.
+
+500000000/720000000 = 6.944 seconds.

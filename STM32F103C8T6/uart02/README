@@ -1,0 +1,6 @@
+
+See the top level README for documentation and schematics for this board.
+
+This is derived from uart01.  Cleaned things up into init and put/get
+functions.  Still 8Mhz based.
+

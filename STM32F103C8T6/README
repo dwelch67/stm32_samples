@@ -129,7 +129,7 @@ has PC13 next to it.
 Start with blinker01
 Once built:
 
-> flash write_image erase blinker01/blinker01.gcc.thumb.flash.elf
+> flash write_image erase blinker01/blinker01.thumb.elf
 
 If you use the .elf file it contains address information (0x08000000)
 if you use the .bin file then you need to specify 0x08000000

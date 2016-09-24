@@ -11,7 +11,7 @@ void dummy ( unsigned int );
 #define STK_CVR 0xE000E018
 #define STK_MASK 0x00FFFFFF
 
-int delay ( unsigned int n )
+static int delay ( unsigned int n )
 {
     unsigned int ra;
 

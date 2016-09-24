@@ -1,0 +1,5 @@
+
+See the top level README for documentation and schematics for this board.
+
+Derived from uart02, uses the PLL to boost to 72MHz.
+

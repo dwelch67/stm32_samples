@@ -22,11 +22,11 @@ clean:
 flash.o : flash.s
 	$(ARMGNU)-as $(AOPS) flash.s -o flash.o
 
-test.gcc.thumb.o : test.c
-	$(ARMGNU)-gcc $(COPS) -mthumb -c test.c -o test.gcc.thumb.o
+test.thumb.o : test.c
+	$(ARMGNU)-gcc $(COPS) -mthumb -c test.c -o test.thumb.o
 
-test.bin : flash.ld flash.o test.gcc.thumb.o
-	$(ARMGNU)-ld -o test.gcc.thumb.flash.elf -T flash.ld flash.o test.gcc.thumb.o
-	$(ARMGNU)-objdump -D test.gcc.thumb.flash.elf > test.gcc.thumb.flash.list
-	$(ARMGNU)-objcopy test.gcc.thumb.flash.elf test.bin -O binary
+test.bin : flash.ld flash.o test.thumb.o
+	$(ARMGNU)-ld -o test.thumb.elf -T flash.ld flash.o test.thumb.o
+	$(ARMGNU)-objdump -D test.thumb.elf > test.thumb.list
+	$(ARMGNU)-objcopy test.thumb.elf test.bin -O binary
 
