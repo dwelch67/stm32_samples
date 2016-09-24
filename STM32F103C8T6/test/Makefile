@@ -5,14 +5,6 @@ ARMGNU = arm-none-eabi
 AOPS = --warn --fatal-warnings -mcpu=cortex-m0
 COPS = -Wall -Werror -O2 -nostdlib -nostartfiles -ffreestanding  -mcpu=cortex-m0
 
-LOPS = -Wall -m32 -emit-llvm -target arm-none-eabi -mcpu=cortex-m0 -mthumb
-LLCOPS = -march=thumb -mcpu=cortex-m0
-#LLCOPS = -mcpu=cortex-m0
-COPS = -Wall  -O2 -nostdlib -nostartfiles -ffreestanding
-#at some point they changed this option, gee thanks
-#OOPS = -std-compile-opts
-OOPS = -std-link-opts
-
 all : test.bin
 
 clean:

@@ -1,0 +1,36 @@
+
+See the top level README for documentation and schematics for this board.
+
+This is derived from blinker02.
+
+There are a number of steps involved in initializing the uart.  The
+USART1 I/O is PA9 and PA10.  So GPIOA needs to be enabled.  Because
+this example blinks the led for a bit GPIOC needs to be enabled.  And
+USART1 has to be enabled.  Now that GPIOA is enabled we can tell GPIOA
+that PA9 is going to use the alternate function output, USART1_TX.  For
+alternate function inputs the manual says to set them as normal inputs
+so we do that as well.  Now we initialize the uart following the
+procedure in the manual.
+
+We have not messed with the system clock so based on blinker02 we are
+running at 8MHz we assume. So some math:
+
+    //8000000/16 = 500000
+    //500000/115200 = 4.34
+    //4 and 5/16 = 4.3125
+    //4.3125 * 16 * 115200 = 7948800
+
+How you get from 4.34 to 4 5/16 is to subtract off the whole divisor 4
+leaving 0.34 then multiply that by 16 and you get 5.444, that is closer
+to 5 so our fraction is 5 (5/16ths).  You could also take 4.34 times
+16 gives 69  69/16 = 4 5/16.  if you wanted to adjust that up or down
+for accuracy you can try 68/16 or 79/16.  Doing it this way may help
+you figure out how to adjust if close to a whole number boundary
+some number x and 0/16.
+
+So before we use the status register we blink the led about state change
+a second and output a character.  do that a few times, then using the
+TXE status bit blast a bunch of characters, hopefully they all make it,
+then after that go into an echo loop, receive a character then
+transmit it back.  What you type you get back.
+

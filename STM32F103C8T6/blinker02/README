@@ -1,0 +1,13 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+derived from blinker01, using whatever clock it comes up with.
+
+The cortex-m3 has a systick timer built in.  This example is counting
+to 50Million clocks then toggling the led.  It changes state every 6
+seconds give or take.  Basically it appears this is an 8Mhz clock.
+50000000/80000000 = 6.25 seconds.
+
+The documentation talks about an HSI clock that is 8MHz, so there
+you go.
