@@ -86,10 +86,45 @@ begins, you might instead get a
 stm32x device protected
 failed erasing sectors 0 to 0
 
-And still working on the proper solution for that.
+It appears you need to use the serial bootloader, boot0 jumper set to 1
+then use PA9(TX)/PA10(RX) and the program in the progstm directory
+or one of your own that performs a write unprotect.  Naturally it wont
+work if the arm is halted as it may be if you used the above commands
+so press the reset button run progstm
 
-If you get it to work then, move the boot0 jumper back to zero.
-Reset didnt work for me, power cycled and reconnected.
+
+./progstm /dev/ttyUSB2  ../test.bin 
+116 bytes read
+port opened
+detect_chip()
+chip found
+get()
+79 0B
+22 bootloader version
+00 get
+01 get version and read protection status
+02 get ID
+11 Read Memory
+21 Go
+31 Write Memory
+43 Erase
+63 Write Protect
+73 Write Unprotect
+82 Readout Protect
+92 Readout Unprotect
+getverpstat()
+0x22 version
+0x00 read prot disables
+0x00 read prot enables
+getid()
+79 01 04 10 79 
+write_unprotect()
+
+And now the flash write/erase will work.
+
+Now move boot0 back to 0, power cycle the board connect SWD again and
+this time halt shows a user flash program ran
+
 
 halt
 stm32f1x.cpu: target state: halted
