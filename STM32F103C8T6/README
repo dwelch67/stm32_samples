@@ -151,6 +151,127 @@ can cause problems. That the SWD may or may not be able to cope with.
 By moving the boot0 jumper you are asking it to boot from another
 bootloader on the chip, one that as far as we know, doesnt crash.
 
+I must have been having all kinds of bad luck weeks ago.  Had I been
+able to get the board to respond to progstm I might have gotten further.
+
+./progstm /dev/ttyUSB2 ../blinker01/blinker01.thumb.bin 
+200 bytes read
+port opened
+detect_chip()
+chip found
+get()
+79 0B
+22 bootloader version
+00 get
+01 get version and read protection status
+02 get ID
+11 Read Memory
+21 Go
+31 Write Memory
+43 Erase
+63 Write Protect
+73 Write Unprotect
+82 Readout Protect
+92 Readout Unprotect
+getverpstat()
+0x22 version
+0x00 read prot disables
+0x00 read prot enables
+getid()
+79 01 04 10 79 
+erase_flash()
+erase_flash error 1
+0x1F
+
+And there you go, but if we add read_unprotect() and write_unprotect();
+it seems to stop on write_unprotect().  but I have now unlocked yet
+another board so dont know what the exact combination was, perhaps
+it really was read_unprotect().   then if I comment those out (why
+cant I just chain them?) reset/power cycle and then it works
+
+./progstm /dev/ttyUSB2 ../blinker01/blinker01.thumb.bin 
+200 bytes read
+port opened
+detect_chip()
+chip found
+get()
+79 0B
+22 bootloader version
+00 get
+01 get version and read protection status
+02 get ID
+11 Read Memory
+21 Go
+31 Write Memory
+43 Erase
+63 Write Protect
+73 Write Unprotect
+82 Readout Protect
+92 Readout Unprotect
+getverpstat()
+0x22 version
+0x00 read prot disables
+0x00 read prot enables
+getid()
+79 01 04 10 79 
+erase_flash()
+erased
+write_mem_32(0x08000000,0x20001000)
+write_mem_32(0x08000004,0x08000041)
+write_mem_32(0x08000008,0x08000047)
+write_mem_32(0x0800000C,0x08000047)
+write_mem_32(0x08000010,0x08000047)
+write_mem_32(0x08000014,0x08000047)
+write_mem_32(0x08000018,0x08000047)
+write_mem_32(0x0800001C,0x08000047)
+write_mem_32(0x08000020,0x08000047)
+write_mem_32(0x08000024,0x08000047)
+write_mem_32(0x08000028,0x08000047)
+write_mem_32(0x0800002C,0x08000047)
+write_mem_32(0x08000030,0x08000047)
+write_mem_32(0x08000034,0x08000047)
+write_mem_32(0x08000038,0x08000047)
+write_mem_32(0x0800003C,0x08000047)
+write_mem_32(0x08000040,0xF80AF000)
+write_mem_32(0x08000044,0xE7FEE7FF)
+write_mem_32(0x08000048,0x47708001)
+write_mem_32(0x0800004C,0x47706001)
+write_mem_32(0x08000050,0x47706800)
+write_mem_32(0x08000054,0x46C04770)
+write_mem_32(0x08000058,0x4816B570)
+write_mem_32(0x0800005C,0xFFF8F7FF)
+write_mem_32(0x08000060,0x43012110)
+write_mem_32(0x08000064,0xF7FF4813)
+write_mem_32(0x08000068,0x4813FFF1)
+write_mem_32(0x0800006C,0xFFF0F7FF)
+write_mem_32(0x08000070,0x4D134912)
+write_mem_32(0x08000074,0x21804008)
+write_mem_32(0x08000078,0x43010349)
+write_mem_32(0x0800007C,0xF7FF480E)
+write_mem_32(0x08000080,0x2180FFE5)
+write_mem_32(0x08000084,0x0189480F)
+write_mem_32(0x08000088,0xFFE0F7FF)
+write_mem_32(0x0800008C,0x00202400)
+write_mem_32(0x08000090,0xF7FF3401)
+write_mem_32(0x08000094,0x42ACFFDF)
+write_mem_32(0x08000098,0x2180D1F9)
+write_mem_32(0x0800009C,0x05894809)
+write_mem_32(0x080000A0,0xF
+...
+
+Then remove the boot0 jumper, doesnt appear to have to be actually in
+the 0 position, just not in the 1 position (YMMV), and press reset and
+then the blinker program runs.
+
+So as cool as swd is, I may use progstm more, who knows.  Once you
+get a virgin card unlocked, and so long as you dont brick things with
+your application you can then use SWD to stop and reprogram without
+moving the boot0 jumper.  The boot0 jumper then becomes your unbricking
+option (well is in any case) and you can use SWD or the bootloader to
+reprogram the application flash with something that doesnt hang.
+
+
+
 You will want/need the datasheet and reference manual for this part
 go to st.com then search for this part STM32F103C8T6 as of this
 writing it gets a hit on the family STM32F103C8.  Datasheet is currently
