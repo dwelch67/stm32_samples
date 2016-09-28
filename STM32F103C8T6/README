@@ -339,8 +339,6 @@ to find a full ARM JTAG tool for a reasonable price (other than
 an FT2232 mini module or an FT4232 mini module and a bunch of jumper
 wires).
 
-
-
-
-
-
+Note you either need to use -c "transport select swd" on the command
+line openocd -f jlink.cfg -c "transport select swd" -f target.cfg
+or as I have done here add that line to jlink.cfg
