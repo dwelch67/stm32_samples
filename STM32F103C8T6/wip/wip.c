@@ -184,6 +184,9 @@ int notmain ( void )
 {
     unsigned int ra;
 
+static unsigned int state;
+static unsigned int myadd;
+
     PUT32(VTOR,0x00000000); //just in case
     clock_init();
     uart_init();
@@ -199,19 +202,16 @@ int notmain ( void )
     PUT16(USB_CNTR,0x0000); //Clear FRES (release reset)
     PUT16(USB_ISTR,0x0000); //Clear RESET and any other interrupts
 
-    PUT16(USB_SRAM+0x40,0xCACA);
-    PUT16(USB_SRAM+0x44,0xCACA);
-    PUT16(USB_SRAM+0x80,0xCACA);
-    PUT16(USB_SRAM+0x84,0xCACA);
-    PUT16(USB_SRAM+0x100,0xCACA);
-    PUT16(USB_SRAM+0x104,0xCACA);
-
     ra=GET32(GPIOA_CRH);
     ra&=~(0xF<<12);
     ra|= (0xB<<12); //1011
     ra&=~(0xF<<16);
     ra|= (0xB<<12); //1011
     PUT32(GPIOA_CRH,ra);
+
+    //ATTACHED?
+    state=0; //ATTACHED
+    myadd=0;
 
     while(1)
     {
@@ -224,7 +224,7 @@ int notmain ( void )
             PUT16(USB_COUNT0_RX,64);
             PUT16(USB_ADDR0_RX,0x40);
             PUT16(USB_COUNT0_TX,0);
-            PUT16(USB_ADDR0_TX,0x80);
+            PUT16(USB_ADDR0_TX,0x80|myadd);
             ra=GET16(USB_EP0R);
             ra&=~(1<<15); //CTR_RX
             ra|=1<<14;
@@ -238,6 +238,7 @@ int notmain ( void )
             ra|= (2<<4);  //STAT_TX  TX_NAK
             PUT16(USB_EP0R,ra);
             PUT16(USB_DADDR,0x0080);
+            state=1; //DEFAULT
             hexstring(0x0400);
         }
         if(istr&0x8000)  //CTR
@@ -252,20 +253,7 @@ int notmain ( void )
                 {
                     //CTR_RX, OUT HOST->USB
                     ra=GET16(USB_EP0R);
-                hexstring(ra);
-//0000EA60
-//1110101001100000
-//1 CTR_RX
-//1 dtog_rx
-//10 STAT RX  NAK
-//1 SETUP
-//01 EP TYPE
-//0 EP KIND
-//0 CTR TX
-//1 DTOG_TX
-//10 STAT TX nak
-//0000 EA
-
+                //hexstring(ra);
                     if(ra&0x0800)
                     {
                         //SETUP
@@ -273,20 +261,112 @@ int notmain ( void )
                         ra&=~(1<<15); //CTR_RX
                         PUT16(USB_EP0R,ra);
                         {
-                            //unsigned int rb;
-                            unsigned int r0,r1;
+                            unsigned int rb;
+                            unsigned int r0,r1,r2,r3;
                             rb=USB_SRAM+(0x40<<1);
                             r0=GET16(rb); rb+=4;
                             r1=GET16(rb); rb+=4;
-                            hexstrings(r0); hexstring(r1);
+                            r2=GET16(rb); rb+=4;
+                            r3=GET16(rb); rb+=4;
+                            //hexstrings(r0); //bmRequest
+                            //hexstrings(r1); //wValue
+                            //hexstrings(r2); //wIndex
+                            //hexstring (r3); //wLength
+                            //0x80 dev to host standard device
+                            switch(r0)
+                            {
+//00000400                                                                                                    
+//00008B10 00008B10                                                                                           
+//00000680 00000100                                                                                           
+//00008B00 00008B00                                                                                           
+//00008B10 00008B10                                                                                           
+//00000680 00000100                                                                                           
+//00008B00 00008B00                                                                                           
+//00008B10 00008B10                                                                                           
+//00000680 00000100                                                                                           
+//00008B00 00008B00       
+
+
+
+//00000680 00000100 00000000 00000040                                                                         
+                                case 0x0680: //GET_DESCRIPTOR
+                                {
+                                    //wValue Descriptor Type & Index
+                                    //wIndex Zero or Language ID
+                                    //wLength Descriptor Length
+                                    switch(r1&0xFF00)
+                                    {
+                                        case 0x0100: //Device Descriptor
+                                        {
+                                            rb=USB_SRAM+(0x80<<1);
+                                            PUT16(rb,0x0112); rb+=4; //descriptor, size
+                                            PUT16(rb,0x0200); rb+=4; //bcdUSB?                                            
+                                            PUT16(rb,0x0102); rb+=4; //bDeviceSubClass, bDeviceClass
+                                            PUT16(rb,0x4003); rb+=4; //bMaxPacketSize, bDeviceProtocol
+                                            PUT16(rb,0xDEAD); rb+=4; //VID
+                                            PUT16(rb,0xBEEF); rb+=4; //PID
+                                            PUT16(rb,0x0200); rb+=4; //bcdDevice rel 2.00
+                                            PUT16(rb,0x0201); rb+=4; //string index product, string index manufacturer
+                                            PUT16(rb,0x0103); rb+=4; //bNumConfigurations, string index serial number
+                                            PUT16(USB_COUNT0_TX,0x12);
+                                            PUT16(USB_ADDR0_TX,0x80);
+                                            ra=GET16(USB_EP0R);
+                                            //ra&=~(3<<4);  //STAT_TX
+                                            ra|= (3<<4);  //STAT_TX  TX_VALID
+                                            PUT16(USB_EP0R,ra);
+                                hexstrings(r0); //bmRequest
+                                hexstring (r1); //wValue
+                                //hexstrings(r2); //wIndex
+                                //hexstring (r3); //wLength
+                                            break;
+                                        }
+                                        default:
+                                        {
+                                hexstrings(r0); //bmRequest
+                                hexstrings(r1); //wValue
+                                hexstrings(r2); //wIndex
+                                hexstring (r3); //wLength
+                                            break;
+                                        }   
+                                        
+                                        //case 0x0200: //Config Descriptor
+                                        //{
+                                            //break;
+                                        //}
+                                        //case 0x0300: //String Descriptor
+                                        //{
+                                            //break;
+                                        //}
+                                        //case 0x0400: //Interface
+                                        //{
+                                            //break;
+                                        //}
+                                        //case 0x0500: //Endpoint
+                                        //{
+                                            //break;
+                                        //}
+                                    }
+                                    break;
+                                }
+                                default:
+                                {
+                                hexstrings(r0); //bmRequest
+                                hexstrings(r1); //wValue
+                                hexstrings(r2); //wIndex
+                                hexstring (r3); //wLength
+                                break;
+                                }
+                            }
+
+
                         }
                     }
-                    else
+                    else //not setup
                     if(ra&0x8000)
                     {
                         ra=GET16(USB_EP0R);
                         ra&=~(1<<15); //CTR_RX
-                        ra&=~(3<<12); //STAT_RX
+                        //ra&=~(3<<12); //STAT_RX
                         ra|= (3<<12); //STAT_RX  RX_VALID
                         PUT16(USB_EP0R,ra);
                     }
@@ -295,11 +375,13 @@ int notmain ( void )
                 {
                     //CTR_TX, IN USB->HOST
                     ra=GET16(USB_EP0R);
-                    ra&=~(1<<15); //CTR_RX
-                    ra&=~(3<<12); //STAT_RX
+                    ra&=~(1<<7); //CTR_TX
+                    PUT16(USB_EP0R,ra);
+                    if(state==1) PUT16(USB_DADDR,0x0080|myadd);
+                    ra=GET16(USB_EP0R);
+                    //ra&=~(3<<12); //STAT_RX
                     ra|= (3<<12); //STAT_RX  RX_VALID
                     PUT16(USB_EP0R,ra);
-                    /*maybe*/PUT16(USB_DADDR,0x0080);
                 }
             }
         }
