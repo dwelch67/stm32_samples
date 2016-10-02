@@ -298,9 +298,10 @@ See the TOOLCHAIN file for info on where to find a compiler.
 STM32F103C8T6
 
 C 48 pins
-8 64 Kbytes
+8 64 Kbytes FLASH
 T LQFP
 6 -40 to 85C
+20 Kbytes of SRAM
 
 
 There are j-link devices (or clones) from asia on ebay for around $11
@@ -317,22 +318,7 @@ of the card.   The VTref is not a power supply it is sampling the
 voltage of the device to know how strong to drive the data lines (SWxxx)
 3.3 or 5 or 1.8 or whatever, I dont know the full range but certainly
 works with the 3.3 levels we need here.  This means you can use
-the usb end of the stm32 card to plug in and get power for the card.
-Is there risk?  Perhaps, in theory these jtag devices are meant to be
-used this way, I wouldnt necessarily (okay I have) use one computer
-for powering the stm32 via its usb and another computer for the j-link.
-A laptop or other on a brick might have a different ground reference
-(ideally not), worst case one computer is on one phase and the other
-on another, earth ground should still be common, but who knows. No
-your house normally does not have different phases in it.  If it blows
-up, not my fault.  Any time you get into this kind of work you have
-to assume that from time to time you are going to hook something up
-wrong and let some smoke out or you are going to have a bug in your
-program that bricks the board.  The boot0 pin ideally prevents that
-but, you might get lucky.  Configuring gpios wrong you can drive
-into another driver at opposite levels and if one side is weaker
-smoke comes out.  Not my fault, I smoke and brick my own stuff
-from time to time.
+the usb end of the stm32 card to plug in and power the card.
 
 Anyway, very happy with these, it is/was getting harder and harder
 to find a full ARM JTAG tool for a reasonable price (other than

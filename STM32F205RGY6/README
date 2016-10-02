@@ -1,0 +1,157 @@
+
+Have one of these
+
+https://docs.particle.io/datasheets/photon-datasheet/
+
+Have no interest in playing in a sandbox.
+
+It contains a
+
+STM32F205RGY6
+
+microcontroller, go to st.com and search for that part number probably
+hit the family STM32F205RG
+
+Get the datasheet and the RM reference manual.
+
+As with the STM32F1... example, am using a jlink swd, can use an
+stlink as well, both are good choices.
+
+You only need four signals  3.3V as a reference (likely need this
+for j-link but not for stlink)  GND three pins down from that then
+D7 is SWDIO and D6 SWCLK.  dont need RST if you dont want.
+
+D7 is also the blue led pin, since I am using SWD, not going to mess
+with that led.  It glows a little when using SWD.
+
+In one terminal
+
+openocd -f jlink.cfg -f target.cfg
+Open On-Chip Debugger 0.10.0-dev-00325-g12e4a2a (2016-07-05-23:15)
+Licensed under GNU GPL v2
+For bug reports, read
+    http://openocd.org/doc/doxygen/bugs.html
+swd
+adapter speed: 1000 kHz
+adapter_nsrst_delay: 100
+none separate
+cortex_m reset_config sysresetreq
+Info : No device selected, using first device.
+Info : J-Link ARM V8 compiled Nov 28 2014 13:44:46
+Info : Hardware version: 8.00
+Info : VTarget = 3.319 V
+Info : clock speed 1000 kHz
+Info : SWD DPIDR 0x2ba01477
+Info : stm32f2x.cpu: hardware has 6 breakpoints, 4 watchpoints
+
+Using jlink above, can use an stlink as well
+
+
+openocd -f stlink_whatever.cfg -f target.cfg
+Open On-Chip Debugger 0.10.0-dev-00325-g12e4a2a (2016-07-05-23:15)
+Licensed under GNU GPL v2
+For bug reports, read
+    http://openocd.org/doc/doxygen/bugs.html
+Info : auto-selecting first available session transport "hla_swd". To override use 'transport select <transport>'.
+Info : The selected transport took over low-level target control. The results might differ compared to plain JTAG/SWD
+adapter speed: 1000 kHz
+adapter_nsrst_delay: 100
+none separate
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : Unable to match requested speed 1000 kHz, using 950 kHz
+Info : clock speed 950 kHz
+Info : STLINK v2 JTAG v24 API v2 SWIM v11 VID 0x0483 PID 0x374B
+Info : using stlink api v2
+Info : Target voltage: 3.260407
+Info : stm32f2x.cpu: hardware has 6 breakpoints, 4 watchpoints
+
+In another terminal
+
+telnet localhost 4444
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+Open On-Chip Debugger
+> halt
+stm32f1x.cpu: target state: halted
+target halted due to debug-request, current mode: Thread
+xPSR: 0xa1000000 pc: 0x08001234 msp: 0x200000c4
+> flash write_image erase test.bin 0x08000000
+auto erase enabled
+device id = 0x20036410
+flash size = 64kbytes
+stm32f1x.cpu: target state: halted
+target halted due to breakpoint, current mode: Thread
+xPSR: 0x61000000 pc: 0x2000003a msp: 0x200000c4
+wrote 1024 bytes from file test.bin in 0.379937s (2.632 KiB/s)
+>
+
+I will leave a test.bin around to use.  Now here is where the trouble
+begins, you might instead get a
+
+stm32x device protected
+failed erasing sectors 0 to 0
+
+If so then you can see the protection listed here
+
+> flash info 0
+device id = 0x20036411
+flash size = 1024kbytes
+#0 : stm32f2x at 0x08000000, size 0x00100000, buswidth 0, chipwidth 0
+    #  0: 0x00000000 (0x4000 16kB) protected
+    #  1: 0x00004000 (0x4000 16kB) not protected
+    #  2: 0x00008000 (0x4000 16kB) not protected
+    #  3: 0x0000c000 (0x4000 16kB) not protected
+    #  4: 0x00010000 (0x10000 64kB) not protected
+    #  5: 0x00020000 (0x20000 128kB) not protected
+    #  6: 0x00040000 (0x20000 128kB) not protected
+    #  7: 0x00060000 (0x20000 128kB) not protected
+    #  8: 0x00080000 (0x20000 128kB) not protected
+    #  9: 0x000a0000 (0x20000 128kB) not protected
+    # 10: 0x000c0000 (0x20000 128kB) not protected
+    # 11: 0x000e0000 (0x20000 128kB) not protected
+
+You can unlock that bank
+
+> stm32f2x unlock 0
+stm32f2x unlocked.
+INFO: a reset or power cycle is required for the new settings to take effect.
+> flash info 0
+#0 : stm32f2x at 0x08000000, size 0x00100000, buswidth 0, chipwidth 0
+    #  0: 0x00000000 (0x4000 16kB) not protected
+    #  1: 0x00004000 (0x4000 16kB) not protected
+    #  2: 0x00008000 (0x4000 16kB) not protected
+    #  3: 0x0000c000 (0x4000 16kB) not protected
+    #  4: 0x00010000 (0x10000 64kB) not protected
+    #  5: 0x00020000 (0x20000 128kB) not protected
+    #  6: 0x00040000 (0x20000 128kB) not protected
+    #  7: 0x00060000 (0x20000 128kB) not protected
+    #  8: 0x00080000 (0x20000 128kB) not protected
+    #  9: 0x000a0000 (0x20000 128kB) not protected
+    # 10: 0x000c0000 (0x20000 128kB) not protected
+    # 11: 0x000e0000 (0x20000 128kB) not protected
+STM32F2xx - Rev: X
+
+And as it says power cycle, after the power cycle.
+
+> flash info 0
+device id = 0x20036411
+flash size = 1024kbytes
+#0 : stm32f2x at 0x08000000, size 0x00100000, buswidth 0, chipwidth 0
+    #  0: 0x00000000 (0x4000 16kB) not protected
+    #  1: 0x00004000 (0x4000 16kB) not protected
+    #  2: 0x00008000 (0x4000 16kB) not protected
+    #  3: 0x0000c000 (0x4000 16kB) not protected
+    #  4: 0x00010000 (0x10000 64kB) not protected
+    #  5: 0x00020000 (0x20000 128kB) not protected
+    #  6: 0x00040000 (0x20000 128kB) not protected
+    #  7: 0x00060000 (0x20000 128kB) not protected
+    #  8: 0x00080000 (0x20000 128kB) not protected
+    #  9: 0x000a0000 (0x20000 128kB) not protected
+    # 10: 0x000c0000 (0x20000 128kB) not protected
+    # 11: 0x000e0000 (0x20000 128kB) not protected
+STM32F2xx - Rev: X
+
+And now it is unlocked so you can use the flash write_image erase x.elf
+command listed above.
+

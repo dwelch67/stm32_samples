@@ -1,0 +1,6 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+PA1,PA2,PA3 are connected to an insantely painful RGB led.  So I only
+blink them a few times.
