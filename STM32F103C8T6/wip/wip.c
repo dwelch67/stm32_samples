@@ -76,8 +76,6 @@ void dummy ( unsigned int );
 #define EP3_TX_ADDR (0x0120)
 
 
-static void hexstring ( unsigned int d );
-
 
 static void clock_init ( void )
 {
@@ -179,6 +177,33 @@ static void hexstring ( unsigned int d )
     uart_putc(0x0D);
     uart_putc(0x0A);
 }
+unsigned int uart_check ( unsigned int *data )
+{
+    if(GET32(USART1_SR)&0x20)
+    {
+        *data=GET32(USART1_DR)&0xFF;
+        return(1);
+    }
+    return(0);
+}
+
+static unsigned int dhead;
+static unsigned int dtail;
+static unsigned int dlog[512];
+void log_data ( unsigned int x )
+{
+    dlog[dtail]=x;
+    dtail=(dtail+1)&0x1FF;
+}
+void show_log_data ( void )
+{
+    while(dhead!=dtail)
+    {
+        hexstring(dlog[dhead]);
+        dhead=(dhead+1)&0x1FF;
+    }
+}
+
 
 int notmain ( void )
 {
@@ -190,8 +215,10 @@ static unsigned int myadd;
     PUT32(VTOR,0x00000000); //just in case
     clock_init();
     uart_init();
-    hexstring(0x12345678);
-
+    //hexstring(0x12345678);
+    dhead=0;
+    dtail=0;
+    log_data(0x12345678);
 
     ra=GET32(RCC_APB1ENR);
     ra|=1<<23; //UNDOCUMENTED USB ENABLE!
@@ -216,9 +243,17 @@ static unsigned int myadd;
     while(1)
     {
         unsigned int istr;
+
+        unsigned int x;
+        if(uart_check(&x))
+        {
+            if(x==0x20) show_log_data();
+        }
+
         istr=GET16(USB_ISTR);
         if(istr&0x0400)  //RESET
         {
+            log_data(istr|0x11000000);
             PUT16(USB_ISTR,~0x0400);
             PUT16(USB_BTABLE,BTABLE);
             PUT16(USB_COUNT0_RX,64);
@@ -227,68 +262,47 @@ static unsigned int myadd;
             PUT16(USB_ADDR0_TX,0x80|myadd);
             ra=GET16(USB_EP0R);
             ra&=~(1<<15); //CTR_RX
-            ra|=1<<14;
-            ra&=~(3<<12); //STAT_RX
-            ra|= (3<<12); //STAT_RX  RX_VALID
+            ra^= (3<<12); //STAT_RX  RX_VALID
             ra&=~(3<<9);  //EP_TYPE
             ra|= (1<<9);  //EP_TYPE CONTROL
             ra&=~(1<<8);  //EP_KIND
             ra&=~(1<<7);  //CTR_TX
-            ra&=~(3<<4);  //STAT_TX
-            ra|= (2<<4);  //STAT_TX  TX_NAK
+            ra^= (2<<4);  //TX_NAK
             PUT16(USB_EP0R,ra);
             PUT16(USB_DADDR,0x0080);
             state=1; //DEFAULT
-            hexstring(0x0400);
         }
         if(istr&0x8000)  //CTR
         {
-            hexstrings(istr);
-            hexstring(istr);
-//00008B10
+            log_data(istr|0x22000000);
+            log_data(istr&0xF);
             if((istr&0xF)==0)
             {
                 //endpoint 0
-                if(istr&0x10)
+                if(istr&0x10) //DIR
                 {
                     //CTR_RX, OUT HOST->USB
                     ra=GET16(USB_EP0R);
-                //hexstring(ra);
-                    if(ra&0x0800)
+                    if(ra&0x0800) //SETUP
                     {
-                        //SETUP
                         ra=GET16(USB_EP0R);
                         ra&=~(1<<15); //CTR_RX
                         PUT16(USB_EP0R,ra);
                         {
                             unsigned int rb;
-                            unsigned int r0,r1,r2,r3;
+                            unsigned int r0,r1;//,r2,r3;
                             rb=USB_SRAM+(0x40<<1);
                             r0=GET16(rb); rb+=4;
                             r1=GET16(rb); rb+=4;
-                            r2=GET16(rb); rb+=4;
-                            r3=GET16(rb); rb+=4;
-                            //hexstrings(r0); //bmRequest
-                            //hexstrings(r1); //wValue
-                            //hexstrings(r2); //wIndex
-                            //hexstring (r3); //wLength
-                            //0x80 dev to host standard device
+                            //r2=GET16(rb); rb+=4;
+                            //r3=GET16(rb); rb+=4;
+                            log_data(0x123123);
+                            log_data(r0);
+                            log_data(r1);
+                            //log_data(r2);
+                            //log_data(r3);
                             switch(r0)
                             {
-//00000400                                                                                                    
-//00008B10 00008B10                                                                                           
-//00000680 00000100                                                                                           
-//00008B00 00008B00                                                                                           
-//00008B10 00008B10                                                                                           
-//00000680 00000100                                                                                           
-//00008B00 00008B00                                                                                           
-//00008B10 00008B10                                                                                           
-//00000680 00000100                                                                                           
-//00008B00 00008B00       
-
-
-
-//00000680 00000100 00000000 00000040                                                                         
                                 case 0x0680: //GET_DESCRIPTOR
                                 {
                                     //wValue Descriptor Type & Index
@@ -300,7 +314,7 @@ static unsigned int myadd;
                                         {
                                             rb=USB_SRAM+(0x80<<1);
                                             PUT16(rb,0x0112); rb+=4; //descriptor, size
-                                            PUT16(rb,0x0200); rb+=4; //bcdUSB?                                            
+                                            PUT16(rb,0x0200); rb+=4; //bcdUSB?
                                             PUT16(rb,0x0102); rb+=4; //bDeviceSubClass, bDeviceClass
                                             PUT16(rb,0x4003); rb+=4; //bMaxPacketSize, bDeviceProtocol
                                             PUT16(rb,0xDEAD); rb+=4; //VID
@@ -311,24 +325,10 @@ static unsigned int myadd;
                                             PUT16(USB_COUNT0_TX,0x12);
                                             PUT16(USB_ADDR0_TX,0x80);
                                             ra=GET16(USB_EP0R);
-                                            //ra&=~(3<<4);  //STAT_TX
-                                            ra|= (3<<4);  //STAT_TX  TX_VALID
+                                            ra^= (3<<4);  //STAT_TX  TX_VALID
                                             PUT16(USB_EP0R,ra);
-                                hexstrings(r0); //bmRequest
-                                hexstring (r1); //wValue
-                                //hexstrings(r2); //wIndex
-                                //hexstring (r3); //wLength
                                             break;
                                         }
-                                        default:
-                                        {
-                                hexstrings(r0); //bmRequest
-                                hexstrings(r1); //wValue
-                                hexstrings(r2); //wIndex
-                                hexstring (r3); //wLength
-                                            break;
-                                        }   
-                                        
                                         //case 0x0200: //Config Descriptor
                                         //{
                                             //break;
@@ -350,10 +350,10 @@ static unsigned int myadd;
                                 }
                                 default:
                                 {
-                                hexstrings(r0); //bmRequest
-                                hexstrings(r1); //wValue
-                                hexstrings(r2); //wIndex
-                                hexstring (r3); //wLength
+                                //hexstrings(r0); //bmRequest
+                                //hexstrings(r1); //wValue
+                                //hexstrings(r2); //wIndex
+                                //hexstring (r3); //wLength
                                 break;
                                 }
                             }
@@ -366,8 +366,7 @@ static unsigned int myadd;
                     {
                         ra=GET16(USB_EP0R);
                         ra&=~(1<<15); //CTR_RX
-                        //ra&=~(3<<12); //STAT_RX
-                        ra|= (3<<12); //STAT_RX  RX_VALID
+                        ra^= (3<<12); //STAT_RX  RX_VALID
                         PUT16(USB_EP0R,ra);
                     }
                 }
@@ -377,10 +376,13 @@ static unsigned int myadd;
                     ra=GET16(USB_EP0R);
                     ra&=~(1<<7); //CTR_TX
                     PUT16(USB_EP0R,ra);
-                    if(state==1) PUT16(USB_DADDR,0x0080|myadd);
+                    if(state==1)
+                    {
+                        PUT16(USB_DADDR,0x0080|myadd);
+                        state=2; //ADDRESS
+                    }
                     ra=GET16(USB_EP0R);
-                    //ra&=~(3<<12); //STAT_RX
-                    ra|= (3<<12); //STAT_RX  RX_VALID
+                    ra^= (3<<12); //STAT_RX  RX_VALID
                     PUT16(USB_EP0R,ra);
                 }
             }
@@ -390,7 +392,7 @@ static unsigned int myadd;
     //while(1)
     //{
         //ra=uart_getc();
-        //hexstring(ra);
+        ////hexstring(ra);
     //}
     return(0);
 }
