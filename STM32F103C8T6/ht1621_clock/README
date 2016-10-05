@@ -1,0 +1,7 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+derived from prior examples.  Takes the nmea data from a gps receiver
+extracts the time, adjusts for the time zone.  Displays it on an
+ht1621b driven lcd panel
