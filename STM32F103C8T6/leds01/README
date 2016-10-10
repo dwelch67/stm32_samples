@@ -1,0 +1,17 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Simple led matrix board I made.  A0-A3 are the columns, the positive
+side of the leds A0 is tied to the positive side of 3 leds in one
+column.  A4-A6 are the rows, each tied to the negatives of all the leds
+in that row.  Resistors on each row and column.  So if you want one
+led on then you want the column high and the row low for that one
+led the others you dont want on then either column low or row high or
+both.  So kinda charlieplexing, but not, uses more pins than a nice
+charlieplexd array would (normally only 4 pins for 12 leds).  This
+was constructed by hand on perf board, so went this route.
+
+Multiple examples in one, blink rate on some have to do with how
+many bits are on or not, not interested in even blinking for all
+combinations, just demonstrating all combinations.
