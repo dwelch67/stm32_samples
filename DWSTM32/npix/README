@@ -1,0 +1,42 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Adafruit calls these things neopixels.  Worldsemi calls them Intelligent
+control LED integrated light source.  The part number is WS2812B.
+
+Very interesting creatures.
+
+The datasheet is well...interesting...The timing seems very rigid, and
+to some extent is.  Why would they choose such a frequency?  Hard to
+bitbang when with many microcontrollers a single instruction either
+way can blow your timing according to the datasheet.
+
+The other interesting thing that perhaps was obvious from the
+datasheet to others but not to me is that how this works is you send
+the reset, a long low period.  Then when ready you send a stream of
+ones and zeros cant pause gotta shove them out.  I was expecting this
+to be like a big shift register, the colors moving like the videos
+imply.  But actually the first 24 bits set the color for the first
+led, then the second 24 bits the second in line, and so on.
+
+I tried a few ways to bit bang this, ended up with this solution so
+far.  The solution here is to populate sram with a series of
+instructions that set the gpio output and use nops to control the time
+then reset the gpio, use nops to control the time.  Repeat for the whole
+data stream.  Quick and dirty and it works.
+
+I made a little board at oshpark, npix.brd in this directory or see
+npix.pdf.  As oriented here, with the marked corner on the device
+down and to the right, the top pins on either side are VCC, the bottom
+pins are GND.  The right middle is data in, the left middle is data out
+initially only need the right pins top VCC, middle data in, bottom GND.
+However or wherever you have these you will need power ground and a
+data in.  So far I have gotten away with driving these with 3.3V
+not 3.5 to 5.5, and without any caps populated per LED.
+
+The other trick not shown here is that the pulse that seems to matter
+is the short pulse, the 400ns give or take.  I can stretch the long
+pulse well beyond the 0.8, have not pushed it longer than two or three
+times, but will push that later.
+
