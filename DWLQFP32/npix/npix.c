@@ -2,14 +2,12 @@
 
 //------------------------------------------------------------------------
 //------------------------------------------------------------------------
-
+void PUT16 ( unsigned int, unsigned int );
 void PUT32 ( unsigned int, unsigned int );
 unsigned int GET32 ( unsigned int );
 void dummy ( unsigned int );
 
-void xshort_on ( unsigned int, unsigned int, unsigned int );
-void xlong_off ( unsigned int, unsigned int, unsigned int );
-
+void HOP ( unsigned int, unsigned int, unsigned int, unsigned int );
 
 #define GPIOB_BASE 0x48000400
 #define GPIOA_BASE 0x48000000
@@ -17,11 +15,6 @@ void xlong_off ( unsigned int, unsigned int, unsigned int );
 #define USART1_BASE 0x40013800
 
 #define FLASH_ACR 0x40022000
-
-#define STK_CSR 0xE000E010
-#define STK_RVR 0xE000E014
-#define STK_CVR 0xE000E018
-#define STK_MASK 0x00FFFFFF
 
 //-------------------------------------------------------------------
 void clock_init ( void )
@@ -31,8 +24,8 @@ void clock_init ( void )
     PUT32(FLASH_ACR,0x11);
     //HSI8 based 48MHz.  (8/2)*12
     ra=0;
-    ra|=10<<18; //times 12
-    ra|=0<<15;  //divide by 2
+    ra|=2<<18; //times 4
+    ra|=0<<16;  //divide by 2
     PUT32(RCC_BASE+0x04,ra);
     ra=GET32(RCC_BASE+0x00);
     ra|=1<<24;
@@ -53,105 +46,43 @@ void clock_init ( void )
     }
 }
 //------------------------------------------------------------------------
-int uart_init ( void )
+static unsigned int hopper;
+static void send_24 ( unsigned int x )
 {
     unsigned int ra;
-
-    ra=GET32(RCC_BASE+0x14);
-    ra|=1<<17; //enable port a
-    PUT32(RCC_BASE+0x14,ra);
-
-    ra=GET32(RCC_BASE+0x18);
-    ra|=1<<14; //enable USART1
-    PUT32(RCC_BASE+0x18,ra);
-
-    //moder 10
-    ra=GET32(GPIOA_BASE+0x00);
-    ra&=~(3<<18); //PA9
-    ra|=2<<18; //PA9
-    ra&=~(3<<20); //PA10
-    ra|=2<<20; //PA10
-    PUT32(GPIOA_BASE+0x00,ra);
-    //OTYPER 0
-    ra=GET32(GPIOA_BASE+0x04);
-    ra&=~(1<<9); //PA9
-    ra&=~(1<<10); //PA10
-    PUT32(GPIOA_BASE+0x04,ra);
-    //ospeedr 11
-    ra=GET32(GPIOA_BASE+0x08);
-    ra|=3<<18; //PA9
-    ra|=3<<20; //PA10
-    PUT32(GPIOA_BASE+0x08,ra);
-    //pupdr 00
-    ra=GET32(GPIOA_BASE+0x0C);
-    ra&=~(3<<18); //PA9
-    ra&=~(3<<20); //PA10
-    PUT32(GPIOA_BASE+0x0C,ra);
-    //afr 0001
-    ra=GET32(GPIOA_BASE+0x24);
-    ra&=~(0xF<<4); //PA9
-    ra|=0x1<<4; //PA9
-    ra&=~(0xF<<8); //PA10
-    ra|=0x1<<8; //PA10
-    PUT32(GPIOA_BASE+0x24,ra);
-
-    ra=GET32(RCC_BASE+0x0C);
-    ra|=1<<14; //reset USART1
-    PUT32(RCC_BASE+0x0C,ra);
-    ra&=~(1<<14);
-    PUT32(RCC_BASE+0x0C,ra);
-
-    PUT32(USART1_BASE+0x0C,417);
-    PUT32(USART1_BASE+0x08,1<<12);
-    PUT32(USART1_BASE+0x00,(1<<3)|(1<<2)|1);
-
-    return(0);
-}
-//------------------------------------------------------------------------
-void uart_send ( unsigned int x )
-{
-    while(1) if(GET32(USART1_BASE+0x1C)&(1<<7)) break;
-    PUT32(USART1_BASE+0x28,x);
-}
-//------------------------------------------------------------------------
-unsigned int uart_recv ( void )
-{
-    while(1) if((GET32(USART1_BASE+0x1C))&(1<<5)) break;
-    return(GET32(USART1_BASE+0x24));
-}
-//------------------------------------------------------------------------
-void hexstrings ( unsigned int d )
-{
-    //unsigned int ra;
+    //unsigned int rd;
+    unsigned int xa;
+    unsigned int xb;
     unsigned int rb;
-    unsigned int rc;
-
-    rb=32;
-    while(1)
+    
+    for(rb=0x00800000;rb;rb>>=1)
     {
-        rb-=4;
-        rc=(d>>rb)&0xF;
-        if(rc>9) rc+=0x37; else rc+=0x30;
-        uart_send(rc);
-        if(rb==0) break;
+        if(x&rb)
+        {
+            xa=10;
+            xb=5;
+        }
+        else
+        {
+            xa=5;
+            xb=10;
+        }
+        PUT16(hopper,0x6002); hopper+=2;
+        for(ra=0;ra<xa;ra++) { PUT16(hopper,0x46C0); hopper+=2; }
+        PUT16(hopper,0x6001); hopper+=2;
+        for(ra=0;ra<xb;ra++) { PUT16(hopper,0x46C0); hopper+=2; }
     }
-    uart_send(0x20);
-}
-//------------------------------------------------------------------------
-void hexstring ( unsigned int d )
-{
-    hexstrings(d);
-    uart_send(0x0D);
-    uart_send(0x0A);
 }
 //------------------------------------------------------------------------
 int notmain ( void )
 {
     unsigned int ra;
+    unsigned int rd;
+    unsigned int rx;
 
     clock_init();
-    uart_init();
-    hexstring(0x12345678);
+    //uart_init();
+    //hexstring(0x12345678);
 
 
 
@@ -176,36 +107,32 @@ int notmain ( void )
     ra&=~(3<<2); //PB1
     PUT32(GPIOB_BASE+0x0C,ra);
 
-    PUT32(STK_CSR,4);
-    PUT32(STK_RVR,0xFFFFFFFF);
-    PUT32(STK_CVR,0x00000000);
-    PUT32(STK_CSR,5);
-
     PUT32(GPIOB_BASE+0x18,(1<<(1+16))); //off
-    for(ra=0;ra<200000;ra++) dummy(ra);
+    for(ra=0;ra<200000;ra++) dummy(ra);    
 
+    hopper=0x20000100;
+    send_24(0x00010000);
+    send_24(0x00000100);
+    send_24(0x00000001);
+    send_24(0x00000002);
+    PUT16(hopper,0x4770);
+    HOP(GPIOB_BASE+0x18,1<<(1+16),1<<(1+0),0x20000101);
 
-    while(1)
+    for(rx=0;;rx++)
     {
-        xshort_on(GPIOB_BASE+0x18,1<<(1+16),1<<(1+0));
-        xlong_off(GPIOB_BASE+0x18,1<<(1+16),1<<(1+0));
+        rd=0;
+        if(rx&0x10) rd|=0x000001;
+        if(rx&0x20) rd|=0x000100;
+        if(rx&0x40) rd|=0x010000;
+        hopper=0x20000100;
+        if(rx&1) send_24(rd); else send_24(0);
+        if(rx&2) send_24(rd); else send_24(0);
+        if(rx&4) send_24(rd); else send_24(0);
+        if(rx&8) send_24(rd); else send_24(0);
+        PUT16(hopper,0x4770);
+        HOP(GPIOB_BASE+0x18,1<<(1+16),1<<(1+0),0x20000101);
+        for(ra=0;ra<200000;ra++) dummy(ra);
     }
-
-
-    //while(1)
-    //{
-        //PUT32(GPIOB_BASE+0x18,(1<<1));
-        //for(ra=0;ra<200000;ra++) dummy(ra);
-        //PUT32(GPIOB_BASE+0x18,(1<<(1+16)));
-        //for(ra=0;ra<200000;ra++) dummy(ra);
-    //}
-    
-    //while(1)
-    //{
-        //ra=uart_recv();
-        //if(ra==0x0D) uart_send(0x0A);
-        //uart_send(ra);
-    //}
     return(0);
 }
 //------------------------------------------------------------------------
