@@ -1,0 +1,8 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Adafruit calls these things neopixels.  Worldsemi calls them Intelligent
+control LED integrated light source.  The part number is WS2812B.
+
+See npix01 for more.

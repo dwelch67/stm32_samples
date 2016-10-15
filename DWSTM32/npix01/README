@@ -35,8 +35,3 @@ However or wherever you have these you will need power ground and a
 data in.  So far I have gotten away with driving these with 3.3V
 not 3.5 to 5.5, and without any caps populated per LED.
 
-The other trick not shown here is that the pulse that seems to matter
-is the short pulse, the 400ns give or take.  I can stretch the long
-pulse well beyond the 0.8, have not pushed it longer than two or three
-times, but will push that later.
-
