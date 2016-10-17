@@ -1,0 +1,44 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Adafruit calls these things neopixels.  Worldsemi calls them Intelligent
+control LED integrated light source.  The part number is WS2812B.
+
+Very interesting creatures.
+
+The datasheet is well...interesting...The timing seems very rigid, and
+to some extent is.  Why would they choose such a frequency?  Hard to
+bitbang when with many microcontrollers a single instruction either
+way can blow your timing according to the datasheet.
+
+The other interesting thing that perhaps was obvious from the
+datasheet to others but not to me is that how this works is you send
+the reset, a long low period.  Then when ready you send a stream of
+ones and zeros cant pause gotta shove them out.  I was expecting this
+to be like a big shift register, the colors moving like the videos
+imply.  But actually the first 24 bits set the color for the first
+led, then the second 24 bits the second in line, and so on.
+
+I tried a few ways to bit bang this, ended up with this solution so
+far.  The solution here is to populate sram with a series of
+instructions that set the gpio output and use nops to control the time
+then reset the gpio, use nops to control the time.  Repeat for the whole
+data stream.  Quick and dirty and it works.
+
+I made a little board at oshpark, npix.brd in this directory or see
+npix.pdf.  As oriented here, with the marked corner on the device
+down and to the right, the top pins on either side are VCC, the bottom
+pins are GND.  The right middle is data in, the left middle is data out
+initially only need the right pins top VCC, middle data in, bottom GND.
+However or wherever you have these you will need power ground and a
+data in.  So far I have gotten away with driving these with 3.3V
+and 5.0V.  Did have a situation where I needed to let the board power
+first, then plug the leds in later (when running at 3.3V) so pushing
+the inrush or other limit basically.  This readme has been copied
+from other mcus, this nucleo board has a 5V pin, and didnt have to plug
+the leds in hot, just plugged usb into the board and it came up and
+worked.
+
+
+
