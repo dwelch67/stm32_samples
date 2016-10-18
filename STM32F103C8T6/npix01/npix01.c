@@ -9,8 +9,6 @@ void dummy ( unsigned int );
 
 void HOP ( unsigned int, unsigned int, unsigned int, unsigned int );
 
-
-
 #define GPIOCBASE 0x40011000
 #define RCCBASE 0x40021000
 
@@ -25,44 +23,6 @@ void HOP ( unsigned int, unsigned int, unsigned int, unsigned int );
 #define RCC_CR      (RCC_BASE+0x00)
 #define RCC_CFGR    (RCC_BASE+0x04)
 #define FLASH_ACR   0x40022000
-
-
-//static void clock_init ( void )
-//{
-    //unsigned int ra;
-    //unsigned int cfgr;
-
-    //ra=GET32(RCC_CR);
-    //ra=ra|1<<16; //HSEON
-    //PUT32(RCC_CR,ra);
-
-    //while(1) if(GET32(RCC_CR)&(1<<17)) break; //HSERDY
-
-    //cfgr=0x00000000;
-    //cfgr|= (0x7<<18); //PLL input clock x 9
-    //cfgr|= (1<<16);   //PLLSRC PREDIV1 selected as PLL input clock
-    //PUT32(RCC_CFGR,cfgr);
-
-    //ra=GET32(RCC_CR);
-    //ra=ra|1<<24;    //PLLON
-    //PUT32(RCC_CR,ra);
-
-    //while(1) if(GET32(RCC_CR)&(1<<25)) break; //PLLRDY
-
-    ////cfgr|= (0x7<<24); //MCO SYSCLK/2 must not exceed 50MHz
-    //cfgr|= (0x0<<22); //USB 48MHz
-    //cfgr|= (0x4<<8);  //APB1 36MHz
-    //PUT32(RCC_CFGR,cfgr);
-
-    //PUT32(FLASH_ACR,0x2); //72MHz 2 wait states
-
-    //cfgr|= (0x2<<0); //PLL
-    //PUT32(RCC_CFGR,cfgr);
-
-    //while(1) if((GET32(RCC_CFGR)&0xF)==0xA) break; //Wait for it
-//}
-
-
 
 static void clock_init ( void )
 {
@@ -179,8 +139,8 @@ int notmain ( void )
     PUT32(GPIOCBASE+0x10,(1<<(13+16))); //off
     for(ra=0;ra<1000000;ra++) dummy(ra);
 
-    ry=6;
-    rz=2;
+    ry=9;
+    rz=3;
 
 ////    for(ry=1;ry<20;ry++)
     //{

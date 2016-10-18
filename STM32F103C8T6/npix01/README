@@ -33,6 +33,22 @@ pins are GND.  The right middle is data in, the left middle is data out
 initially only need the right pins top VCC, middle data in, bottom GND.
 However or wherever you have these you will need power ground and a
 data in.  So far I have gotten away with driving these with 3.3V
-not 3.5 to 5.5, and without any caps populated per LED.  This code
-being re-used across boards.  This board I am using 5V.
+not 3.5 to 5.5, and without any caps populated per LED.
 
+This code being re-used across boards.  This board I am using 5V.
+Curious that this chip is so much different than the cortex-m0 chips,
+perhaps there are other factors.  The same leds seem to want a shorter
+period from this device.  Cant so far get this one to work with the
+from reset internal 8MHz clock.  Bumped it up to 16MHz.  Maybe the
+ram is slow and has a wait state or the fetching is different (quite
+likely), or the peripherals are slower and chew more clocks.  Who knows.
+
+  ry=9;
+  rz=3;
+
+Puts it in the ballpark of 0.4 and 0.8us.  But had it working with 6
+and 0.  
+  
+Ideally you want to use timer and maybe dma features in the mcu, but
+that gets much more chip specific, which I might do as needed some
+day but for now this does what I need.
