@@ -1,0 +1,5 @@
+
+See the top level README for documentation and schematics for this board.
+
+Same as rtc01 but uses HSE/128 instead,  I dont yet know which one is
+more accurate if either are accurate (enough to not be annoying).

@@ -164,30 +164,18 @@ int notmain ( void )
     ra|=1<<8; //DBP
     PUT32(PWR_CR,ra);
 
-
     PUT32(RCC_BDCR,0x10000);
     PUT32(RCC_BDCR,0x00000);
 
     bdcr=GET32(RCC_BDCR);
-//hexstring(bdcr);
-    bdcr|=1<<0; //LSEON
-    PUT32(RCC_BDCR,bdcr);
-
-    while(1)
-    {
-        bdcr=GET32(RCC_BDCR);
-        if(bdcr&(1<<1)) break; //LSERDY
-    }
-
-    //bdcr=GET32(RCC_BDCR);
-    bdcr&=~(3<<8); //RTCSEL should be zero
-    bdcr|= (1<<8); //RTCSEL LSE
+    //bdcr&=~(3<<8); //RTCSEL should be zero
+    bdcr|= (3<<8); //RTCSEL HSE
     PUT32(RCC_BDCR,bdcr);
 
     //bdcr=GET32(RCC_BDCR);
     bdcr|= (1<<15); //RTCEN
     PUT32(RCC_BDCR,bdcr);
-//hexstring(bdcr);
+bdcr=GET32(RCC_BDCR); hexstring(bdcr);
 
     while(1)
     {
@@ -195,8 +183,9 @@ int notmain ( void )
         if(ra&(1<<3)) break; //RSF
     }
     rtoff();
+
     PUT32(RTC_CRL,0x38);
-    PUT32(RTC_PRLL,32767);
+    PUT32(RTC_PRLL,62499);
     PUT32(RTC_CRL,0x28);
     rtoff();
 
@@ -258,5 +247,7 @@ hexstring(GET32(RTC_PRLL));
             hexstring((ht<<20)|(ho<<16)|(mt<<12)|(mo<<8)|(st<<4)|(so<<0));
         }
     }
+
+
     return(0);
 }
