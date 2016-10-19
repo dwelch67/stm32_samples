@@ -1,0 +1,6 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Uses the real time clock with the 32768Hz clock to drive time on an
+ht1621b display.
