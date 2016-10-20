@@ -4,3 +4,6 @@ information.
 
 Uses the real time clock with the 32768Hz clock to drive time on an
 ht1621b display.
+
+Wow that was way worse than I expected, it was 16 minutes fast in less
+than 24 hours.

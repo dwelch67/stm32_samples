@@ -112,10 +112,10 @@ static void rtc_init ( void )
         if(ra&(1<<3)) break; //RSF
     }
     rtoff();
-    PUT32(RTC_CRL,0x38);
-    PUT32(RTC_PRLL,32767);
-    PUT32(RTC_CRL,0x28);
-    rtoff();
+    //PUT32(RTC_CRL,0x38);
+    //PUT32(RTC_PRLL,32767);
+    //PUT32(RTC_CRL,0x28);
+    //rtoff();
 }
 
 
@@ -312,8 +312,8 @@ int notmain ( void )
     last_time[2]=0;
     last_time[3]=0;
 
-    ht=1;ho=1;
-    mt=0;mo=7;
+    ht=0;ho=9;
+    mt=2;mo=4;
     st=0;so=0;
 
     show_clock();
