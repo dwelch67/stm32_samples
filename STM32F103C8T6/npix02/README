@@ -1,0 +1,7 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Same as npix01, but does a little ugly thing to see if this is a power
+on or reset and then goes full bright or minimal like npix01, to easily
+demonstrate the range of the output of the leds.
