@@ -6,4 +6,5 @@ Uses the real time clock with the 32768Hz clock to drive time on an
 ht1621b display.
 
 Wow that was way worse than I expected, it was 16 minutes fast in less
-than 24 hours.
+than 24 hours.  Okay, there is something going on here.  Added uart
+output and going to log that to see where the jump in time is.
