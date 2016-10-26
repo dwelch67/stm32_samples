@@ -1,0 +1,18 @@
+
+See the top level README for documentation and schematics for this board.
+
+These $2 china boards have a 32.768Hz oscillator for the RTC.  So
+why not try.  The appnote AN2821 leaves some steps out.  Have to read
+the reference manual to fill in the gaps.  Will make a clock from this
+and see how it drifts.  Ideally want to take this and a PPS from a
+GPS and see how it drifts relative to that.   Also compare it to HSE
+as calibration steps mention HSE.  Is HSE more accurate?  I should
+try an RTC with HSE.  I dont have specs on this boards components, so
+dont know their advertised accuracy.
+
+Yes, could do lots of division/modulo but that takes a lot of clock
+cycles, so this BCD thing is I assume on par or better.  Should
+actually do it BCD and not separate variables, is that faster or slower?
+(as it could be all register based through the math if BCD from
+one 32 bit variable, but separate variables its gotta swap out to stack).
+Hmm, actually gcc 6.2 burned a bunch of registers.
