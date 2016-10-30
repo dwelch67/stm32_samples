@@ -1,0 +1,14 @@
+
+See the top level README for documentation and schematics for this board.
+
+Still trying to sort out why my time was so wrong.  Going with the
+just divide the timer approach.  The prescaler is 36 bits,
+cant count a whole minute with the 32768 timer, but can count half a
+minute so the timer ticks every 30 seconds.  So it takes 120 ticks to
+make a minute.  1440 ticks per half day.  So take the count, compute
+modulo 1440, then divide by 120 result is hours, remainder is minutes
+times 2.
+
+Only using the lower timer register, around 1.5 million days before I
+run into a rollover situation and the time goes wrong.  Aver 4000 years
+dont think this is a problem.
