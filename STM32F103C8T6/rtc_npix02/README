@@ -1,0 +1,16 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Adafruit calls these things neopixels.  Worldsemi calls them Intelligent
+control LED integrated light source.  The part number is WS2812B.
+
+Very interesting creatures...See other npix examples for a description
+of how this code interfaces these leds.
+
+Will see with time, my other approach didnt seem to work, not sure why.
+Now going with the just divide out the RTC counter into HH:MM.  Derived
+from rtc04 where the 32768hz clock is used.  The rtc timer counts in
+units of half a second, so 120 ticks per minute.  Long division is used
+(soft divide cant be much different, but probably tighter code) to
+extract the hours and minutes.
