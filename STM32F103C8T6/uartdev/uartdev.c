@@ -30,6 +30,16 @@ void dummy ( unsigned int );
 #define RCC_CR      (RCC_BASE+0x00)
 #define RCC_CFGR    (RCC_BASE+0x04)
 
+#define GPIOBBASE 0x40010C00
+#define RCCBASE 0x40021000
+
+#define STK_CSR 0xE000E010
+#define STK_RVR 0xE000E014
+#define STK_CVR 0xE000E018
+#define STK_MASK 0x00FFFFFF
+
+#define PERIPH_BB_BASE 0x42000000
+
 static void clock_init ( void )
 {
     unsigned int ra;
@@ -112,6 +122,7 @@ static void hexstring ( unsigned int d )
     uart_putc(0x0D);
     uart_putc(0x0A);
 }
+
 int notmain ( void )
 {
     clock_init();
