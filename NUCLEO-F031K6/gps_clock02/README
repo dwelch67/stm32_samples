@@ -32,3 +32,7 @@ If you cant see the board then you may not know.
 
 They all glow a little then the ones that are "on" glow more.
 
+Could extend this to walk through other timezones, but for my
+timezone, it powers up for the summer and leaves a breadcrumb, if
+it sees the breadcrumb it switches to winter.  So apply power and
+it is summer adjustment, press reset and it switches to winter.
