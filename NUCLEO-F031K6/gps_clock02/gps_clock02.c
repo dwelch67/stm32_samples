@@ -15,13 +15,13 @@ void dummy ( unsigned int );
 #define STK_CVR 0xE000E018
 #define STK_MASK 0x00FFFFFF
 
-unsigned char xstring[32];
-unsigned int tim[4];
-unsigned int lasttim[4];
+static unsigned char xstring[32];
+static unsigned int tim[4];
+static unsigned int lasttim[4];
 #define ZMASK 0xFF
-unsigned char zbuff[ZMASK+1];
-unsigned int zhead;
-unsigned int ztail;
+static unsigned char zbuff[ZMASK+1];
+static unsigned int zhead;
+static unsigned int ztail;
 
 
 
@@ -355,6 +355,7 @@ static void show_clock ( void )
 //------------------------------------------------------------------------
 //------------------------------------------------------------------------
 //------------------------------------------------------------------------
+static unsigned int timezone;
 //------------------------------------------------------------------------
 static int do_nmea ( void )
 {
@@ -432,7 +433,8 @@ static int do_nmea ( void )
                         rb+=rc;
                         if(rb>12) rb-=12;
                         //ra=5; //time zone adjustment winter
-                        ra=4; //time zone adjustment summer
+                        //ra=4; //time zone adjustment summer
+                        ra=timezone;
                         if(rb<=ra) rb+=12;
                         rb-=ra;
                         if(rb>9)
@@ -511,6 +513,10 @@ int notmain ( void )
 {
     uart_init();
     charlie_init();
+
+    timezone=4;
+    if(GET32(0x20000D00)==0x12341234) timezone=5;
+    PUT32(0x20000D00,0x12341234);
 
     lasttim[0]=1;
     lasttim[1]=1;
