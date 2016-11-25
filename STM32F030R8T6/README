@@ -1,0 +1,87 @@
+
+So I bought some seven segment lcd panels on ebay.  Turns out the
+price was on par with mouser, of course shipping was significantly
+better.
+
+It didnt say but I think they are or are similar enough to
+the lumex LCD-A401C71TR
+
+http://www.lumex.com/lcd-a401c71tr
+
+Then I got a 64 pin microcontroller, since you need a ton of pins,
+each segment is a separate pin.  Some displays have 8 pins for the seven
+segment (seven plus a decimal point is eight), and then a common
+for each digit, so in this case you would have eight plus four.  But for
+those you have to blink each digit.  This one each segement is separate
+you dont need to blink anything just leave them on.  I have read some
+web pages that talked about feeding these a sine wave of some frequency.
+Hmmm, the lumex document above says operating voltage 5V AC.  Well
+so far it works, just driving them 3.3V DC.  Will see if something
+wears out or dies.
+
+bigled.brd is an eagle file for the board I built for this, had it
+made at oshpark.  I dont remember the size not but for the small one
+inch by one inch boards or so oshpark is more reasonable than the
+china board shops, but this one may be near or at the edge where it
+starts to get too expensive for oshpark.  I have not yet used anything
+other than oshpark, my boards have all been really small..
+
+
+Some notes about my board
+
+                       corner
+                         GND
+                         x
+                         VCC
+                         TX
+                         RX
+                         x
+
+
+
+
+
+                          X
+PA9  UART TX              TX
+PA10 UART RX              X
+PA14 SWCLK                GND
+PA13 SWDIO                VCC
+corner                corner
+
+This is the map of STM32 port pins to lcd digits.
+
+  A01      A05      B00      B11
+
+A00 A02  A04 A06  C05 B01  B10 B12
+
+  C03      A03      C04      B02
+
+B04 D02  C11 A15  C09 C07  B15 B13
+
+  B03      C10      C08      B14
+
+
+
+colon A07
+period under colon A08
+left period C12
+right period C06
+
+ A
+G B
+ C
+F D
+ E
+
+A01,A02,C03,D02,B03,B04,A00,
+A05,A06,A03,A15,C10,C11,A04,
+B00,B01,C04,C07,C08,C09,C05,
+B11,B12,B02,B13,B14,B15,B10,
+
+blinker01 just to see if the board works and some segments
+blinker02 was a lot of experiments trying to figure out the pins, I
+could have figured it out from my board design, but this was pretty
+quick.  seven.c was used to build the on/off bits for each segment,
+the values to write into the BSRR registers.
+
+And gps_clock02 is the purpose of this board, this chip, etc.
