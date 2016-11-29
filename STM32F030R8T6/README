@@ -17,7 +17,13 @@ you dont need to blink anything just leave them on.  I have read some
 web pages that talked about feeding these a sine wave of some frequency.
 Hmmm, the lumex document above says operating voltage 5V AC.  Well
 so far it works, just driving them 3.3V DC.  Will see if something
-wears out or dies.
+wears out or dies...Okay I stand corrected.  The lcd panel doesnt like
+this.  If you leave some segments on even for a minute or minutes it
+starts to look strange getting lighter in an uneven way.  Then if you
+turn on others briefly they are darker and even.  So far it has
+recovered from this but it takes hours I think, certainly not minutes.
+Trying to blink them digitally did not get them "on" so maybe you really
+do need a 5V sine wave.
 
 bigled.brd is an eagle file for the board I built for this, had it
 made at oshpark.  I dont remember the size not but for the small one
