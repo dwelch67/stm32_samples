@@ -1,0 +1,29 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+It really bugs me when I see the blinker example you are supposed to
+run first be interrupt based.  Or any notion that interrupts is how
+you do that.  While true you CAN use interrupts.  It should most
+definitely not be the first or fifth or 20th thing you do.  Start with
+polling, you can sometimes, often?, make your entire project without
+using interrupts.  Just depends some on the problem and some on your
+design.  Saying that, eventually you will want/need to know.  So this
+is the first interrupt example.
+
+Charlieplexing a two digit decimal number.
+
+Tune these parameters to adjust if the background leds glow or not
+and if so how much
+
+
+    PUT32(STK_RVR,2000-1);
+
+        if(bit&val) counter=5;
+        //else counter=2; //others glow
+        else counter=1; //others off
+
+
+If you make the interrupt rate too high then you are bascally stuck
+in the interrupt or worse, the counting and the uart output indicate
+whether or not you have pushed it too far.

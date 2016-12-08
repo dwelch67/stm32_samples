@@ -1,0 +1,19 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+It really bugs me when I see the blinker example you are supposed to
+run first be interrupt based.  Or any notion that interrupts is how
+you do that.  While true you CAN use interrupts.  It should most
+definitely not be the first or fifth or 20th thing you do.  Start with
+polling, you can sometimes, often?, make your entire project without
+using interrupts.  Just depends some on the problem and some on your
+design.  Saying that, eventually you will want/need to know.  So this
+is the first interrupt example.
+
+I am working my way to charlieplexing in the int02 example.  This
+one makes the user led "glow" note how it compares to the power led.
+
+Printing out the uart demonstrates that despite the very high interrupt
+rate we are are still getting a lot of foreground time.
+
