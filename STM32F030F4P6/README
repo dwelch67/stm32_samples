@@ -1,0 +1,11 @@
+
+Bought some more ebay boards.  Search for STM32F030F4P6, come with
+two sets of four pin connectors at the bottom, one is for serial the
+other for SWD.  I assume it is a bad idea if you use the usb power
+and the power at the other end at the same time.
+
+This is essentially the same chip as the DWSTM32 example, more
+flash or ram.
+
+
+
