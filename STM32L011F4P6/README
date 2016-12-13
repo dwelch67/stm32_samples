@@ -1,0 +1,79 @@
+
+
+Bought some loose STM32L011F4P6 chips.  Ultra low power I hope.
+
+
+       GND TX RX VCC
+
+BOOT0                SWCLK
+PF0                  SWDIO
+PF1                  RX
+NRST                 TX
+VDDA                 VCC
+PA0                  GND
+PA1                  PB1
+PA2                  PA7
+PA3                  PA6
+PA4 (led)            PA5 (led)
+
+
+stm32f0discovery which is same/similar pinout to other stm32 discovery
+boards.
+
+1 VDD TARGET
+2 SWCLK
+3 GND
+4 SWDIO
+5 NRST
+6 SWO
+
+So far I cannot use the bootloader to program I have to use SWD, and
+with that it is also very strange these commands work
+
+flash erase_sector 0 0 3
+flash write_image blinker01/blinker01.elf
+
+but flash write_image erase does not work.
+
+Also interesting flash typically erases to 0xFFs but this erases to
+0x00s.  I assume it is a different low power technology.
+
+This might be a clue (for the serial bootloader):
+
+couldn't use loader, falling back to page memory writes
+wrote 220 bytes from file blinker01/blinker01.elf in 0.579009s (0.371 KiB/s)
+
+My first chip is on the pcboard in the DWSTM32 directory so leds are
+on PA4 and PA5.  The other board is on its way with the led on PB1
+
+I normally just set my stack pointer to 0x20001000 for everything unless
+I am doing something other than these tiny examples.  Well this part
+has 0x800 bytes of ram so 0x20001000 actually causes problems.
+
+
+
+
+After reset, the microcontroller restarts by default with an internal 2 MHz clock (MSI).
+
+
+to use SWD (could maybe call it jtag).  with openocd. need to build
+openocd with stlink enabled then
+
+openocd -f stlink-v2.cfg -f target.cfg
+
+Or whichever stlink you have if you have one.  The discovery and nulceo
+boards have an stlink built in, some you can use to target other
+boards some you cant.  Often cheaper to buy one of the larger nucleo
+boards for $10 bucks than to buy a dedicated stlink usb thing for $15
+unless you can find one on ebay.
+
+then in another window
+
+telnet localhost 4444
+
+then use these kinds of commands
+
+halt
+flash erase_sector 0 0 3
+flash write_image blinker01/blinker01.elf
+reset

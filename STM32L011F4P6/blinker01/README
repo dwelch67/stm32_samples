@@ -1,0 +1,18 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+I dont have the stm32.brd boards yet, so using the DWSTM32.brd from
+the DWSTM32 example which uses PA4 and PA5.  Will remedy this when I
+get the other boards.
+
+My purpose for buying these chips is ultra low power.  So slowed the
+clock down to 64Khz give or take.  Lightly blinking the leds.
+
+This runs from flash.  so like 20 microamps perhaps?
+
+GPIO adds another 6 or 7 microamps.
+
+Will see, dont know if I can mesure that small, but can say charge up
+a cap and let it run off of that down and measure how long befoer it
+dies.
