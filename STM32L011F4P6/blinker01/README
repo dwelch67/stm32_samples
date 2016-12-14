@@ -3,8 +3,8 @@ See the previous level README for schematic and programmers reference
 information.
 
 I dont have the stm32.brd boards yet, so using the DWSTM32.brd from
-the DWSTM32 example which uses PA4 and PA5.  Will remedy this when I
-get the other boards.
+the DWSTM32 example which uses PA4 and PA5.  The stm32.brd uses
+PB1 to sink the led instead of source.
 
 My purpose for buying these chips is ultra low power.  So slowed the
 clock down to 64Khz give or take.  Lightly blinking the leds.
@@ -15,4 +15,5 @@ GPIO adds another 6 or 7 microamps.
 
 Will see, dont know if I can mesure that small, but can say charge up
 a cap and let it run off of that down and measure how long befoer it
-dies.
+dies.  Looks like with a 1.5F cap it might stay on for many hours, after
+a handful it had hardly bumped the voltage.

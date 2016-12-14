@@ -1,0 +1,20 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Same as blinker01 except the main program is run in ram not flash
+and the flash is turned off (have to pull boot0 to reprogram as
+the flash is off if this boots right).  I think this saves 10 microamps.
+
+
+(disconnect boot0 from ground)
+reset
+(into st serial bootloader)
+
+halt
+flash erase_sector 0 0 3
+flash write_image blinker02/blinker02.elf
+
+(connect boot0 to ground)
+reset
+
