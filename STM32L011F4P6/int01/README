@@ -1,0 +1,18 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+I dont have my microammeters yet, but this uses interrupts and wfi to
+at least stop some of the arm not the systick timer clearly, but perhaps
+this saves a little more power.  Will see.
+
+I strongly suggest folks poll before using interrupts.  I didnt make a
+polling example yet, but can/will that this would then be derived from
+if you look at my other cortex-m examples I do that on almost every
+board (and rarely use interrupts).
+
+This uses the systick timer with interrupts and runs from flash (int02
+uses sram and turns off the flash to save power).  The systick is in
+the arm core and very intimate so you dont have to setup an NVIC or
+anything, you enable interrupts on the peripheral and the core gets
+interrupted when the counter rolls over/into zero.
