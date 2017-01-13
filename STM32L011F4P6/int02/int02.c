@@ -12,7 +12,7 @@ void DOVTOR ( unsigned int, unsigned int );
 
 #define FLASHBASE 0x40022000
 
-
+#define PWRBASE 0x40007000
 #define STK_CSR 0xE000E010
 #define STK_RVR 0xE000E014
 #define STK_CVR 0xE000E018
@@ -41,14 +41,30 @@ int notmain ( void )
     unsigned int ra;
 
     //SLOOOOW...
-    ra=GET32(RCCBASE+0x04);
-    ra&=~(7<<13);
-    PUT32(RCCBASE+0x04,ra);
+    //ra=GET32(RCCBASE+0x04);
+    //ra&=~(7<<13);
+    //PUT32(RCCBASE+0x04,ra);
+
+
+    
+    //while(1)
+    //{
+        //if((GET32(PWRBASE+0x04)&(1<<4))==0) break;
+    //}
+    //ra=GET32(PWRBASE+0x00);
+    //ra|=3<<11;
+    //PUT32(PWRBASE+0x00,ra);
+    //while(1)
+    //{
+        //if((GET32(PWRBASE+0x04)&(1<<4))==0) break;
+    //}
 
     //shut down flash
     PUT32(FLASHBASE+0x08,0x04152637);
     PUT32(FLASHBASE+0x08,0xFAFBFCFD);
     PUT32(FLASHBASE+0x00,0x00000018);
+
+
 
     DOVTOR(VTOR,0x20000000);
 

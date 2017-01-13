@@ -78,6 +78,37 @@ if(len>0x600)
     fprintf(fp,"  ldr r2,rccmask\n");
     fprintf(fp,"  and r1,r2           \n");
     fprintf(fp,"  str r1,[r0]       \n");
+//vcore range 3
+    fprintf(fp,"  ldr r0,pwrreg         \n");
+    fprintf(fp,"  mov r1,#0x10          \n");
+    fprintf(fp,"vcore0:                 \n");
+    fprintf(fp,"  ldr r2,[r0,#0x04]     \n");
+    fprintf(fp,"  tst r2,r1             \n");
+    fprintf(fp,"  bne vcore0            \n");
+    
+    fprintf(fp,"  ldr r3,pwrval         \n");
+    fprintf(fp,"  ldr r4,[r0,#0x00]     \n");
+    fprintf(fp,"  orr r4,r3             \n");
+    fprintf(fp,"  str r4,[r0,#0x00]     \n");
+
+    //fprintf(fp,"  mov r1,#0x10          \n");
+    fprintf(fp,"vcore1:                 \n");
+    fprintf(fp,"  ldr r2,[r0,#0x04]     \n");
+    fprintf(fp,"  tst r2,r1             \n");
+    fprintf(fp,"  bne vcore1            \n");
+
+    //while(1)
+    //{
+        //if((GET32(PWRBASE+0x04)&(1<<4))==0) break;
+    //}
+    //ra=GET32(PWRBASE+0x00);
+    //ra|=3<<11;
+    //PUT32(PWRBASE+0x00,ra);
+    //while(1)
+    //{
+        //if((GET32(PWRBASE+0x04)&(1<<4))==0) break;
+    //}
+    
 //copy
     fprintf(fp,"  ldr r0,program_base     \n");
     fprintf(fp,"  ldr r1,sram_base        \n");
@@ -96,6 +127,8 @@ if(len>0x600)
 
     fprintf(fp,"rccreg:         .word 0x40021004\n");
     fprintf(fp,"rccmask:        .word 0xFFFF1FFF\n"); //bit 13
+    fprintf(fp,"pwrreg:         .word 0x40007000\n");
+    fprintf(fp,"pwrval:         .word 0x00001800\n"); 
     fprintf(fp,"program_base:   .word program\n");
     fprintf(fp,"sram_base:      .word 0x20000000\n");
     fprintf(fp,"program_length: .word 0x%08X\n",len>>4);
