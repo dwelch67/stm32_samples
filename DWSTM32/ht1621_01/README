@@ -1,0 +1,35 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+
+Bought an LCD on ebay for like $5
+
+Portions of the description
+
+Arduino kit 5bit 7Seg LCD LED SPI Digital tube with UNO MEGA2560 Pro C program
+Module No.:  TB233
+5 Digit 7 Seg SPI LCD Display Module
+HT1621
+
+Searching for this gave the best result.
+
+5 Digit 7 Seg SPI LCD Display Module
+
+It has a green backlight (can be disabled) 5 digits and two arrows
+pointing left.
+
+Uses an HT1621B controller, which is not quite spi but close enough
+chip select, clock and data.  (Technically the controller has two
+clocks a write clock and a read clock they dont expose the read clock
+so it does basically feel like a spi with out the MISO signal).
+
+To disable the led, there is an led signal you can see on the
+back there is a signal headed to the backlight that has two
+solder bridges, one is connected the unconnected one on mine went to
+the led pin.  Unsolder the one solder bridge and then you have no
+backlike to deal with, solder the other short and you can use the pin.
+Or if you dont mind the backlight, just leave it on.  Didnt look to
+see if there was a control/command from the HT1621, I dont think
+there is I think it just comes on when the board is powered.
+
