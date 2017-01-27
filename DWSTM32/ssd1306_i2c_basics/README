@@ -1,0 +1,108 @@
+
+See the top level README for schematic and programmers reference information.
+
+
+       GND TX RX VCC
+
+BOOT0                SWCLK
+PF0                  SWDIO
+PF1                  RX
+NRST                 TX
+VDDA                 VCC  VCC
+PA0   SCL            GND  GND
+PA1   SDA            PB1
+PA2                  PA7
+PA3                  PA6
+PA4 (led)            PA5 (led)
+
+
+So as written in this example using the init in this example.
+
+The data to pixels is such that if you do this
+
+        SetPageStart(0);
+        SetColumn(0);
+
+Think of the "page" as 8 rows of pixels, and set column puts you at
+the left or first column.
+
+The first byte you write after those two calls.  Bit 0 will be the
+top left pixel 1 is on 0 is off.  Bit 1 of that first byte is the next
+pixel down, row 1 column 0. Bit 2 of that first byte is the next
+pixel down, row 2 column 0 and so on through bit 7.  The next byte
+takes you back to row 0, column 1 now for bit 0 of that second byte
+bit 1 of the second byte is row 1, column 1
+
+or to view it another way a is the top left pixel aiq are the pixels
+across the top from left to right and abcd are across the left from top
+to bottom.
+
+aiq
+bjr
+cks
+dlt
+emu
+fnv
+gow
+hpx
+
+after a
+
+        SetPageStart(0);
+        SetColumn(0);
+
+the first byte you write with send_data(); is the byte with bits
+hgfedcba
+the second send_data() byte contains bits
+ponmlkji
+the third send_data() byte contains the bits
+xwvutsrq
+
+Now if you do this
+
+        SetPageStart(1);
+        SetColumn(0);
+
+aiq
+bjr
+cks
+dlt
+emu
+fnv
+gow
+hpx
+y
+z
+.
+.
+.
+.
+.
+.
+
+
+with a still being the top left pixel
+
+then the first send_data() has
+......zy
+as its bits.
+
+so a page here means go to row 8 times the page number and set column
+says go to column number from 0 to 127 on this device, if you have
+a smaller one then 0 to that number.
+
+This device is 128x64 so there are 8 pages if you will.
+
+Maybe you can look at it as if you are eating a taco with your right
+hand, your head tilted to the right 90 degrees.  From that view
+a is the top right pixel.  The page 0 column 0 bytes are on the right
+bit 0 for each of those bytes is the rightmost pixels as you go down,
+bit 1 of those bytes is the the pixels to the left and so on.  Look
+at the abcd thing above with your head tilted right, see the
+hgfedcba now? and the ponmlkji and the xwvutsrq bytes?
+
+There are a few different fonts that I pre-computed the bytes
+for so that you can send those bytes in that order so long as you
+start at the right place.
+
+

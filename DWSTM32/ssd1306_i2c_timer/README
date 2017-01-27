@@ -1,0 +1,19 @@
+
+See the top level README for schematic and programmers reference information.
+
+
+       GND TX RX VCC
+
+BOOT0                SWCLK
+PF0                  SWDIO
+PF1                  RX
+NRST                 TX
+VDDA                 VCC  VCC
+PA0   SCL            GND  GND
+PA1   SDA            PB1
+PA2                  PA7
+PA3                  PA6
+PA4 (led)            PA5 (led)
+
+this is a special purpose timer
+
