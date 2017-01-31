@@ -9,7 +9,7 @@ http://www.st.com/stm32nucleo
 Then navigate to the NUCLEO-F031K6 page by clicking on that name in
 the graph, as of this writing it is a black on yellow box.
 
-YOu will need the users manual for the board.
+You will need the users manual for the board.
 
 You will need the reference manual for the specific microcontroller
 (search by part number within st.com)
@@ -71,5 +71,39 @@ done my research in that I dont think we can mess with boot0 so you
 cant experience the serial bootloader like you can with a simple
 breakout board.  This mbed thing makes it really easy that you just
 copy the flash.bin file over.
+
+
+usb connector up, right side is
+
+VIN
+GND
+RST
+5V
+A7
+A6
+A5
+A4
+A3
+A2
+A1
+A0
+REF
+3V3
+D13
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

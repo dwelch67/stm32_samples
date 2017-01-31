@@ -1,0 +1,139 @@
+
+See the top level README for schematic and programmers reference information.
+
+derived from the DWSTM32 examples, this one I used the 128x32 module
+which inits differently, thanks again adafruit for info.
+
+VIN
+GND  GND
+RST
+5V
+A7
+A6
+A5
+A4
+A3
+A2
+A1   SDA
+A0   SCL
+REF
+3V3  VCC
+D13
+
+
+So as written in this example using the init in this example.
+
+The data to pixels is such that if you do this
+
+        SetPageStart(0);
+        SetColumn(0);
+
+There are controls to make the data go from top to bottom or bottom
+to top and perhaps left to right, not sure.  As initialized in this
+code though a page is a ROW from left to right 128 bytes.  The byes
+define the COLUMN for that ROW with the lsbit being on the top, so
+
+A.A.A.AAAAAAAA
+AAAAA.AAAAAAAA
+AAAAA.AAAAAAAA
+..............
+AAAAAAAAAAAAAA
+AAAAAAAAAAAAAA
+..............
+AAAAAAAAAAAAAA
+BBBBBBBBBBBBBB
+BBBBBBBBBBBBBB
+..............
+..............
+BBBBBBBBBBBBBB
+..............
+..............
+BBBBBBBBBBBBBB
+
+So say the pixels are as above, with the top left corner of the
+display being the top left corner of the above.
+
+        SetPageStart(0);
+        SetColumn(0);
+
+Would say I want to write the row that has the A pixels
+
+        SetPageStart(1);
+        SetColumn(0);
+
+Would say I want to write the row that has the B pixels.
+
+Knowing that if you turn your head 90 degrees to the left as if you
+were eating a taco in your right hand.  you see the A column on the top
+is now a row  A.AA.AAA if the As are pixels that are on and dots are
+off then the bytes
+
+A.AA.AAA 0xB7
+A.AA.AA. 0xB6
+A.AA.AAA 0xB7
+A.AA.AA. 0xB6
+A.AA.AAA 0xB7
+A.AA.... 0xB0
+A.AA.AAA 0xB7
+
+And so on.
+
+so to display that "page"
+
+        SetPageStart(0);
+        SetColumn(0);
+        send_data(0xB7);
+        send_data(0xB6);
+        send_data(0xB7);
+        send_data(0xB6);
+        send_data(0xB7);
+        send_data(0xB0);
+        send_data(0xB7);
+        ...
+
+for up to 128 on that page or row.  If you go beyond 128 I think it
+just starts on the next page/row.
+
+yeah, obviously:
+
+static void ClearScreen ( void )
+{
+    unsigned int ra;
+    unsigned int rb;
+
+    for(ra=0;ra<4;ra++) //128x32
+//    for(ra=0;ra<8;ra++) //128x64
+    {
+        SetPageStart(ra);
+        SetColumn(0);
+        for(rb=0;rb<0x80;rb++) send_data(0);
+    }
+}
+
+With your head still tilted left the B page is
+B..B..BB or 0x93
+
+Subtle differences in 128x32 and 128x64 initialization, with an 128x64
+you get 8 pages (64/8 = 8) and 128x32 4 pages (32/8 = 4)
+
+If you get it wrong you lose every other pixel or something like that
+depending on what you are displaying it kinda works using 128x64 code
+on a 128x32, you are getting 4 pixes per column per page instead
+of 8, so depending on your image/text/etc it may look shrunk but kinda
+okay or just wrong.
+
+
+Another recent discovery, is first and foremost people contrast and
+brightness are two different things.  The contrast setting from 0x00
+to 0xFF doesnt make a whole lot of difference (in brightness), some.
+Take a blinker example, and have it blink 0x00, 0x7F 0xFF every second
+or so, rotate through those.  But also if you change the VCOMH voltage
+regulator, you can also play with "brightness".  Same deal set one
+contrast and then every second change the SETVCOMDESELECT.  So dimmest
+which is what I prefer is a contrast and a vcom of 0x00.  In daylight
+or a bright room you might wish for more.
+
+
+
+
+
