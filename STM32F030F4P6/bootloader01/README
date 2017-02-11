@@ -1,0 +1,92 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+PA9  USART1_TX
+PA10 USART1_RX
+
+This is an example bootloader.  Normally I wouldnt write/use a
+bootloader on a chip like this.  But this ebay board doesnt have a
+boot0 button like the boards I make it has a jumper, more time consuming
+so I made this bootloader.
+
+This reads motorola srecord files.
+
+https://en.wikipedia.org/wiki/SREC_(file_format)
+
+It is an ASCII file format that contains the binary or program we
+want to load and run.  An example line is
+
+S3152000002029000348FFF7EFFF70BDC0461C3801408A
+
+I am using the S3 records, in fact this code may require it.  The
+line starts with an S, and then the next number tells what kind of
+record this line is, 3, meaning data with a 32 bit address.  The
+next two numbers tell how many bytes are in this record, then because
+this is an S3 the next 8 numbers are the 32 bit address 0x20000020
+in this case.  Then the data starts byte 0x29 is at address 0x20000020
+byte 0x00 at address 0x20000021 and so on.  The last byte is a checksum
+to insure the line/record was read right.
+
+So using a dumb terminal connected to the uart (with this nucleo board
+there is a virtual uart through the usb)  It boots and shows
+
+12345678
+
+SREC
+
+Then if you cut and paste the .srec contents (open them in a text
+editor and cut and paste) into the dumb terminal then it will parse the
+srecords and write ram with those values.
+
+If it sees an S7 record
+
+S70520000000DA
+
+Which in this case says the entry point is 0x20000000 then it will print
+that out
+
+12345678
+
+SREC
+20000000
+
+In either case once you have downloaded the program using the srecord
+format, then enter 'g' and it will run the program (after printing
+the entry point it is using).  So if you build and run the testsrec
+program in this directory you will see
+
+12345678
+
+SREC
+20000000
+20000000
+01234567
+01234567
+01234567
+01234567
+01234567
+01234567
+01234567
+01234567
+01234567
+01234567
+
+The test program knowing/assming the uart was configured by the
+bootloader doesnt have to re-init the uart, just shove bytes out.
+Also note that with the cortex-m the way it boots is with a vector
+table, but sram based programs like this, this bootloader simply
+branches to the entry point (I guess I could have made it read a
+vector table and branch there...but didnt...a feature you can
+add yourself if you want).
+
+This board has 4096 of ram so the programs are limited to that
+minus a little for the stack used by this program.  So the programs
+have to be pretty small.
+
+#define SRAMSTART 0x20000000
+//leave room for the stack used by this program.
+#define SRAMEND   (0x20000FFF-64)
+
+
+
