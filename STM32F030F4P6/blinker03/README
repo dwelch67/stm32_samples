@@ -1,0 +1,6 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+same as blinker02 but uses the external HSE clock which on this board
+is 8MHz.
