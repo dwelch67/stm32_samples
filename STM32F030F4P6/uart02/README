@@ -1,0 +1,13 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+PA9  USART1_TX
+PA10 USART1_RX
+
+Simple uart example, for this board you can use the RX/TX pins at the
+bottom of the board (opposite end from the usb connector).
+
+Prints a few numbers out then whatever you type it echos.
+
+Switches to the HSE which on this board which is 8MHz.  PLL not used.

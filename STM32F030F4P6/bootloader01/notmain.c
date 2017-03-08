@@ -175,6 +175,7 @@ int notmain ( void )
     sum=0;
     addr=0;
     type=0;
+    data=0;
     entry=SRAMSTART;
     while(1)
     {
