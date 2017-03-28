@@ -1,0 +1,10 @@
+
+See the top level README for documentation and schematics for this board.
+
+EXTI example detects an edge on an input pin PB8 in this case and
+that causes an interrupt.  To avoid bounce and to control the edges
+I tied PB8 to PB9 and by changing pb9 I can control the pb8 input.
+The final version toggles pb9 every second, so the one edge being detected
+causes an interrupt every two seconds.
+
+

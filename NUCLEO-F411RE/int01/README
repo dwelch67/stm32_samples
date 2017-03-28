@@ -1,0 +1,8 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Demonstrates using the NVIC to allow an interrupt through to the
+cpu.  Uart output in an interrupt service routing is not a good idea
+in this case it is once a second, and there is nobody else using
+the peripheral so in this case it is safe.
