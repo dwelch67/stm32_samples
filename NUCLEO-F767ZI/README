@@ -1,0 +1,83 @@
+
+This directory contains examples for the stm32f7 nucleo board
+specifically the stm32 NUCLEO-F767ZI.
+
+Starting page for all of the nucleo boards
+
+http://www.st.com/stm32nucleo
+
+Then navigate to the NUCLEO-F767ZI page by clicking on that name in
+the graph.
+
+As of this writing you will need the UM1974: STM32 Nucleo-144 board
+users manual.
+
+As of this writing there is no direct link to the microcontroller page
+so do a search on the st website for STM32F767ZI
+
+Under Part Number Results there is one hit and select that link
+to get to the part page.
+
+Click on the Design Resources tab.
+
+We need the Reference Manual
+RM0410: STM32F76xxx and STM32F77xxx advanced ARM®-based 32-bit MCUs
+
+
+M0253: STM32F7 Series Cortex®-M7 processor programming manual
+(similar to the ARM manuals listed next)
+
+It is also a good idea to get the ARM Architectural Reference Manual (ARM)
+and the Techincal Reference Manual.  Possible you may have to give up an
+email address to create a free account.
+
+Along the left under ARM architecture, then under Reference Manuals
+Select ARMv7-M and download the pdf.
+
+Along the left under Cortex-M series processors, then Cortex-M4, then
+select the most recent revision (ideally you want the exact rev they
+used for the chip if that info is available even if obsolete, otherwise
+just get the most recent), then Select the Technical Reference Manual,
+slide the right window down to the bottom and download the pdf.
+
+Unlike older/original mbed boards, it does not appear that you have
+to press the reset button after copying the .bin file to run the
+new program.  But, at least for me it sometimes takes a while before
+the newly copied program is loaded and started in the microcontroller.
+
+You can certainly press reset as much as you like after it is loaded
+to try the new program again and again.
+
+In the old (mbed) days the .bin file would stay there on the virtual
+flash drive, my experience today is that the .bin file goes away.
+Historically I would choose a specific file name (flash.bin for example)
+and copy to that filename on the mbed (nucleo) device.  I think there
+is actually a preferred name but I didnt research that just yet.  My
+experience is after many times copying a bin file over, it eventually
+says it is full.  Unplug and replug and you can continue.
+
+Understand these are bare metal examples that DO NOT use the mbed
+development environment, these use gnu and or llvm toolchains.
+See the TOOLCHAIN file for more on getting the tools.  The way these
+mbed boards work is the debugger microcontroller emulates a flash drive
+which we copy a file to when that .bin file arrives it loads it into the
+evaluation microcontroller and starts it.  There is no magic to the .bin
+files that know where or how they were created, you can certainly try
+these examples on your board, and return to using the mbed gui/sdk as
+well.
+
+This chip uses a cortex-m7 core from ARM.  The cortex-m3, cortex-m4,
+and cortex-m7 cores support the thumb instruction set and ARMv7-M thumb2
+extensions to the thumb instruction set.  The cortex-m0 (and m0+) only
+support the ARMv6-M thumb2 extensions which is a much smaller set of
+additional instrucitons compared to the ARMv7-M thumb2 extensions.  The
+examples in this directory compile for thumb and thumb+thumb2 in
+separate binaries.
+
+Start with the blinker examples then move on to ...
+
+blinker01 turns led on and off, burns cpu cycles to delay
+
+
+
+
