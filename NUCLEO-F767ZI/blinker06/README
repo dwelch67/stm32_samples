@@ -1,0 +1,10 @@
+
+See the top level README for schematic and programmers reference information.
+
+This chip has an RTC, Real Time Clock, and it has a precision reference
+clock/crystal.  It takes some not necessarily obvious or documented
+gyrations to initialize the rtc.
+
+This example uses the rtc to count off seconds to measure time to
+blink the led.
+
