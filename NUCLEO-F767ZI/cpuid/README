@@ -1,0 +1,155 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Dumping the CPUID registers, note this is an older r1p0 core, make
+sure you refere to the right documentation.
+
+
+E000ED00 411FC270
+E000ED40 00000030
+E000ED44 00000200
+E000ED48 00100000
+E000ED4C 00000000
+E000ED50 00110030
+E000ED54 00000000
+E000ED58 01000000
+E000ED5C 00000000
+E000ED60 01101110
+E000ED64 02112000
+E000ED68 20232231
+E000ED6C 01111131
+E000ED70 01310132
+E000ED74 00000000
+E000ED78 09000003
+E000ED7C 8303C003
+E000ED80 F00FE019
+E000ED84 00000000
+
+
+E000ED00 411FC270
+CPUID this is a r1p0 cortex-m7, not the latest, there are newer so
+you might specifically need the r1p0 manual not the newer one.  Also
+careful with errata that you apply it to the correct version.
+
+E000ED40 00000030
+Supports thumb2 of course.
+
+E000ED44 00000200
+two stack supported, so two stack pointers.
+
+E000ED48 00100000
+Support for M profile Debug architecture, with memory-mapped access
+
+E000ED4C 00000000
+reserved
+
+E000ED50 00110030
+Support for Auxiliary Control Register only.
+Tightly coupled memories implemented with IMPLEMENTATION DEFINED
+control.
+One level of shareability implemented.
+Implemented as Non-cacheable. (outermost sharability)
+PMSAv7, providing support for a base region and subregions.
+
+E000ED54 00000000
+reserved
+
+E000ED58 01000000
+Support for WFI stalling.
+
+E000ED5C 00000000
+reserved
+
+E000ED60 01101110
+Adds support for the SDIV and UDIV instructions.
+Adds support for the BKPT instruction.
+(coprocessor instructions) None supported, except for separately
+attributed architectures, for example the Floating-point extension.
+Adds support for the CBNZ and CBZ instructions.
+Adds support for the BFC , BFI , SBFX , and UBFX instructions.
+Adds support for the CLZ instruction.
+
+E000ED64 02112000
+Adds support for the BX instruction, and the T bit in the PSR.
+Adds support for the BLX instruction, and PC loads have BX -like behavior.
+Adds support for the IT instructions, and for the IT bits in the PSRs.
+Adds support for the SXTB , SXTH , UXTB , and UXTH instructions.
+Adds support for the SXTAB , SXTAB16 , SXTAH , SXTB16 , UXTAB , UXTAB16 ,
+UXTAH , and UXTB16 instructions.
+
+E000ED68 20232231
+Adds support for the REV , REV16 , and REVSH instructions, ARMv7-M reserved.
+Adds support for the RBIT instruction.
+Adds support for the UMULL and UMLAL instructions.
+Adds support for the UMAAL instruction.
+Adds support for the SMULL and SMLAL instructions.
+Adds support for the SMLABB , SMLABT , SMLALBB , SMLALBT , SMLALTB , SMLALTT ,
+SMLATB , SMLATT , SMLAWB , SMLAWT , SMULBB , SMULBT , SMULTB , SMULTT , SMULWB ,
+and SMULWT instructions.
+Also adds support for the Q bit in the PSRs. ARMv7-M reserved.
+Adds support for the SMLAD , SMLADX , SMLALD , SMLALDX , SMLSD , SMLSDX ,
+SMLSLD , SMLSLDX , SMMLA , SMM
+Adds support for the MLA instruction, ARMv7-M reserved.
+Adds support for the MLS instruction.
+LDM and STM instructions are restartable.
+LDM and STM instructions are continuable.
+Adds support for the PLD instruction.
+Adds support for the PLI instruction.
+Adds support for the LDRD and STRD instructions.
+
+E000ED6C 01111131
+Adds support for the true NOP instruction.
+Adds support for encoding T1 of the MOV (register) instruction copying from a
+low register to a low register.
+Adds support for the TBB and TBH instructions.
+Adds support for the SVC instruction.
+Adds support for the SSAT and USAT instructions, and for the Q bit in the PSRs.
+Adds support for the PKHBT , PKHTB , QADD16 , QADD8 , QASX , QSUB16 ,
+QSUB8 , QSAX , SADD16 , SADD8 , SASX , SEL , SHADD16 , SHADD8 , SHASX , SHSUB16 , SHSUB8 ,
+SHSAX , SSAT16 , SSUB16 , SSUB8 , SSAX , SXTAB16 , SXTB16 , UADD16 , UADD8 , UASX , UHADD16 ,
+UHADD8 , UHASX , UHSUB16 , UHSUB8 , UHSAX , UQADD16 , UQADD8 , UQASX , UQSUB16 , UQSUB8 ,
+UQSAX , USAD8 , USADA8 , USAT16 , USUB16 , USUB8 , USAX , UXTAB16 , and UXTB16
+instructions.
+Also adds support for the GE[3:0] bits in the PSRs.
+Adds support for the QADD , QDADD , QDSUB , and QSUB instructions, and for the Q bit
+in the PSRs.
+
+E000ED70 01310132
+Adds support for the M-profile forms of the CPS , MRS , and MSR instructions, to
+access the PSRs.
+Adds support for the DMB , DSB , and ISB barrier instructions.
+Adds support for all of the writeback addressing modes defined in the
+ARMv7-M architecture.
+Adds support for shifts of loads and stores over the range LSL 0-3.
+Adds support for other constant shift options, on loads, stores, and
+other instructions.
+Adds support for the LDRBT , LDRT , STRBT , and STRT instructions.
+Adds support for the LDRHT , LDRSBT , LDRSHT , and STRHT instructions.
+
+E000ED74 00000000
+reserved
+
+E000ED78 09000003
+Separate instruction and data caches
+
+E000ED7C 8303C003
+cache write back granule 3
+no exclusive reservation granule
+8 word minimum D cache line
+8 word minimum I cache line
+
+E000ED80 F00FE019
+write through
+write back
+read allocation
+write allocation
+128 sets
+4 way associativity
+8 word cache line
+
+
+E000ED84 00000000
+level 1 cache
+data or unified cache
+
