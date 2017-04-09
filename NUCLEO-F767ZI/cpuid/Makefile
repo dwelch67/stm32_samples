@@ -2,7 +2,7 @@
 ARMGNU = arm-none-eabi
 
 XCPUx = -mcpu=cortex-m0
-XCPU = -mcpu=cortex-m7
+XCPU = -mcpu=cortex-m7 -mfpu=fpv5-d16 -mfloat-abi=hard
 
 AOPS = --warn --fatal-warnings $(XCPU)
 COPS = -Wall -O2 -nostdlib -nostartfiles -ffreestanding $(XCPU)

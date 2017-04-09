@@ -5,6 +5,8 @@ unsigned int GET16 ( unsigned int );
 unsigned int GET32 ( unsigned int );
 void dummy ( unsigned int );
 
+unsigned int UDIV ( unsigned int, unsigned int );
+
 #define RCC_BASE 0x40023800
 #define RCC_CR          (RCC_BASE+0x00)
 #define RCC_PLLCFGR     (RCC_BASE+0x04)
@@ -148,6 +150,23 @@ int notmain ( void )
     {
         hexstrings(rx); hexstring(GET32(rx));
     }
+    //0xE000ED88 CPACR
+    hexstring(GET32(0xE000ED88));
+    PUT32(0xE000ED88,0xFFFFFFFF);
+    hexstring(GET32(0xE000ED88));
+
+    for(rx=0xE000EF34;rx<=0xE000EF48;rx+=4)
+    {
+        hexstrings(rx); hexstring(GET32(rx));
+    }
+
+    rx=GET32(0xE000ED00);
+    hexstring(rx/10);
+    hexstring(rx/10.0);
+    hexstring(rx/10.0F);
+    hexstring(UDIV(rx,10));
+    hexstring(rx/12345678);
+    hexstring(UDIV(rx,12345678));
     return(0);
 }
 

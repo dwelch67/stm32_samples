@@ -153,3 +153,61 @@ E000ED84 00000000
 level 1 cache
 data or unified cache
 
+
+CPACR
+
+00F00000
+both cp11 and cp10 (is one the single precision float and the other double?)
+see the code, I use both.
+
+    hexstring(rx/10.0);
+    hexstring(rx/10.0F);
+
+06832D0B
+06832D10
+
+which is pretty cool that the single gives a different result than
+double.
+
+    hexstring(rx/10);
+    hexstring(UDIV(rx,10));
+
+gcc prefers to multiply by 0xCCCCCCCD and adjust rather than use UDIV
+to divide by 10.  Interesting, perhaps a flag is required other than
+just saying this is a cortex-m7 go ahead and use UDIV.
+
+
+E000EF34 C0000000
+E000EF38 FFFFFFF8
+E000EF3C 00000000
+E000EF40 10110221
+E000EF44 12000011
+E000EF48 00000040
+
+
+E000EF34 C0000000 FPCCR
+
+
+
+E000EF38 FFFFFFF8
+E000EF3C 00000000
+E000EF40 10110221 MVFR0
+All rounding modes supported.
+short vectors not supported
+square root supported
+divide supported
+exception trapping not supported
+double precision supported
+single precision supported
+
+E000EF44 12000011 MVFR1
+fused multiply accumulate supported
+half-precision and double-precision supported
+Hardware supports propagation of NaN values
+Hardware supports full denormalized number arithmetic
+
+E000EF48 00000040 MVFR2
+Support for floating-point selection, floating-point conversion to integer with
+direct rounding modes, floating-point round to integral floating-point, and
+floating-point maximum number and minimum number.
+
