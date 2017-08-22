@@ -2,6 +2,7 @@
 void PUT32 ( unsigned int, unsigned int );
 unsigned int GET32 ( unsigned int );
 void dummy ( unsigned int );
+void ienable ( void );
 void DOWFI ( void );
 
 #define GPIOABASE 0x50000000
@@ -22,7 +23,7 @@ void systick_handler ( void )
 {
     GET32(STK_CSR);
 
-    switch(counter&7)
+    switch(counter&0xF)
     {
         case 0:
             PUT32(GPIOBBASE+0x18, (1<<(1+16)) );
@@ -82,9 +83,10 @@ int notmain ( void )
 
     counter=0;
     PUT32(STK_CSR,4);
-    PUT32(STK_RVR,10000-1);
-    PUT32(STK_CVR,0);
+    PUT32(STK_RVR,4000-1);
+    PUT32(STK_CVR,4000-1);
     PUT32(STK_CSR,7);
+    ienable();
 
     DOWFI();
 

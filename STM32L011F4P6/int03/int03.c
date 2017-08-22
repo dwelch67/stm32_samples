@@ -5,9 +5,7 @@ void dummy ( unsigned int );
 void ienable ( void );
 void DOWFI ( void );
 void DOVTOR ( unsigned int, unsigned int );
-
 #define GPIOABASE 0x50000000
-#define GPIOBBASE 0x50000400
 
 #define RCCBASE 0x40021000
 
@@ -20,19 +18,55 @@ void DOVTOR ( unsigned int, unsigned int );
 #define STK_MASK 0x00FFFFFF
 
 #define VTOR 0xE000ED08
+
+
+unsigned int nextprand ( unsigned int x )
+{
+    if(x&1)
+    {
+        x=x>>1;
+        x=x^0xBF9EC099;
+    }
+    else
+    {
+        x=x>>1;
+    }
+    return(x);
+}
+
 //-------------------------------------------------------------------
 //  **** WARNING THE CODE BELOW IS PART OF AN INTERRUPT HANDLER ****
 //-------------------------------------------------------------------
+volatile unsigned int prand;
+volatile unsigned int fourfive;
+volatile unsigned int counter;
 void systick_handler ( void )
 {
     unsigned int ra;
 
-    PUT32(GPIOBBASE+0x18, (1<<(1+16)) );
-    PUT32(GPIOABASE+0x18, (1<<(5+ 0)) );
-    for(ra=0;ra<10;ra++) dummy(ra);
-    PUT32(GPIOBBASE+0x18, (1<<(1+ 0)) );
-    PUT32(GPIOABASE+0x18, (1<<(5+16)) );
     GET32(STK_CSR);
+    if(counter==0)
+    {
+        if(fourfive&1)
+        {
+            PUT32(GPIOABASE+0x18, (1<<(4+ 0)) );
+            for(ra=0;ra<10;ra++) dummy(ra);
+            PUT32(GPIOABASE+0x18, (1<<(4+16)) );
+        }
+        else
+        {
+            PUT32(GPIOABASE+0x18, (1<<(5+ 0)) );
+            for(ra=0;ra<10;ra++) dummy(ra);
+            PUT32(GPIOABASE+0x18, (1<<(5+16)) );
+        }
+        //fourfive++;
+        prand=nextprand(prand);
+        counter=prand&0x7;
+    }
+    else
+    {
+        counter--;
+    }
 }
 //-------------------------------------------------------------------
 //  **** WARNING THE CODE ABOVE IS PART OF AN INTERRUPT HANDLER ****
@@ -46,8 +80,6 @@ int notmain ( void )
     //ra=GET32(RCCBASE+0x04);
     //ra&=~(7<<13);
     //PUT32(RCCBASE+0x04,ra);
-
-
 
     //while(1)
     //{
@@ -66,25 +98,12 @@ int notmain ( void )
     PUT32(FLASHBASE+0x08,0xFAFBFCFD);
     PUT32(FLASHBASE+0x00,0x00000018);
 
-
+    //SLOOOOW...
+    ra=GET32(RCCBASE+0x04);
+    ra&=~(7<<13);
+    PUT32(RCCBASE+0x04,ra);
 
     DOVTOR(VTOR,0x20000000);
-
-    ra=GET32(RCCBASE+0x2C);
-    ra|=1<<1; //enable port b
-    PUT32(RCCBASE+0x2C,ra);
-    //moder
-    ra=GET32(GPIOBBASE+0x00);
-    ra&=~(3<<2); //PB1
-    ra|=  1<<2; //PB1
-    PUT32(GPIOBBASE+0x00,ra);
-    //OTYPER
-    ra=GET32(GPIOBBASE+0x04);
-    ra&=~(1<<1); //PB1
-    PUT32(GPIOBBASE+0x04,ra);
-    PUT32(GPIOBBASE+0x18, (1<<(1+ 0)) );
-
-
 
     ra=GET32(RCCBASE+0x2C);
     ra|=1<<0; //enable port a
@@ -102,7 +121,11 @@ int notmain ( void )
     ra&=~(1<<5); //PA5
     PUT32(GPIOABASE+0x04,ra);
 
+    PUT32(GPIOABASE+0x18, (1<<(4+16)) || (1<<(5+16)) );
 
+    prand=0x12345;
+    fourfive=1;
+    counter=0;
     PUT32(STK_CSR,4);
     PUT32(STK_RVR,0x40000-1);
     PUT32(STK_CVR,0x40000-1);

@@ -90,6 +90,12 @@ dummy:
     bx lr
 
 .thumb_func
+.globl ienable
+ienable:
+    cpsie i
+    bx lr
+
+.thumb_func
 .globl DOWFI
 DOWFI:
     wfi
