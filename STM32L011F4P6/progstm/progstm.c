@@ -762,7 +762,7 @@ int main ( int argc, char *argv[] )
     }
 
     get_stm_info();
-    for(ra=0;ra<256;ra++)
+    for(ra=0;ra<128;ra++)
     {
         if(extended_erase_page(ra)) return(1);
     }

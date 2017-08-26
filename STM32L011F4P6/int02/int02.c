@@ -28,10 +28,10 @@ void systick_handler ( void )
     unsigned int ra;
 
     PUT32(GPIOBBASE+0x18, (1<<(1+16)) );
-    PUT32(GPIOABASE+0x18, (1<<(5+ 0)) );
+    PUT32(GPIOABASE+0x18, (1<<(4+ 0)) | (1<<(5+ 0)) );
     for(ra=0;ra<10;ra++) dummy(ra);
     PUT32(GPIOBBASE+0x18, (1<<(1+ 0)) );
-    PUT32(GPIOABASE+0x18, (1<<(5+16)) );
+    PUT32(GPIOABASE+0x18, (1<<(4+16)) | (1<<(5+16)) );
     GET32(STK_CSR);
 }
 //-------------------------------------------------------------------
