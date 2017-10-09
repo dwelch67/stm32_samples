@@ -43,9 +43,9 @@ int notmain ( void )
     unsigned int ra;
 
     //SLOOOOW...
-    //ra=GET32(RCCBASE+0x04);
-    //ra&=~(7<<13);
-    //PUT32(RCCBASE+0x04,ra);
+    ra=GET32(RCCBASE+0x04);
+    ra&=~(7<<13);
+    PUT32(RCCBASE+0x04,ra);
 
 
 
