@@ -1,0 +1,86 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Someone on stackoverflow found this gnu assembler (gas) bug.
+
+
+.cpu cortex-m7
+.syntax unified
+.thumb
+
+
+.thumb_func
+.globl test1
+test1:
+    orr r0,#0x3200
+    bx lr
+
+.thumb_func
+.globl test2
+test2:
+    orr r0,#0x3201
+    bx lr
+
+          /* MOV accepts both Thumb2 modified immediate (T2 encoding) and
+         UINT16 (T3 encoding), MOVW only accepts UINT16.  When
+         disassembling, MOV is preferred when there is no encoding
+         overlap.
+         NOTE: MOV is using ORR opcode under Thumb 2 mode.  */
+          if (((newval >> T2_DATA_OP_SHIFT) & 0xf) == T2_OPCODE_ORR
+          && ARM_CPU_HAS_FEATURE (cpu_variant, arm_ext_v6t2_v8m)
+          && !((newval >> T2_SBIT_SHIFT) & 0x1)
+          && value >= 0 && value <=0xffff)
+        {
+          /* Toggle bit[25] to change encoding from T2 to T3.  */
+          newval ^= 1 << 25;
+          /* Clear bits[19:16].  */
+          newval &= 0xfff0ffff;
+          /* Encoding high 4bits imm.  Code below will encode the
+             remaining low 12bits.  */
+          newval |= (value & 0x0000f000) << 4;
+          newimm = value & 0x00000fff;
+        }
+
+This is a bit silly.  An unused ORR immediate encoding is used for
+MOV immediate.  It is a MOV instruction not an ORR.  The other took
+that mistake then expanded on it by taking the wrong instruction
+(MOV instead of ORR) and then using the T3 encoding of the wrong
+instruction to try to squeeze in more immediates.
+
+It makes no sense whatsoever of course.
+
+    hexstring(test1(0x0000));
+    hexstring(test2(0x0000));
+    hexstring(test1(0x00FE));
+    hexstring(test2(0x00FE));
+
+output
+
+00003200
+00003201
+000032FE
+00003201
+
+MOV is a MOV not an ORR.
+
+The bug was introduced in binutils 2.28
+
+The correct answer is an error
+
+test.s: Assembler messages:
+test.s:16: Error: invalid constant (3201) after fixup
+
+The ORR immediate encoding can only handle what is basically 8 bits
+moved around to some locations in a 32 bit word with the other bits
+being zeros.  0x3201   11001000000001  is 14 bits not 8, wont fit,
+game over, fix your code.  How did has the world survived this bug
+for almost a year?   Gcc knows this is not valid and doesnt produce
+it so you have to have a human do it to find it.  Gcc generates
+
+    orr r0,#0x3200
+    orr r0,#0x0001
+
+which is valid.
+
+
