@@ -1,0 +1,108 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This started off super easy then got hard then got relatively easy
+again.
+
+See the next level up files.  This example drives the clock61.kicad_pcb
+board.  This came from my kicad_fun repository.  The pdf shows what it
+is.
+
+It is a charlieplexed (wikipedia or google) clock.  60 leds in a
+circle, 9 pins that can either be high, low or floating.
+
+There are 9*8=72 combintaions of one high, one low and the others
+floating.  So up to 72 leds can be driven with 9 pins.  I needed 60 so
+8 pins is not enough.
+
+The word clock61 is on the back so in the pdf it is backward when
+looking at the pdf such that you see that word right side up but right
+to left (when I open the pdf I need to turn my head to the left)
+that is technically up when designed in the kicad_fun repo.  This
+was designed programmatically not by hand.  Using normal angles and
+sines and cosines, where zero degrees is to the right, east if you
+think about a compass.
+
+But because of how I did it that is where I define 12:00, looking at
+where the outer rings have a cutout, that is "up" as far as this
+software is concerned.  Also where the three things in the middle
+are clustered together and not spaced like the other things in the
+middle, that is up, or 12:00.
+
+Now that I have this built (I dont know if I broke something or if
+the problem had absolutely nothing to do with this board, but the
+first try at oshpark it came back with no bottom copper layer.  They
+said there was a bug in their stuff, they fixed the bug and re-built
+my board for free and did the swift service).  Time goes clockwise
+angles in geometry go counter clockwise.  When computing this I coulda/
+shoulda done something about that.  Arguably how I ended up implementing
+this it doesnt actually matter, I could have done, and somewhat
+trivially still can re-build such that the way it looks in kicad is
+up?  (maybe I will, will see).
+
+The key to my sanity and why this can be easily rotated is the
+buildheader.c program, it is a compile/build time tool that computes
+the 60 sets of register writes that turn on one specific led (and turn
+the others off).  It was also a major reason why this took hours longer
+than it should have.
+
+spinner00 for example took literally minutes to write, including the
+header builder.  It just goes around and lights one at a time pretty
+fast.
+
+The bottom line is/was that I write the gpioa mode register, I dont
+read-modify-write.  so when I go from a dumb spinner program to using
+the swd/jtag or further using the uart, these are on port a, I cant
+mess with moder.  But I did, and it drove me nuts, as soon as I touched
+the leds the uart would die.  Then had a brief moment (another hour,
+almost pitched the interrupt thing all together) where in the ISR
+I clear everthing then write based on the structure.  Well that clearing
+was mucking with the uart pins again, just for that wee bitty bit of
+code, enough to mangle the uart data some.  This being the clock01
+subdirectory, the first really working clock using this board.
+
+However oriented the pin in the very middle of the clock is pin 8
+the one to the left of it counterclockwise is pin 0 the one to the
+right clockwise is pin 7.  Pin 1 is the next pin over counterclockwise
+from pin 0 and so on around to pin 7.  So if you at it where pin 0
+goes through a resistor out to the ring of leds, for the first 8
+leds counterclockwise from there are pin0 on one side then pin 1 then
+2 then 3 then ... 7.  Then the inner led pads are pin 1 for 8 leds
+then the inner pads are pin 2, and so on so starting with that led
+that is lined up with the pin0 resistor
+
+0,1
+0,2
+0,3
+0,4
+0,5
+0,6
+0,7
+0,8
+1,0
+1,2
+1,3
+1,4
+1,5
+...
+and so on.
+
+As written for now looking at the 59 second led that is 0,2
+the 58 second is 0,3 and so on.
+
+{0x28280044,0x00000000,0x00080002,0x00000000,}, // 50 1 3
+{0x28280014,0x00000000,0x00040002,0x00000000,}, // 51 1 2
+{0x28280005,0x00000000,0x00010002,0x00000000,}, // 52 1 0
+{0x28280001,0x00000004,0x00000001,0x00020000,}, // 53 0 8
+{0x28284001,0x00000000,0x00800001,0x00000000,}, // 54 0 7
+{0x28281001,0x00000000,0x00400001,0x00000000,}, // 55 0 6
+{0x28280401,0x00000000,0x00200001,0x00000000,}, // 56 0 5
+{0x28280101,0x00000000,0x00100001,0x00000000,}, // 57 0 4
+{0x28280041,0x00000000,0x00080001,0x00000000,}, // 58 0 3
+{0x28280011,0x00000000,0x00040001,0x00000000,}, // 59 0 2
+
+0 being high and 2 being low to turn on the 59 second led.
+
+If I simply change buildheader.c then I can make any one of the
+leds the 12:00 top of the clock led.

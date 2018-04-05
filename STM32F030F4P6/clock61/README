@@ -1,0 +1,32 @@
+
+See the clock01 README for now.  This is a charlieplexed clock board
+60 leds in a circle driven by 9 pins.  One high one low and the rest
+floating can isolate and drive one led.  To have more than one led
+"on" at a time you have to blink them faster than a human can detect.
+This is not very difficult a task.
+
+The pcb is actually software created, I didnt creat this by hand
+using kicad I simply looked at the file format and wrote a program
+to generate everything, a little high school math.
+
+This file is a version 4 format kicad file which happenes to be fine
+on the computer I developed this on likewise after a problem at
+oshpark with this board and or having nothing to do with this board
+but the panel that the first one was on, they are able to build using
+this file.
+
+(kicad_pcb (version 4) (host pcbnew 4.0.7-e2-6376~58~ubuntu16.04.1)
+
+I am going to go back and change the program to build for version 3,
+so more folks can open this file with kicad, very subtle differences
+in the file format.
+
+Note I screwed up and the text clock61 was on the back copper layer
+not back silkscreen.
+
+clock01 is working!!!  I think I see an led glitch sometimes, I would
+really rather use one port not two, so if I dont use the jtag/swd
+then I can do that.  Also technically I have it oriented wrong.  Can
+fix that.
+
+
