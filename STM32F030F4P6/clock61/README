@@ -29,4 +29,6 @@ really rather use one port not two, so if I dont use the jtag/swd
 then I can do that.  Also technically I have it oriented wrong.  Can
 fix that.
 
-
+clock02 is working!!!.  spinner02 and clock02 I changed the orientation
+to be as designed when viewed in kicad.  And only uses port A, but that
+means the uart TX is consumed, no uart output for debugging.
