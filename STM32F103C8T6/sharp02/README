@@ -1,0 +1,17 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+https://www.adafruit.com/product/3502
+
+I like these sharp displays, very easy to program, very low power
+
+display stm32
+VIN     VCC
+GND     GND
+CS      PC13
+MOSI    PC14
+SCLK    PC15
+
+leave the other signals on the display off.
+
