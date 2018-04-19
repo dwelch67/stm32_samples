@@ -36,6 +36,7 @@ static const unsigned char WF_LUT[]={
 unsigned char xstring[32];
 unsigned int tim[4];
 unsigned int lasttim[4];
+unsigned int timezone;
 //------------------------------------------------------------------------
 static void clock_init ( void )
 {
@@ -116,7 +117,8 @@ static void uart_init ( void )
     ra&=~(1<<14);
     PUT32(RCCBASE+0x24,ra);
 
-    PUT32(USART1BASE+0x0C,1667);
+    //PUT32(USART1BASE+0x0C,1667); //9600 baud
+    PUT32(USART1BASE+0x0C,3333); //4800 baud
     PUT32(USART1BASE+0x08,1<<12);
     PUT32(USART1BASE+0x00,(1<<3)|(1<<2)|1);
 }
@@ -592,7 +594,9 @@ int do_nmea ( void )
                         rb=/*rb*10*/(rb<<3)+(rb<<1); //times 10
                         rb+=rc;
                         if(rb>12) rb-=12;
-                        ra=5; //time zone adjustment
+                        //ra=5; //time zone adjustment winter
+                        //ra=4; //time zone adjustment summer
+                        ra=timezone;
                         if(rb<=ra) rb+=12;
                         rb-=ra;
                         if(rb>9)
@@ -663,7 +667,6 @@ int do_nmea ( void )
             }
         }
     }
-
     return(0);
 }
 
@@ -677,6 +680,17 @@ int notmain ( void )
     clock_init();
     uart_init();
     hexstring(0x12345678);
+
+    if(GET32(0x20000100)==0x44444444)
+    {
+        timezone=5;
+        PUT32(0x20000100,0x55555555);
+    }
+    else
+    {
+        timezone=4;
+        PUT32(0x20000100,0x44444444);
+    }
 
     gpio_init();
     //epd_power(0);
@@ -804,15 +818,17 @@ int notmain ( void )
         //}
     //}
 
-    tim[0]=0;
-    tim[1]=0;
-    tim[2]=0;
-    tim[3]=0;
+    tim[0]=1;
+    tim[1]=2;
+    tim[2]=3;
+    tim[3]=4;
 
     lasttim[0]=0;
     lasttim[1]=0;
     lasttim[2]=0;
     lasttim[3]=0;
+
+    show_clock();
 
     //hexstring(0x12341234);
     do_nmea();
