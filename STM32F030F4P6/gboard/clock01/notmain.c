@@ -6,6 +6,12 @@ void dummy ( unsigned int );
 #define GPIOABASE 0x48000000
 
 #define RCCBASE     0x40021000
+#define RCC_CR      (RCCBASE+0x00)
+#define RCC_CFGR    (RCCBASE+0x04)
+#define RCC_CFGR2   (RCCBASE+0x2C)
+
+#define FLASH_BASE  0x40022000
+#define FLASH_ACR   (FLASH_BASE+0x00)
 
 #define STK_CSR     0xE000E010
 #define STK_RVR     0xE000E014
@@ -25,55 +31,44 @@ volatile unsigned int second;
 volatile unsigned int mtens;
 volatile unsigned int mones;
 volatile unsigned int counter;
+
+volatile unsigned int x;
+volatile unsigned int y;
+volatile unsigned int z;
+
 void systick_handler ( void )
 {
-    unsigned int y;
-    unsigned int x;
-    unsigned int z;
-    y=(counter>>5)&3;
-    x=(counter>>3)&3;
-    switch(y)
+    if(counter==0)
     {
-        case 0: z=hour; break;
-        case 1: z=mtens; break;
-        case 2: z=mones; break;
-        default: z=0; break;
-    }
-    switch(counter&7)
-    {
-        case 0:
+        x++;
+        if(x>3)
         {
-            PUT32(GPIOABASE+0x00,0x28200000);
-            PUT32(GPIOABASE+0x18,0x00FF0000);
-            PUT32(GPIOABASE+0x00,gbinary[y][x][0]);
-            PUT32(GPIOABASE+0x18,gbinary[y][x][1]);
-            break;
-        }
-        case 2:
-        {
-            if((z&(1<<x))==0)
+            x=0;
+            y++;
+            if(y>2) y=0;
+            switch(y)
             {
-            PUT32(GPIOABASE+0x00,0x28200000);
-            PUT32(GPIOABASE+0x18,0x00FF0000);
+                case 0: z=hour;  break;
+                case 1: z=mtens; break;
+                case 2: z=mones; break;
+                default: z=0xF; break;
             }
-            break;
         }
-        default:
+        PUT32(GPIOABASE+0x00,0x28200000);
+        PUT32(GPIOABASE+0x18,0x00FF0000);
+        PUT32(GPIOABASE+0x00,gbinary[y][x][0]);
+        PUT32(GPIOABASE+0x18,gbinary[y][x][1]);
+        if(z&(1<<x))
         {
-            break;
+            counter=20;
+        }
+        else
+        {
+            counter=1;
         }
     }
-
-
-    
-
-
-
-    counter++;
-    if(counter>=0x5F) counter=0;
+    counter--;
 }
-
-
 
 static int uart_init ( void )
 {
@@ -129,6 +124,7 @@ static int uart_init ( void )
     //PUT32(USART1BASE+0x0C,69); //115200
     //PUT32(USART1BASE+0x0C,1667); //4800
     PUT32(USART1BASE+0x0C,833); //9600
+
     PUT32(USART1BASE+0x08,1<<12);
     PUT32(USART1BASE+0x00,(0<<3)|(1<<2)|1); //not TE
 
@@ -352,16 +348,20 @@ int notmain ( void )
     uart_init();
 
     PUT32(STK_CSR,4);
-    PUT32(STK_RVR,1000-1);
+    PUT32(STK_RVR,2000-1);
     PUT32(STK_CVR,0x00000000);
 
-    counter = 0;
+    counter = 20;
     hour = 0;
     minute = 0;
     second = 0;
 
-    mtens = 0;
-    mones = 0;
+    x = 0;
+    y = 0;
+    z = 5;
+
+    mtens = 5;
+    mones = 6;
     for(ra=0;ra<6;ra++) xstring[ra]=0;
 
     PUT32(STK_CSR,7);

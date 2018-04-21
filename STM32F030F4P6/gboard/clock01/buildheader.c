@@ -15,7 +15,7 @@ unsigned char raw [3][4][2]=
     {{A,D},{B,D},{C,D},{D,C}},
 };
 
-unsigned int stuff[3][4][2];
+unsigned int stuff[4][4][2];
 
 void figure ( unsigned int y, unsigned int x, unsigned int h, unsigned int l )
 {
@@ -48,11 +48,15 @@ int main ( void )
             figure(ry,rx,raw[2-ry][3-rx][1],raw[2-ry][3-rx][0]);
         }
     }
+        for(rx=0;rx<4;rx++)
+        {
+            figure(ry,rx,raw[2][3][1],raw[2][3][0]);
+        }
 
-    printf("const unsigned int gbinary[3][4][2]=\n");
+    printf("const unsigned int gbinary[4][4][2]=\n");
     printf("{\n");
 
-    for(ry=0;ry<3;ry++)
+    for(ry=0;ry<4;ry++)
     {
         printf("{");
         for(rx=0;rx<4;rx++)

@@ -18,14 +18,14 @@ clean:
 #---------------------------------
 
 
-twostuff.h : buildheader.c
+gbinary.h : buildheader.c
 	gcc buildheader.c -o buildheader
-	./buildheader > twostuff.h
+	./buildheader > gbinary.h
 
 flash.o : flash.s
 	$(ARMGNU)-as $(AOPS) flash.s -o flash.o
 
-notmain.o : notmain.c twostuff.h
+notmain.o : notmain.c gbinary.h
 	$(ARMGNU)-gcc $(COPS) -mthumb -mcpu=cortex-m0 -march=armv6-m -c notmain.c -o notmain.o
 
 notmain.bin : flash.ld flash.o notmain.o
