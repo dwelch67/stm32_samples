@@ -42,7 +42,7 @@ int notmain ( void )
 /*
 
 halt
-flash write_image erase uboard/blinker01.elf
+flash write_image erase uboard/blinker01/blinker01.elf
 reset
 
 */
