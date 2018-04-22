@@ -1,0 +1,16 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+
+so based on clock01, so far the best README in this clock61 directory
+
+changed the orientation so it matches how it looks in kicad.
+
+changed it to use pa0 through pa7 and pa9, so they are all on the same
+port.
+
+This means no uart tx.  And so use the swd/jtag to program the part.
+
+Should have and may still go back and re-do all of these examples with
+the as designed orientation and only using one port.
