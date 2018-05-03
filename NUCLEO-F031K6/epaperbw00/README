@@ -1,0 +1,58 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This example uses the spi interface with a Nokia 5110 display, these
+are probably all recycled from old phones, who knows.  There seems
+to be a large quantity of the out there.
+
+https://www.sparkfun.com/products/10168
+http://www.adafruit.com/products/338
+
+I got 5 of them on ebay for $13 with pins.
+
+   USB
+
+PA9     VIN
+PA10    GND
+NRST    NRST
+GND     +5V
+PA12    PA2
+PB0     PA7
+PB7     PA6
+PB6     PA5
+PB1     PA4
+PF0     PA3
+PF1     PA1
+PA8     PA0
+PA11    AREF
+PB5     +3V3
+PB4     PB3
+
+
+PA7 DIN
+PA5 CLK
+PA4 CS
+PA3 DC
+PA1 RST
+PA0 BUSY
+
+GND GND
+VCC VCC
+
+
+Not something you want to update all that often.  Blinks when updating.
+
+The display is considered 296 tall and 128 wide, so wires up portrait
+the data starts top left, the msbit of the first byte is the inverse
+of the top left pixel.  Each byte goes across the top, 16 bytes across
+then row 2 and so on.  So in landscape, wires left the first bit is the
+bottom left and you draw up then to the right.
+
+Seem to be patterns that upset it, not sure why.  It seems so far
+like the even and odd rows need to be the same so instead of 296 by
+128 think 148 by 128.
+
+The LUT is something magic from them...
+
+
