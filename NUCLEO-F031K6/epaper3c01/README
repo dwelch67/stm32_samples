@@ -4,7 +4,7 @@ information.
 
 This example uses the spi interface with a three color epaper display
 
-https://www.waveshare.com/wiki/1.54inch_e-Paper_Module_(B)
+http://www.waveshare.com/wiki/1.54inch_e-Paper_Module_(B)
 
 I did learn from their example programs in order to create this program.
 They do not document the LUT data.
