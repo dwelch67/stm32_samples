@@ -2,14 +2,12 @@
 See the previous level README for schematic and programmers reference
 information.
 
-This example uses the spi interface with a Nokia 5110 display, these
-are probably all recycled from old phones, who knows.  There seems
-to be a large quantity of the out there.
+This example uses the spi interface with a two color epaper display
 
-https://www.sparkfun.com/products/10168
-http://www.adafruit.com/products/338
+https://www.waveshare.com/wiki/2.9inch_e-Paper_Module
 
-I got 5 of them on ebay for $13 with pins.
+I did learn from their example programs in order to create this program.
+They do not document the LUT data.
 
    USB
 
