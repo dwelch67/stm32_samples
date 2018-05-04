@@ -1,0 +1,44 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This example uses the spi interface with a three color epaper display
+
+http://www.waveshare.com/wiki/2.9inch_e-Paper_Module_(B)
+
+I did learn from their example programs in order to create this program.
+They do not document the LUT data.
+
+   USB
+
+PA9     VIN
+PA10    GND
+NRST    NRST
+GND     +5V
+PA12    PA2
+PB0     PA7
+PB7     PA6
+PB6     PA5
+PB1     PA4
+PF0     PA3
+PF1     PA1
+PA8     PA0
+PA11    AREF
+PB5     +3V3
+PB4     PB3
+
+
+PA7 DIN
+PA5 CLK
+PA4 CS
+PA3 DC
+PA1 RST
+PA0 BUSY
+
+GND GND
+VCC VCC
+
+Unlike the 1.54 inch three color the interface is a bit easier to program
+but...it blinks forever getting the image there.  It is nice to not
+to have to program twice the number of pixels for the black layer.
+
