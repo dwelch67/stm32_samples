@@ -1,0 +1,53 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This example uses the spi interface with a two color epaper display
+
+http://www.waveshare.com/wiki/1.54inch_e-Paper_Module
+
+I did learn from their example programs in order to create this program.
+They do not document the LUT data.  The 2.9 and the 1.54 two color
+(black and white) program the same way but with different dimensions.
+
+   USB
+
+PA9     VIN
+PA10    GND
+NRST    NRST
+GND     +5V
+PA12    PA2
+PB0     PA7
+PB7     PA6
+PB6     PA5
+PB1     PA4
+PF0     PA3
+PF1     PA1
+PA8     PA0
+PA11    AREF
+PB5     +3V3
+PB4     PB3
+
+
+PA7 DIN
+PA5 CLK
+PA4 CS
+PA3 DC
+PA1 RST
+PA0 BUSY
+
+GND GND
+VCC VCC
+
+
+Blinks when updating, for some reason they want you to do it twice.
+
+The display is considered 200 tall and 200 wide, so wires up portrait
+the data starts top left, the msbit of the first byte is the inverse
+of the top left pixel.  Each byte goes across the top, 25 bytes across
+then row 2 and so on.  So in landscape, wires left the first bit is the
+bottom left and you draw up then to the right.
+
+The LUT is something magic from them...
+
+
