@@ -196,8 +196,8 @@ static void SDA_INPUT ( void )
 {
     unsigned int ra;
     ra=GET32(GPIOA_MODER);
-    ra&=~(3<<(SDA<<1)); 
-    //ra|= (1<<(SDA<<1)); 
+    ra&=~(3<<(SDA<<1));
+    //ra|= (1<<(SDA<<1));
     PUT32(GPIOA_MODER,ra);
     DELAY();
 }
@@ -207,7 +207,7 @@ static void SDA_OUTPUT ( void )
     unsigned int ra;
     ra=GET32(GPIOA_MODER);
     ra&=~(3<<(SDA<<1)); //dont need this
-    ra|= (1<<(SDA<<1)); 
+    ra|= (1<<(SDA<<1));
     PUT32(GPIOA_MODER,ra);
     DELAY();
 }
@@ -271,7 +271,7 @@ static unsigned int READ_BYTE ( void )
 static unsigned int READ_REGISTER ( unsigned int sadd, unsigned int x)
 {
     unsigned int rc;
-    
+
     START();
     WRITE_BYTE(sadd|0);
     WRITE_BYTE(x);
@@ -388,25 +388,25 @@ int notmain ( void )
     PUT32(RCCBASE+0x14,ra);
     //moder
     ra=GET32(GPIOA_MODER);
-    ra&=~(3<<(SCL<<1)); 
-    ra&=~(3<<(SDA<<1)); 
-    ra|= (1<<(SCL<<1)); 
-    ra|= (1<<(SDA<<1)); 
+    ra&=~(3<<(SCL<<1));
+    ra&=~(3<<(SDA<<1));
+    ra|= (1<<(SCL<<1));
+    ra|= (1<<(SDA<<1));
     PUT32(GPIOA_MODER,ra);
     //OTYPER
     ra=GET32(GPIOA_OTYPER);
-    ra&=~(1<<SCL); 
-    ra&=~(1<<SDA); 
+    ra&=~(1<<SCL);
+    ra&=~(1<<SDA);
     PUT32(GPIOA_OTYPER,ra);
     ////ospeedr
     //ra=GET32(GPIOA_OSPEEDR);
-    //ra|= (3<<(SCL<<1)); 
-    //ra|= (3<<(SDA<<1)); 
+    //ra|= (3<<(SCL<<1));
+    //ra|= (3<<(SDA<<1));
     //PUT32(GPIOA_OSPEEDR,ra);
     //pupdr
     ra=GET32(GPIOA_PUPDR);
-    ra&=~(3<<(SCL<<1)); 
-    ra&=~(3<<(SDA<<1)); 
+    ra&=~(3<<(SCL<<1));
+    ra&=~(3<<(SDA<<1));
     ra|= (1<<(SDA<<1));  //PULL UP
     PUT32(GPIOA_PUPDR,ra);
 
@@ -428,7 +428,7 @@ int notmain ( void )
     {
         ra=READ_REGISTER(sadd,0);
         hexstrings(ra); hexstrings(ra>>4);
-        if(ra&0x800)
+        if(ra&0x8000)
         {
             temp=0;
         }
@@ -442,8 +442,9 @@ int notmain ( void )
             temp=base_ten(rb);
         }
         hexstring(temp);
+        for(ra=0;ra<0x80000;ra++) dummy(ra);
     }
-   
+
     return(0);
 }
 //------------------------------------------------------------------------
