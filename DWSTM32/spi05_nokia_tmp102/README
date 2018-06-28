@@ -1,0 +1,46 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+For I2C bit banging is used, for SPI the hardware peripheral is used.
+
+I have one of each of these
+
+https://www.sparkfun.com/products/10168
+https://www.sparkfun.com/products/13314
+
+Can get them from china on ebay for much less, but can take a while
+to get here.
+
+      GND TX RX VCC
+
+BOOT0                SWCLK
+PF0                  SWDIO
+PF1                  RX
+NRST                 TX
+VDDA                 VCC
+PA0 SCL              GND
+PA1 SDA              PB1
+PA2                  PA7       MOSI
+PA3                  PA6       MISO
+PA4 (led) NSS        PA5 (led) SCK
+
+STM32 to Nokia 5110 display connections
+
+PA7 DIN
+PA5 CLK
+PA4 CE
+PA3 D/C
+GND GND
+VCC VCC
+RST RST
+
+STM32 to TMP102
+
+PA0 SCL
+PA1 SDA
+GND GND
+VCC VCC
+
+Turned out to only take a couple of minutes to merge two examples
+into this temperature display.
