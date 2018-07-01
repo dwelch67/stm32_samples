@@ -328,3 +328,71 @@ wires).
 Note you either need to use -c "transport select swd" on the command
 line openocd -f jlink.cfg -c "transport select swd" -f target.cfg
 or as I have done here add that line to jlink.cfg
+
+UPDATE.  Been a long while since I updated this.  First off there
+are some purple j-link boards on ebay that work great.
+
+Search for things like swd jlink without the dash in it.  or SJMCU
+jlink, etc.  Currently around $6.
+
+We can take advantage of a bootloader made for this chip/board,
+you need to use one of the methods above once (uart or swd) to
+program the binary file below (address 0x08000000).
+
+Project
+https://github.com/rogerclarkmelbourne/STM32duino-bootloader
+binary (Select View Raw to download)
+https://github.com/rogerclarkmelbourne/STM32duino-bootloader/blob/master/binaries/generic_boot20_pc13.bin
+
+Then if you move the boot1 jumper to 1 (the jumper closest to the
+reset button away from the usb connector), and press reset or power
+cycle then it will go into a bootloader that supports dfu.  The PC13
+led will blink.
+
+dfu-util --list
+dfu-util 0.8
+
+Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.
+Copyright 2010-2014 Tormod Volden and Stefan Schmidt
+This program is Free Software and has ABSOLUTELY NO WARRANTY
+Please report bugs to dfu-util@lists.gnumonks.org
+
+Found DFU: [1eaf:0003] ver=0201, devnum=33, cfg=1, intf=0, alt=2, name="STM32duino bootloader v1.0  Upload to Flash 0x8002000", serial="LLM 003"
+Found DFU: [1eaf:0003] ver=0201, devnum=33, cfg=1, intf=0, alt=1, name="STM32duino bootloader v1.0  Upload to Flash 0x8005000", serial="LLM 003"
+Found DFU: [1eaf:0003] ver=0201, devnum=33, cfg=1, intf=0, alt=0, name="STM32duino bootloader v1.0  ERROR. Upload to RAM not supported.", serial="LLM 003"
+
+So if we use alt=2 we can load programs at 0x08002000, so I am starting
+to add a flashdfu.ld file and an additional set of binary files that
+can be used
+
+dfu-util -a 2 -D blinker01/blinker01.thumb.dfu.bin
+dfu-util 0.8
+
+Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.
+Copyright 2010-2014 Tormod Volden and Stefan Schmidt
+This program is Free Software and has ABSOLUTELY NO WARRANTY
+Please report bugs to dfu-util@lists.gnumonks.org
+
+dfu-util: Invalid DFU suffix signature
+dfu-util: A valid DFU suffix will be required in a future dfu-util release!!!
+Opening DFU capable USB device...
+ID 1eaf:0003
+Run-time device DFU version 0110
+Claiming USB DFU Interface...
+Setting Alternate Setting #2 ...
+Determining device status: state = dfuIDLE, status = 0
+dfuIDLE, continuing
+DFU mode device DFU version 0110
+Device returned transfer size 1024
+Copying data from PC to DFU device
+Download    [=========================] 100%          204 bytes
+Download done.
+state(8) = dfuMANIFEST-WAIT-RESET, status(0) = No error condition is present
+Done!
+
+If you move the boot1 jumper back or remove it then press reset or
+power cycle.  The dfu bootloader will start first, do some fast blinks
+then it will run our program (blinker01).
+
+Move boot1 back to 1 press reset and try again.  Allows for programming
+these boards without other special tools.  Except the one time.
