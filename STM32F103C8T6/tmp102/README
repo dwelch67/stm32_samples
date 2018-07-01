@@ -1,0 +1,17 @@
+
+See the top level README for documentation and schematics for this board.
+
+Got a TMP102 breakout from sparkfun.  Very very simple I like it much
+better than others.
+
+0.0625C per bit is 0.1125F per bit  which is 7373/0x10000
+so multiply by 7373 and shift right 16 then add the 32
+F = ((9/5)*C)+32
+
+You like my long division, works great.
+
+SCL on PA0
+SDA on PA1
+
+as written can see output on PA9 115200
+
