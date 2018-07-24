@@ -36,8 +36,8 @@ you can certainly use an SWD Jtag solution like an stlink.
 
 BOOT0                SWCLK
 PF0                  SWDIO
-PF1                  RX
-NRST                 TX
+PF1                  RX (USB D+)
+NRST                 TX (USB D-)
 VDDA                 VCC
 PA0                  GND
 PA1                  PB1
