@@ -112,3 +112,35 @@ a quarter the size.  Using the same leds and resistors I used on the
 stm32 board.
 
 
+For parts like the STM32F042F4P6 which has usb you can connect as
+above (USB D+/-) and use dfu-util (use boot0 to reset into the
+bootloader).
+
+
+dfu-util -a 0 -s 0x08000000 -D blinker01/blinker01.gcc.thumb.flash.bin
+
+
+Opening DFU capable USB device...
+ID 0483:df11
+Run-time device DFU version 011a
+Claiming USB DFU Interface...
+Setting Alternate Setting #0 ...
+Determining device status: state = dfuERROR, status = 10
+dfuERROR, clearing status
+Determining device status: state = dfuIDLE, status = 0
+dfuIDLE, continuing
+DFU mode device DFU version 011a
+Device returned transfer size 2048
+DfuSe interface name: "Internal Flash  "
+Downloading to address = 0x08000000, size = 264
+Download	[=========================] 100%          264 bytes
+Download done.
+File downloaded successfully
+
+
+Then reset with boot0 set for application...
+
+
+
+
+
