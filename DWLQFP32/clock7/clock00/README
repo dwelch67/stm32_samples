@@ -1,0 +1,30 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+
+port 3 bits for seven segment lcd.
+
+ 555
+6   4
+6   4
+6   4
+ 777
+0   2
+0   2
+0   2
+ 111  3
+
+green
+Mouser 630-HDSP-513G
+Mfg        HDSP-513G
+
+red
+Mouser 630-HDSP-513E
+Mfg        HDSP-513E
+
+PB4 ground for first left segment
+PB5 ground for second
+PB6 ground for third
+PB7 ground for fourth rightmost segment
+

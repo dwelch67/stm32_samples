@@ -1,0 +1,86 @@
+
+Need to use SWD to program this board, if you search for
+
+SWD JLINK
+
+on ebay, its a purple board with a mini-b usb on one end and four
+pins sticking out the other under the pins labelled
+
+TVCC
+GND
+SWDCLK
+SWDIO
+
+Currently a little over $5
+
+Plus some jumper wires, female to female. Search for
+
+jumper wire f/f
+
+Under $2 currently for 40 of them.
+
+The SWD board does not power the mcu board TVCC is a monitor,
+
+SWD  MCU board
+
+TVCC    VCC
+GND     GND
+SWDCLK  CLK
+SWDIO   DIO
+
+I make no claim to be an expert at pcb design, I cheated and took
+shortcuts.  A real design should have more R's and C's at a minimum,
+and then go from there.  But these function well enough for me.
+
+Simple seven segment display board, common cathode.
+
+Looking at the display, 8 pins on the left
+
+0 PA7
+1 PA6
+2 PA5
+3 PA4
+4 PA3
+5 PA2
+6 PA1
+7 PA0
+
+right side is the grounds from the top
+
+0 PB4
+1 PB5
+2 PB6
+3 PB7
+
+Specifically I used these parts
+
+HDSP-513G (green)
+HDSP-513E (red)
+
+I used 750Ohm resistors, I didnt want this too bright, built one with
+130ohm to be a little brighter for a lit room.
+
+MCU board.
+
+The mcu from this directory tree
+STM32F030K6T6
+
+MTK3339 PA6H gps receiver.  I think it is called the ladybird 1 I usually
+only need to search for PA6H GPS.  9600 baud.
+
+Voltage regulator
+AP2112K-3.3TRG1
+and the caps its datasheet calls out, I think 1.0uf
+
+Wurth 61400413321 usb connector.
+USB B is way overkill, but...they are easy to hand solder and cheap (enough).
+
+Dont need the reset pull up resistor.  The boot0 pull down 4.7K or 10K
+or whatever your preference is.
+
+Standard sized header pins.  0.254mm which is 0.1 inch pitch?  If you
+dont want to hard solder these together, then get a male and female
+set I soldered mine to each other with enough spacing to not short out
+and to be able to build an enclosure and mount.
+
+I have my boards built at oshpark.  YMMV
