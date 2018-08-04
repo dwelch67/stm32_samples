@@ -42,8 +42,8 @@ configured with the PB1 pin sinking not sourcing.
 06 PA0          27 PB4
 07 PA1          26 PB3
 08 PA2          25 PA15
-09 PA3          24 PA14
-10 PA4          23 PA13
+09 PA3          24 PA14  SWCLK
+10 PA4          23 PA13  SWDIO
 11 PA5          22 PA12
 12 PA6          21 PA11
 13 PA7          20 PA10  USART1_RX
