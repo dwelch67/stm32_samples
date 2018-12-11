@@ -290,6 +290,7 @@ static int do_nmea ( void )
                     num[2]=(mph>>4)&0xF;
                     num[3]=(mph>>0)&0xF;
                 }
+                state=0;
                 break;
             }
         }
