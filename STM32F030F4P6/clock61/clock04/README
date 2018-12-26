@@ -1,0 +1,13 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+so based on clock03, so far the best README in this clock61 directory
+
+Uses pa0 through 7 and pa9, so no uart tx.  Not sure why yet but the
+high interrupt rate was causing uart reception problems, perhaps
+no fifo or I didnt enable it.  Bumping the internal clock to 48 from
+8 allows this to work.  Less time in the isr, isr rate relative to
+number of clocks can go way down.
+
+
