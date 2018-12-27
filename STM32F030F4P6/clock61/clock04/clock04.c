@@ -20,8 +20,23 @@ void dummy ( unsigned int );
 #define FLASH_BASE       0x40022000
 #define FLASH_ACR  (FLASH_BASE+0x00)
 
-
 #include "twostuff.h"
+
+static const unsigned char fives[60]=
+{
+    2,1,1,1,1,
+    2,1,1,1,1,
+    2,1,1,1,1,
+    2,1,1,1,1,
+    2,1,1,1,1,
+    2,1,1,1,1,
+    2,1,1,1,1,
+    2,1,1,1,1,
+    2,1,1,1,1,
+    2,1,1,1,1,
+    2,1,1,1,1,
+    2,1,1,1,1,
+};
 
 static unsigned char xstring[32];
 
@@ -39,9 +54,9 @@ void systick_handler ( void )
         PUT32(GPIOABASE+0x18,0x00FF0000);
         PUT32(GPIOABASE+0x00,twostuff[sec][0]);
         PUT32(GPIOABASE+0x18,twostuff[sec][1]);
-        counter=1;
-        if(sec==second) counter=5;
-        if(sec==minute) counter=10;
+        counter=fives[sec];
+        if(sec==second) counter=10;
+        if(sec==minute) counter=15;
         if(sec==hour) counter=60;
     }
     counter--;
@@ -107,7 +122,7 @@ static void clock_init ( void )
         ra=GET32(RCC_CFGR);
         if((ra&3)==2) break;
     }
- 
+
 }
 
 
@@ -398,7 +413,7 @@ int notmain ( void )
     uart_init();
 
     PUT32(STK_CSR,4);
-    PUT32(STK_RVR,10000-1);
+    PUT32(STK_RVR,8000-1);
     PUT32(STK_CVR,0x00000000);
 
     counter = 0;
