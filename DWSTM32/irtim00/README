@@ -1,0 +1,43 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+I probably tried this elsewhere.  You shouldnt use JTAG/SWD for this
+one as PA13 is used.
+
+Ideally I need a part with PB9 and the high drain, but PA13 also
+has IR_OUT.
+
+This is my first experiment with the IRTIM timer.  It ands TIM16 and
+TIM17 outputs so you can use one of them as a carrier and the other
+as data for infrared, think TV remote control stuff.  Normally the
+carrier is near 40KHz, but this one was done slower so we could visually
+see it working.
+
+
+    PUT16(TIM17_PSC,0x10-1); 
+    PUT16(TIM17_ARR,0x7A12);
+    PUT16(TIM17_CCR1,0x7A12);
+
+The carrier is at 0x7A120 or 500,000 ticks
+8000000/500000 = 16
+16 blinks a second.
+It is likely 0x7A130 as it counts from 0x0000 to 0x7A12 but not sure
+will have to put it on a scope.
+
+    PUT16(TIM16_PSC,0x1000-1);
+    PUT16(TIM16_ARR,0x2000);
+    
+0x2000000 / 8000000 = 4.19 seconds.
+
+So compared to ground IR_OUT blinks at 16 times a second for 4.19 seconds
+then it goes solid high, for 4.19 seconds, then blinks then solid, etc.
+
+The next step is to get the carrier closer to 40Khz put an ir led on
+it, set up an ir receiver and see what we see.  Check on a scope, then
+after that use an ir protocol to transmit something.
+
+I dont know what the blank they were doing with the example in the
+reference manual.  The carrier was not an even rate.  And the envelope
+side was not enabled.
+
