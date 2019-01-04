@@ -81,8 +81,8 @@ if(1)
 
     //carrier
     PUT16(TIM17_PSC,0);
-    PUT16(TIM17_ARR,210);
-    PUT16(TIM17_CCR1,210);
+    PUT16(TIM17_ARR,210/2);
+    PUT16(TIM17_CCR1,210/2);
     PUT16(TIM17_CCMR1,(3<<4)|(1<<3));
     PUT16(TIM17_CCER,(1<<0));
     PUT16(TIM17_BDTR,(1<<15));
