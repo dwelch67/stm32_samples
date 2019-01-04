@@ -1,0 +1,59 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+A couple of resources for codes, I have been using the sbprojects
+one for some time now.
+
+http://www.vishay.com/docs/80071/dataform.pdf
+http://www.sbprojects.com/knowledge/ir/
+
+Using a simple ir reciver module
+
+http://www.sparkfun.com/products/10266
+
+for this one
+
+facing bump pins down 1 2 3
+1 out
+2 gnd
+3 vcc
+
+note that not all modules have the same pinout, get it wrong and you
+let smelly smoke out.
+
+This example takes the out signal from the receiver and basically
+shows it on the led.  Your sensor may or may not invert, so with the
+above, the led is off normally and blinks when there is the right kind
+of ir (tv/etc remote controls).
+
+   USB
+
+PA9     VIN
+PA10    GND
+NRST    NRST
+GND     +5V
+PA12    PA2
+PB0     PA7
+PB7     PA6
+PB6     PA5
+PB1     PA4
+PF0     PA3
+PF1     PA1
+PA8     PA0
+PA11    AREF
+PB5     +3V3
+PB4     PB3
+
+PA0  out
+GND  gnd
++3V3 vcc
+
+
+This is not a complete REC5 receiver, but provides enough information
+to figure the codes out by hand.
+
+
+
+
+
