@@ -1,0 +1,78 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Bought some TM1637 based seven segment displays.  The TM1637 is a
+generic display controller, but there are displays with 4 digits
+and a colon for sale at amazon and ebay and other usual places.
+
+Four connections on the display GND, 5V, CLK, DIO so far it works with
+3.3V for power and signals.
+
+   USB
+
+PA9     VIN
+PA10    GND    GND
+NRST    NRST
+GND     +5V
+PA12    PA2
+PB0     PA7
+PB7     PA6
+PB6     PA5
+PB1     PA4
+PF0     PA3
+PF1     PA1    CLK
+PA8     PA0    DIO
+PA11    AREF
+PB5     +3V3   hook to 5V (works with 3.3v instead of 5V)
+PB4     PB3
+
+PA0  out
+GND  gnd
++3V3 vcc
+
+ AAA
+F   B
+F   B
+F   B
+ GGG
+E   C
+E   C
+E   C
+ DDD
+
+ GFE DCBA
+0011 1111  0  0x3F
+0000 0110  1  0x06
+0101 1011  2  0x5D
+0100 1111  3  0x4F
+0110 0110  4  0x66
+0110 1101  5  0x6D
+0111 1101  6  0x7D
+0000 0111  7  0x07
+0111 1111  8  0x7F
+0110 1111  9  0x6F
+
+set bit 8 on second digit to light the colon.
+0x06, 0x5D 0x4F, 0x66 colon off
+0x06, 0xDD 0x4F, 0x66 colon on
+
+
+0x40 by itself to say write data to display register
+command 1 in datasheet.
+
+0xC0 to set display address from beginning
+command 2 in datasheet
+data for first  segment
+data for second segment
+data for third  segment
+data for fourth segment
+
+dont have to do command 3 every time, just once up front is fine.
+
+0x88 least bright 1/16th pulse width
+0x8F most bright 14/16ths pulse width
+
+
+
+
