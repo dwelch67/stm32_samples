@@ -1,0 +1,6 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Uses pa0 through 8, I dont know why the high clock rate is required
+still sorting that out.
