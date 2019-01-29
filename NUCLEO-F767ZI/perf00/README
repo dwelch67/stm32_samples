@@ -1,0 +1,40 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This is in direct response to a claim and a stackoverflow question
+as a response.  ARM states:
+
+In an error-free system, the major performance impact is the cost of
+the read-modify-write scheme for non-full stores in the data side. If
+a store buffer slot does not contain at least a full 32-bit word, it
+must read the word to be able to compute the check bits. This can occur
+because software only writes to an area of memory with byte or halfword
+store instructions. The data can then be written in the RAM. This
+additional read can have a negative impact on performance because it
+prevents the slot from being used for another write.
+
+The buffering and outstanding capabilities of the memory system mask
+part of the additional read, and it is negligible for most codes.
+However, ARM recommends that you use as few cacheable STRB and STRH
+instructions as possible to reduce the performance impact.
+
+For the cortex-m7.
+
+The srams in the cache (as likely elsewhere as this happens with the
+cache off too), the memories that are the building blocks of the
+cache, are 32 bits plus optional ecc wide.  So in order to write
+a byte that based on write policy lands in the cache, the word width
+item in the cache data sram needs to be read, the bytes in question
+modified and the word plus optional ecc written.  This is a minimum
+of two clock cycles and can be more depending on the design.  Where
+a full width/word write does not need the read, so it can write
+to the sram in a minimum of one clock cycle.  As to the specific
+design is up to ARM and I have no visibility into that, but know that
+you might have some extra clocks if you do byte or halfword writes
+vs word and you bunch them up to the point that the system backpressures
+the processor.
+
+We can see that here, when you put a bunch of writes together back
+to back we get held off.  If you space them out then the extra clocks
+are buried in the noise and we wont see them.
