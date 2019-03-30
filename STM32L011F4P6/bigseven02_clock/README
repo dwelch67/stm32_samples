@@ -1,0 +1,32 @@
+
+This works in combination with
+
+STM32F042K6T6/forward00
+
+
+
+
+
+LCD-S101D14TR or similar.
+
+
+ aaa
+f   b
+f   b
+f   b
+ ggg
+e   c
+e   c
+e   c
+ ddd
+
+{"abcdef"}, //0
+{"bc"}, //1
+{"abged"}, //2
+{"abgcd"}, //3
+{"fbgc"}, //4
+{"afgcd"}, //5
+{"afgcde"}, //6
+{"abc"}, //7
+{"abcdefg"}, //8
+{"abcfg"}, //9
