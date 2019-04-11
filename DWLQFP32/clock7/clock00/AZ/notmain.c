@@ -307,22 +307,38 @@ int notmain ( void )
     unsigned int ra;
     unsigned int rb;
 
-    timezone=4;
-    rb=0x44444444;
+
+    timezone=0;
+    rb=0;
     ra=GET32(0x20000D00);
-    if(ra==0x44444444)
+    switch(ra)
     {
-        timezone=5;
-        rb=0x55555555;
-    }
-    else
-    if(ra==0x55555555)
-    {
-        timezone=4;
-        rb=0x44444444;
+        case 0x44444444:
+        {
+            timezone=5;
+            rb=0x55555555;
+            break;
+        }
+        case 0x55555555:
+        {
+            timezone=7;
+            rb=0x77777777;
+            break;
+        }
+        case 0x77777777:
+        {
+            timezone=4;
+            rb=0x44444444;
+            break;
+        }
+        default:
+        {
+            timezone=7;
+            rb=0x77777777;
+            break;
+        }
     }
     PUT32(0x20000D00,rb);
-
 
     ra=GET32(RCC_BASE+0x14);
     ra|=1<<17; //enable port A
@@ -366,7 +382,7 @@ int notmain ( void )
 /*
 
 reset halt
-flash write_image erase clock00/notmain.elf
+flash write_image erase clock00/AZ/notmain.elf
 reset
 
 */
