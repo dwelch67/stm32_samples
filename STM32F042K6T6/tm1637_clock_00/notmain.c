@@ -151,7 +151,7 @@ static int uart_init ( void )
     ra|=1<<14; //enable USART1
     PUT32(RCCBASE+0x18,ra);
 
-    //PA9  UART1_TX NOT USING THIS, NEED IT FOR A GPIO
+    //PA9  UART1_TX
     //PA10 UART1_RX
 
     //moder 10
@@ -194,7 +194,7 @@ static int uart_init ( void )
     //PUT32(USART1BASE+0x0C,1667); //4800
     PUT32(USART1BASE+0x0C,833); //9600
     PUT32(USART1BASE+0x08,1<<12);
-    PUT32(USART1BASE+0x00,(1<<3)|(1<<2)|1); //not TE
+    PUT32(USART1BASE+0x00,(1<<3)|(1<<2)|1);
 
     return(0);
 }
@@ -204,8 +204,6 @@ static unsigned int uart_recv ( void )
     while(1) if((GET32(USART1BASE+0x1C))&(1<<5)) break;
     return(GET32(USART1BASE+0x24));
 }
-
-const unsigned char mod3[16]={0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,0};
 
 //$GPRMC,000143.00,A,4030.97866,N,07955.13947,W,0.419,,020416,,,A*6E
 
@@ -224,6 +222,7 @@ static int do_nmea ( void )
     unsigned int sum;
     unsigned int savesum;
     unsigned int xsum;
+    unsigned int validity;
     unsigned int num[4];
     unsigned char xstring[32];
 
@@ -234,12 +233,13 @@ static int do_nmea ( void )
     sum=0;
     savesum=0;
     xsum=0;
+    validity=0;
     while(1)
     {
         ra=uart_recv();
         //uart_send(ra);
         //uart_send(0x30+state);
-        //PUT32(USART1BASE+0x28,ra);
+        PUT32(USART1BASE+0x28,ra);
 
         if(ra!='*') sum^=ra;
 
@@ -266,19 +266,19 @@ static int do_nmea ( void )
             }
             case 3:
             {
-                if(ra=='G') state++;
+                if(ra=='R') state++;
                 else state=0;
                 break;
             }
             case 4:
             {
-                if(ra=='G') state++;
+                if(ra=='M') state++;
                 else state=0;
                 break;
             }
             case 5:
             {
-                if(ra=='A') state++;
+                if(ra=='C') state++;
                 else state=0;
                 break;
             }
@@ -344,8 +344,13 @@ static int do_nmea ( void )
                 }
                 break;
             }
-            //could check for A vs V here...
             case 8:
+            {
+                if(ra=='A') validity=1;
+                else validity=0;
+                state++;
+            }
+            case 9:
             {
                 if(ra=='*')
                 {
@@ -354,14 +359,14 @@ static int do_nmea ( void )
                 }
                 break;
             }
-            case 9:
+            case 10:
             {
                 if(ra>0x39) ra-=0x37;
                 xsum=(ra&0xF)<<4;
                 state++;
                 break;
             }
-            case 10:
+            case 11:
             {
                 if(ra>0x39) ra-=0x37;
                 xsum|=(ra&0xF);
@@ -371,7 +376,10 @@ static int do_nmea ( void )
                     num[1]=led_table[xstring[1]&0xF];
                     num[2]=led_table[xstring[2]&0xF];
                     num[3]=led_table[xstring[3]&0xF];
-                    if(xstring[5]&1) num[1]|=0x80;
+                    if(validity)
+                    {
+                        if(xstring[5]&1) num[1]|=0x80;
+                    }
 
                     cd_start();
                     cd_byte(0x40);
@@ -469,7 +477,14 @@ int notmain ( void )
     cd_stop();
 
     cd_start();
-    cd_byte(0x88);
+    if(1)
+    {
+        cd_byte(0x88);//pulse width 1/16 (dim)
+    }
+    else
+    {
+        cd_byte(0x8F);//pulse width 14/16 (bright)
+    }
     cd_stop();
 
     uart_init();
