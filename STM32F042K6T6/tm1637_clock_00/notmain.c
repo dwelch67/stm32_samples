@@ -376,9 +376,15 @@ static int do_nmea ( void )
                     num[1]=led_table[xstring[1]&0xF];
                     num[2]=led_table[xstring[2]&0xF];
                     num[3]=led_table[xstring[3]&0xF];
+                    //herky jerky
+                    //if(validity)
+                    //{
+                        //if(xstring[5]&1) num[1]|=0x80;
+                    //}
+                    //just have the colon show validity state
                     if(validity)
                     {
-                        if(xstring[5]&1) num[1]|=0x80;
+                        num[1]|=0x80;
                     }
 
                     cd_start();
