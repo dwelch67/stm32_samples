@@ -1,0 +1,7 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This was written for the stm32fun.kicad_pcb board.
+
+PA0 - PA7 have leds.
