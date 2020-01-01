@@ -1,0 +1,7 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Derived from uart01.  This takes what it receives from rx and
+echos it out tx.
+
