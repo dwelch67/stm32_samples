@@ -1,0 +1,18 @@
+
+See the top level README for schematic and programmers reference information.
+
+This expands on the blinker01 example by using a timer in the cortex-m.
+
+This cortex-m4 has a system timer in the arm core itself, one that is
+very simple to use.
+
+This is actually two examples in one.  The first example blinks 5 times
+watching one bit in the timer change, just to see that it works, the
+second is more interesting.  There is an internal clock source HSI, we
+assume the chip comes up using that clock.  The reference manual
+says that this clock is 16MHz.  Assuming the systick timer runs off
+of that clock without a divisor then if we count to 16 million then
+that should be one second.  Count to 16 million N times that should
+be N seconds.  The second loop, turns the led on for 10 seconds then
+off for one.  Use a stop watch or watch or other reference to see
+that this is the case.
