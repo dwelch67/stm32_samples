@@ -1,0 +1,100 @@
+
+There is a board called the blue pill or stm32 blue pill using
+an STM32F103C8T6.  And then some folks starting making them using
+black pcbs instead of blue, calling them black pills.  And then an
+stm32f4 discovery clones made with black pcbs and now this new
+stm32 black pill based on the STM32F401CCU6
+
+This is about the latter STM32F401CCU6 based black pill.
+
+Google STM32F4 black pill, they are a few bucks from asia.  Mine
+was $9 on Amazon.  Has a usb-c connector and comes with pins, some
+soldering required if you want to use them.  Can do lots of good
+learning without those pins though.
+
+
+lsusb shows
+
+Bus 001 Device 007: ID 0483:5740 STMicroelectronics STM32F407
+
+If you press and hold BOOT0 while you press and release NRST (then
+release boot0)
+
+Then
+
+dfu-util -l
+
+(may need to apt-get install dfu-util)
+
+dfu-util 0.8
+
+Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.
+Copyright 2010-2014 Tormod Volden and Stefan Schmidt
+This program is Free Software and has ABSOLUTELY NO WARRANTY
+Please report bugs to dfu-util@lists.gnumonks.org
+
+Found DFU: [0483:df11] ver=2200, devnum=8, cfg=1, intf=0, alt=3, name="@Device Feature/0xFFFF0000/01*004 e", serial="319135643235"
+Found DFU: [0483:df11] ver=2200, devnum=8, cfg=1, intf=0, alt=2, name="@OTP Memory /0x1FFF7800/01*512 e,01*016 e", serial="319135643235"
+Found DFU: [0483:df11] ver=2200, devnum=8, cfg=1, intf=0, alt=1, name="@Option Bytes  /0x1FFFC000/01*016 e", serial="319135643235"
+Found DFU: [0483:df11] ver=2200, devnum=8, cfg=1, intf=0, alt=0, name="@Internal Flash  /0x08000000/04*016Kg,01*064Kg,01*128Kg", serial="319135643235"
+
+The 0x08000000 will be the one we are interested in
+
+dfu-util -a 0 -s 0x08000000 -D notmain.bin
+
+dfu-util 0.8
+
+Copyright 2005-2009 Weston Schmidt, Harald Welte and OpenMoko Inc.
+Copyright 2010-2014 Tormod Volden and Stefan Schmidt
+This program is Free Software and has ABSOLUTELY NO WARRANTY
+Please report bugs to dfu-util@lists.gnumonks.org
+
+dfu-util: Invalid DFU suffix signature
+dfu-util: A valid DFU suffix will be required in a future dfu-util release!!!
+Opening DFU capable USB device...
+ID 0483:df11
+Run-time device DFU version 011a
+Claiming USB DFU Interface...
+Setting Alternate Setting #0 ...
+Determining device status: state = dfuERROR, status = 10
+dfuERROR, clearing status
+Determining device status: state = dfuIDLE, status = 0
+dfuIDLE, continuing
+DFU mode device DFU version 011a
+Device returned transfer size 2048
+DfuSe interface name: "Internal Flash  "
+Downloading to address = 0x08000000, size = 216
+Download    [=========================] 100%          216 bytes
+Download done.
+File downloaded successfully
+
+Then press and release NRST by itself to run the program.
+
+You will need the datasheet from st, go to st.com and search for
+STM32F401CCU6
+follow the hit, get the datasheet.
+
+Then somewhere on the device
+page you can find reference manuals, currently RM0368 goes with
+this device, get that.
+
+These tell you that the device uses a cortex-m4 core from ARM, so
+go to infocenter.arm.com and get the cortex-m4 technical reference
+manual.
+
+Which tells you it is based on the armv7-m architecture so
+also get the armv7-m architectural reference manual.
+
+This is your basic minimum documentation set for working on this device.
+A schematic would be nice too, will see about that, the pins appear
+to have their gpio numbers on them A2, A3...B2, B3 etc...So that will
+do for now.
+
+RM0368 is also used for the STM32F401RE which they have a nucleo board
+for, so its the same family/core.  From the datasheets
+F401RE  64 pin package 512Kbytes of flash
+F401CCU6 48/48 pin, 256Kbytes of flash, UFQFPN package.
+
+Basically both are the STM32F401.
+
+

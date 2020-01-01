@@ -1,0 +1,8 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+The silkscreen says C13 so perhaps like the blue pill the user led is
+on Port C pin 13.  And based on this example this appears to be the case.
+
+
