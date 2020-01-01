@@ -2,8 +2,6 @@
 //------------------------------------------------------------------------
 //------------------------------------------------------------------------
 
-#define BRICK_BUTTON
-
 void PUT16 ( unsigned int, unsigned int );
 void PUT32 ( unsigned int, unsigned int );
 unsigned int GET16 ( unsigned int );
@@ -111,8 +109,6 @@ void systick_handler ( void )
 //------------------------------------------------------------------------
 int notmain ( void )
 {
-    //unsigned int ra;
-    //unsigned int rb;
 
     led_init();
     clock_init();
