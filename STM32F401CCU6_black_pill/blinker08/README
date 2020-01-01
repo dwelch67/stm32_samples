@@ -1,0 +1,9 @@
+
+See the top level README for schematic and programmers reference information.
+
+This was fun and interesting.  If you enable interrupts but set
+SEVONPEND, wfe will continue after the interrupt, but the ISR wont
+get called.  But that alone is not enough the first wfe returns the
+second doesnt.  The interrupt is clear from the peripheral.  But still
+pending.  The ICSR register was the key for systick.  Chip vendor
+interrupts are perhaps stuck elsewhere.
