@@ -1,0 +1,37 @@
+
+See the top level README for schematic and programmers reference information.
+
+Three examples in one.  First setting up the timer to roll over every
+4 million ticks, similar to blinker03 but a different timeout.
+
+Blink the led a few times based on the internal HSI 16Mhz clock, then
+switch to the external clock, the led gets faster indiciating this
+is faster than 16MHz.  Then attempt to measure it.  I am seeing 16
+seconds indicating this is a 25MHz clock.  Which is what I see on the
+lid of the crystal/oscillator.
+
+It is very important to be careful here.  The STM32 family so far
+has a bootloader that can be entered using a strap, boot0.  So that
+is your get out of jail free card.  In general with some parts if you
+mess up the clock init and say there is no external clock you can
+make it so those parts will now be unclocked, and of those you may
+not be able to get into them with their in circuit programming solution
+be it SWD or other.  Meaning the part is bricked.  I have bricked
+my fair share of parts this way.  So if you do not have some strap
+with ideally a button solution, then you need to build that first,
+the missing blinker04 example did just that even though I wrote that
+example for another board that was also STM32F401 based (didnt need
+my own strap solution).  You would figure out GPIO input if you have
+a button is it pressed or not, have the code execute into some safe
+infinite loop if the button is one way and execute into the clock
+init otherwise, that way you can recover the chip if your clock init
+routine is bad.
+
+Another way to do it would be to use knowledge from prior examples
+take some clock wait some number of seconds before trying the risky
+thing, giving you some amount of time after reset to talk to the
+part and put it in a programming mode.  I am talking about MCUs in
+general here not just ST ARM based products as those are not a
+concern, but other ARM based or other not ARM based can be bricked,
+some cant if your board has the right signals hooked up and you have
+the right programming solution.
