@@ -1,0 +1,14 @@
+
+See the top level README for schematic and programmers reference information.
+
+Simlar to blinker02 except this uses a very simple timer in the chip
+but outside the arm core.  One of the on chip peripherals.
+
+This is a 32 bit timer.  Using it a little differently than the SysTick
+timer in blinker02.  In this case the timer is set to roll over at
+16,000,000.  Assuming it is running off of the 16MHz internal clock
+with no scaling then the timer should roll over every second.  Each
+time it rolls over (it counts down so roll over is down to 0 then
+reloading 16 million) the interrupt fires, the interrupt is disabled
+but the status register flag is set, so we can poll that bit to wait
+one second.
