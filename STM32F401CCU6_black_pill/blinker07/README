@@ -1,0 +1,12 @@
+
+See the top level README for schematic and programmers reference information.
+
+This example uses the cortex-m systick timer, but uses interrupts, when
+the timer reaches zero you get an interrupt.  The ISR then blinks the
+led.
+
+The systick timer is part of the ARM core, we use the word interrupt
+and it is, but we didnt have to program the nvic nor did we have to
+enable interrupts to the core.  It just worked.  For interrupts that
+come in from outside the core (external (to the core) interrupts) those
+require additional work.
