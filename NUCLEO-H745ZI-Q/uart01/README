@@ -2,6 +2,8 @@
 See the previous level README for schematic and programmers reference
 information.
 
+this runs on the m7
+
 PD8 USART3 TX alternate function 7
 PD9 USART3 RX alternate function 7
 

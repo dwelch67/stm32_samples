@@ -7,6 +7,13 @@ void dummy ( unsigned int );
 #define RCC_AHB4ENR     (RCC_BASE+0x0E0)
 #define RCC_APB1LENR    (RCC_BASE+0x0E8)
 #define RCC_APB1LRSTR   (RCC_BASE+0x090)
+#define RCC_APB4ENR     (RCC_BASE+0x0F4)
+
+#define SYSCFG_BASE     0x58000400
+#define SYSCFG_UR1      (SYSCFG_BASE+0x304)
+#define SYSCFG_UR2      (SYSCFG_BASE+0x308)
+#define SYSCFG_UR3      (SYSCFG_BASE+0x30C)
+#define SYSCFG_UR4      (SYSCFG_BASE+0x310)
 
 #define CPUID 0xE000ED00
 
@@ -69,12 +76,11 @@ static void uart_send ( unsigned int x )
     PUT32(UART_TDR,x);
 }
 
-static unsigned int uart_recv ( void )
-{
-    while(1) if((GET32(UART_ISR))&(1<<5)) break;
-    return(GET32(UART_RDR));
-}
-
+//static unsigned int uart_recv ( void )
+//{
+    //while(1) if((GET32(UART_ISR))&(1<<5)) break;
+    //return(GET32(UART_RDR));
+//}
 
 static void hexstrings ( unsigned int d )
 {
@@ -105,14 +111,30 @@ int notmain ( void )
 {
     unsigned int ra;
 
+    ra=GET32(CPUID);
+    if((ra&0xFFF0)==0xC270)
+    {
+        PUT32(0x30000000,ra);
+    }
+    else
+    {
+        return(0);
+    }
+
+    ra=GET32(RCC_APB4ENR);
+    ra|=(1<<1); //SYSCFGEN
+    PUT32(RCC_APB4ENR,ra);
+
     uart_init();
     hexstring(0x12345678);
     hexstring(GET32(CPUID));
-    while(1)
-    {
-        ra=uart_recv();
-        hexstring(ra);
-    }
+    hexstring(GET32(0x30000000));
+    hexstring(GET32(0x30020004));
+    hexstring(GET32(0x30020008));
+    //hexstring(GET32(SYSCFG_UR1));
+    //hexstring(GET32(SYSCFG_UR2));
+    //hexstring(GET32(SYSCFG_UR3));
+    //hexstring(GET32(SYSCFG_UR4));
 
     return(0);
 }

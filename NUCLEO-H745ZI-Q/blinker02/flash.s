@@ -5,7 +5,7 @@
 .thumb_func
 .global _start
 _start:
-stacktop: .word 0x20001000
+stacktop: .word 0x30001000
 .word reset
 .word hang
 .word hang

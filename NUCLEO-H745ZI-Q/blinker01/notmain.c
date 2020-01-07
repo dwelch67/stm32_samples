@@ -22,22 +22,8 @@ int notmain ( void )
 {
     unsigned int ra;
 
-    ra=GET32(CPUID);
-    if((ra&0xFFF0)==0xC270)
-    {
-        PUT32(0x20000000,ra);
-    }
-    else
-    {
-        PUT32(0x20000004,ra);
-        return(0);
-    }
-
-//    ra=GET32(RCC_APB4ENR);
-    //ra|=1<<1;
-    //PUT32(RCC_APB4ENR,ra);
     ra=GET32(RCC_AHB4ENR);
-    ra|=1<<1;
+    ra|=1<<1; //GPIOB
     PUT32(RCC_AHB4ENR,ra);
 
     ra=GET32(GPIOB_MODER);

@@ -1,0 +1,39 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+Okay figured out the dual core thing, as documented the cortex-m7
+boots from 0x08000000 the cortex-m4 from 0x08100000.  We are used
+to sram being at 0x20000000 and the examples worked so far using
+that but there are different sram banks I chose to let the cortex-m7
+use sram1 at 0x30000000 and the cortex-m4 sram2 at 0x30020000
+
+the drag and drop mbed programming only affects the cortex-m7 0x08000000
+space, not sure yet how to get around that other than to use openocd
+
+this simple example the cortex-m4 code writes a copy of its cpuid
+value to a location in sram2 and another value.  The target.cfg file
+in the top level directory works with openocd, have to have a new-ish
+one
+
+
+one window
+
+openocd -f target.cfg
+
+second window
+
+telnet localhost 4444
+
+> halt
+> flash write_image erase notmain4.elf
+
+ctrl-c out of the first window and both will return to the prompt.
+
+copy notmain7.bin to the virtual drive
+
+12345678
+411FC271
+411FC271   <-- cortex-m7 cpuid
+410FC241   <-- cortex-m4 cpuid
+11223344

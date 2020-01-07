@@ -13,11 +13,6 @@ void dummy ( unsigned int );
 #define SYSCFG_BASE 0x58000400
 #define CPUID 0xE000ED00
 
-//#define GPIOB_BASE      0x58020400
-//#define GPIOB_MODER     (GPIOB_BASE+0x00)
-//#define GPIOB_OTYPER    (GPIOB_BASE+0x04)
-//#define GPIOB_BSRR      (GPIOB_BASE+0x18)
-
 #define GPIOD_BASE 0x58020C00
 #define GPIOD_MODER     (GPIOD_BASE+0x00)
 #define GPIOD_OTYPER    (GPIOD_BASE+0x04)
@@ -27,10 +22,6 @@ void dummy ( unsigned int );
 #define GPIOD_AFRL      (GPIOD_BASE+0x20)
 #define GPIOD_AFRH      (GPIOD_BASE+0x24)
 
-//#define STK_CSR 0xE000E010
-//#define STK_RVR 0xE000E014
-//#define STK_CVR 0xE000E018
-
 #define USART3_BASE 0x40004800
 #define UART_BASE     USART3_BASE
 #define UART_CR1      (UART_BASE+0x00)
@@ -38,7 +29,6 @@ void dummy ( unsigned int );
 #define UART_ISR      (UART_BASE+0x1C)
 #define UART_RDR      (UART_BASE+0x24)
 #define UART_TDR      (UART_BASE+0x28)
-
 
 //PD8/9  AF7
 
@@ -97,16 +87,6 @@ int notmain ( void )
 {
     unsigned int ra;
 
-    ra=GET32(CPUID);
-    if((ra&0xFFF0)==0xC270)
-    {
-        PUT32(0x20000000,ra);
-    }
-    else
-    {
-        PUT32(0x20000004,ra);
-        return(0);
-    }
     uart_init();
 
     for(ra=0x30;;ra++)
