@@ -2,7 +2,5 @@
 See the previous level README for schematic and programmers reference
 information.
 
-The generic nucleo board documentation says
-
 I think so far the m7 is running not the m4.
 This example blinks the (red) led on PB14

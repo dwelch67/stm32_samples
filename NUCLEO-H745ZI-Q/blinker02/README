@@ -1,0 +1,7 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This uses the systick timer, from the docs it appears that HSI defaults
+to 64MHz if you can believe that.  And this demonstrates that is the
+case 40 rollovers of 16 million is 10 times 64 million or 10 seconds.
