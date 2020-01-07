@@ -1,0 +1,17 @@
+
+NUCLEO-H745ZI-Q
+
+which is a development board for
+
+STM32H745ZIT6U
+
+So far I have not figured out the dual core thing, seems to me the
+cortex-m7 is running but not the m4
+
+The cortex-m7 cpuid is not as documented.
+
+0xe000ed00: 411fc271
+
+User LD1: a green user LED is connected to the STM32H7 I/O PB0 (or PA5)
+User LD2: a yellow user LED is connected to PE1
+User LD3: a red user LED is connected to PB14
