@@ -1,0 +1,11 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+PD8 USART3 TX alternate function 7
+PD9 USART3 RX alternate function 7
+
+These are tied by default to the stlink debugger virtual com port.
+/dev/ttyACMx
+
+spews 0123456701234567... out the uart.
