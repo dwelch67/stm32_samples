@@ -1,0 +1,15 @@
+
+This is one way to skin this cat.
+
+The cortex-m4 boots from 0x08100000 the cortex-m7 from the traditional
+STM32 0x08000000.  What you do with this is use a modern enough openocd
+with dual bank enabled and
+
+flash write_image erase notmain4.elf
+
+The code here will change the VTOR to 0x08000000 and then branch to the
+cortex-m7 reset handler read from 0x08000004.
+
+Now the cortex-m7 code has to handle two processors running the same
+code.  I dont yet know what that does to the performance, maybe ART
+takes care of it.

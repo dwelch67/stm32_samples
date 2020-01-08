@@ -111,15 +111,10 @@ int notmain ( void )
 {
     unsigned int ra;
 
-    ra=GET32(CPUID);
-    if((ra&0xFFF0)==0xC270)
-    {
-        PUT32(0x30000000,ra);
-    }
-    else
-    {
-        return(0);
-    }
+    ra=GET32(CPUID)&0xFFF0;
+    //comment one of these
+    //if(ra==0xC270) return(0); //cortex-m7
+    if(ra==0xC240) return(0); //cortex-m4
 
     ra=GET32(RCC_APB4ENR);
     ra|=(1<<1); //SYSCFGEN

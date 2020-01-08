@@ -25,6 +25,12 @@ int notmain ( void )
 {
     unsigned int ra;
 
+    ra=GET32(CPUID)&0xFFF0;
+    //comment one of these
+    //if(ra==0xC270) return(0); //cortex-m7
+    if(ra==0xC240) return(0); //cortex-m4
+
+
     ra=GET32(RCC_AHB4ENR);
     ra|=1<<1; //GPIOB
     ra|=1<<4; //GPIOE
