@@ -3,6 +3,8 @@ void PUT32 ( unsigned int, unsigned int );
 unsigned int GET32 ( unsigned int );
 void dummy ( unsigned int );
 
+#define CPUID 0xE000ED00
+
 #define RCCBASE         0x58024400
 #define RCC_AHB4ENR     (RCCBASE+0x0E0)
 
