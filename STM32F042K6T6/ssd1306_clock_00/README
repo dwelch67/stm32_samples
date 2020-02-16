@@ -1,0 +1,65 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+derived directly from tm1637_clock_00
+
+It is really easy to combine a gps receiver, an mcu and some form of
+display to make a very accurate clock that doesnt need to be set or
+at least just needs to know the time zone/UTC offset.
+
+This uses an ssd1306 based oled display.  Either then 128x64 or 128x32
+version will work see the define at the top to select which one.
+
+I have a number of gps boards, the kicad pcb file in this directory is
+just one of them.
+
+I like that ladybird 1 (PA6H) gps receiver, the most expensive part,
+around or under $20 each.  You can get other receivers that are $10
+give or take, they all speak NMEA either 4800 or 9600 by default.
+Can use GPRMC or GPGGA, but with GGA the A/V validity is not there or
+not in that location.
+
+It is a two wire clock and data interface, I2C lke but not I2C
+
+    //PA0 DATA PA1 CLOCK
+
+So my timezone trick is very simple.
+
+    timezone=4;
+    rb=0x44444444;
+    ra=GET32(0x20000D00);
+    if(ra==0x44444444)
+    {
+        timezone=5;
+        rb=0x55555555;
+    }
+    else
+    if(ra==0x55555555)
+    {
+        timezone=4;
+        rb=0x44444444;
+    }
+    PUT32(0x20000D00,rb);
+
+
+The idea here is that first power up SRAM is whatever garbage it is
+and one offset is chosen.  But if while powered you hit reset then
+it will see that value and switch to the other.  Easy to add more
+timezone offsets to the rotation.
+
+The colon is tied to the second digit.  It appears that some of these
+are made with decmial points tied to the upper bit not the colon, cant
+have both, not enough bits.  I guess I got lucky and got the clock ones.
+
+I have a validity check, so that it wont blink the colon unless valid.
+With experience with different receivers some will get the time without
+a full 2D nor 3D lock, without valid (A not V after the xxRMC time)
+which implies they may get the time then run off their internal clock
+not the accurate one from GPS.
+
+If you use GGA instead (some receivers change their sequence every
+so many seconds and RMC is slightly delayed making the colon pattern
+look strange) then force the time to be valid.  Or solve it a different
+way.
+
