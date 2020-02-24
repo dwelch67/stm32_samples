@@ -1,0 +1,50 @@
+
+See the top level README for schematic and programmers reference information.
+
+derived from the DWSTM32 examples, this one I used the 128x32 module
+which inits differently, thanks again adafruit for info.
+
+USB connector
+
+right side:
+VIN
+GND  GND
+RST
+5V
+A7
+A6
+A5
+A4
+A3
+A2
+A1   SDA
+A0   SCL
+REF
+3V3  VCC
+D13
+
+
+USB connector
+left side
+D1  (PA9)
+D0  (PA10)  GPS TX
+RST
+GND
+D2
+D3
+D4
+D5
+D6
+D7
+D8
+D9
+D10
+D11
+D12
+
+PA9 is USART1_TX alternate function 1
+PA10 is USART1_RX alternate function 1
+
+derived from ssd1306_i2c_basics and gps_clock02
+
+assuming a 9600 baud gps nmea stream, adjust uart if not.
