@@ -681,13 +681,13 @@ void show_number ( void )
         SetColumn(0);
 
         for(rb=0;rb<20;rb++) send_data(0x00);
-        for(rb=0;rb<16;rb++) send_data(0x00);
-        for(rb=0;rb<4;rb++) send_data(0x00);
-        for(rb=0;rb<16;rb++) send_data(0x00);
-        for(rb=0;rb<16;rb++) send_data(0x00);
         for(rb=0;rb<16;rb++) send_data(dfont[tmpnum[0]][ra][rb]);
         for(rb=0;rb<4;rb++) send_data(0x00);
         for(rb=0;rb<16;rb++) send_data(dfont[tmpnum[1]][ra][rb]);
+        for(rb=0;rb<16;rb++) send_data(0x00);
+        for(rb=0;rb<16;rb++) send_data(dfont[tmpnum[2]][ra][rb]);
+        for(rb=0;rb<4;rb++) send_data(0x00);
+        for(rb=0;rb<16;rb++) send_data(dfont[tmpnum[3]][ra][rb]);
         for(rb=0;rb<20;rb++) send_data(0x00);
     }
 }
@@ -1001,9 +1001,12 @@ static void TMP_UPDATE ( void )
 #ifdef MYDIVIDE
     {
         unsigned int temp;
-        temp=base_ten(rb);
+        temp=base_ten(ra>>8);
         tmpnum[0]=(temp>>4)&0xF;
         tmpnum[1]=(temp>>0)&0xF;
+        temp=base_ten(rb);
+        tmpnum[2]=(temp>>4)&0xF;
+        tmpnum[3]=(temp>>0)&0xF;
         hexstring(temp);
     }
 #else
@@ -1257,7 +1260,7 @@ int do_nmea ( void )
                         //num[1]|=0x80;
                     }
                     show_number();
-                    //TMP_UPDATE();
+                    TMP_UPDATE();
                 }
                 for(rb=0;rb<6;rb++) xstring[rb]=0;
                 state=0;
@@ -1360,8 +1363,10 @@ int notmain ( void )
     num[2]=3;
     num[3]=4;
 
-    tmpnum[0]=0;
-    tmpnum[1]=0;
+    tmpnum[0]=1;
+    tmpnum[1]=2;
+    tmpnum[2]=3;
+    tmpnum[3]=4;
 
     show_number();
 
