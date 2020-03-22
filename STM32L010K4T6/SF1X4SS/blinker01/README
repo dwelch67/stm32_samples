@@ -1,0 +1,26 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+PA00 0
+PA01 A
+PA02 F
+PA03 1
+PA04 2
+PA05 B
+PA06 3
+PA07 G
+PA08 C
+PA11 P
+PA12 D
+PA15 E
+
+ //aaa
+//f   b
+//f   b
+//f   b
+ //ggg
+//e   c
+//e   c
+//e   c
+ //ddd
