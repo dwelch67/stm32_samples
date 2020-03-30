@@ -1,0 +1,8 @@
+
+Messing with PWM on TIM2.
+
+PA1 TIM2_CH2
+PA2 TIM2_CH3
+PA3 TIM2_CH4
+
+ARR determins period, CCR determines the on/off point.

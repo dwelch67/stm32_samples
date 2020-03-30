@@ -83,11 +83,13 @@ int notmain ( void )
     ra|=1<<0; //enable timer 2
     PUT32(RCC_APB1ENR,ra);
 
-    //ra=GET32(RCC_APB1RSTR);
-    //ra|= (1<<0); //reset TIM2
-    //PUT32(RCC_APB1RSTR,ra);
-    //ra&=~(1<<0);
-    //PUT32(RCC_APB1RSTR,ra);
+if(0)
+{
+    ra=GET32(RCC_APB1RSTR);
+    ra|= (1<<0); //reset TIM2
+    PUT32(RCC_APB1RSTR,ra);
+    ra&=~(1<<0);
+    PUT32(RCC_APB1RSTR,ra);
 
     PUT32(TIM2_CR1,0x00000000);
     PUT32(TIM2_CCR2,2000000-1);
@@ -96,10 +98,53 @@ int notmain ( void )
     PUT32(TIM2_ARR, 8000000-1);
     PUT32(TIM2_CNT,0x00000000);
     PUT32(TIM2_PSC,0x00000000);
-    PUT32(TIM2_CCMR1,(3<<12));
-    PUT32(TIM2_CCMR2,(3<<12)|(3<<4));
+    PUT32(TIM2_CCMR1,(6<<12));
+    PUT32(TIM2_CCMR2,(6<<12)|(6<<4));
     PUT32(TIM2_CCER,(1<<4)|(1<<8)|(1<<12));
     PUT32(TIM2_CR1,0x00000001);
+}
+if(1)
+{
+    unsigned int rb;
+
+    ra=GET32(RCC_APB1RSTR);
+    ra|= (1<<0); //reset TIM2
+    PUT32(RCC_APB1RSTR,ra);
+    ra&=~(1<<0);
+    PUT32(RCC_APB1RSTR,ra);
+
+    PUT32(TIM2_CR1,0x00000000);
+    PUT32(TIM2_CCR2,200-1);
+    PUT32(TIM2_CCR3,400-1);
+    PUT32(TIM2_CCR4,600-1);
+    PUT32(TIM2_ARR, 800-1);
+    PUT32(TIM2_CNT,0x00000000);
+    PUT32(TIM2_PSC,0x00000000);
+    PUT32(TIM2_CCMR1,(6<<12));
+    PUT32(TIM2_CCMR2,(6<<12)|(7<<4));
+    PUT32(TIM2_CCER,(1<<4)|(1<<8)|(1<<12));
+    PUT32(TIM2_CR1,0x00000001);
+
+    while(1)
+    {
+        for(ra=0;ra<800;ra++)
+        {
+            PUT32(TIM2_CCR2,ra);
+            PUT32(TIM2_CCR3,ra);
+            PUT32(TIM2_CCR4,ra);
+            for(rb=0;rb<2000;rb++) dummy(rb);
+        }
+        for(ra--;ra;ra--)
+        {
+            PUT32(TIM2_CCR2,ra);
+            PUT32(TIM2_CCR3,ra);
+            PUT32(TIM2_CCR4,ra);
+            for(rb=0;rb<2000;rb++) dummy(rb);
+        }
+    }
+}
+
+
 
     return(0);
 }
