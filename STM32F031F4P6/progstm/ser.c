@@ -19,11 +19,11 @@ unsigned short ser_maincnt;
 unsigned char ser_buffer[(0xFFF+1)<<1];
 
 //-----------------------------------------------------------------------------
-unsigned char ser_open ( void )
+unsigned char ser_open ( char *port )
 {
   struct termios options;
 
-  ser_hand=open("/dev/ttyUSB5",O_RDWR|O_NOCTTY|O_NDELAY);
+  ser_hand=open(port,O_RDWR|O_NOCTTY|O_NDELAY);
   if(ser_hand==-1)
   {
     fprintf(stderr,"open: error - %s\n",strerror(errno));

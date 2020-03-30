@@ -1,6 +1,6 @@
 
 //-----------------------------------------------------------------------------
-// Copyright (C) David Welch, 2000
+// Copyright (C) David Welch, 2000-2015
 //-----------------------------------------------------------------------------
 
 #include <stdio.h>
@@ -9,8 +9,6 @@
 
 #include "ser.h"
 
-#include "blinker.bin.h"
-
 unsigned int seq;
 unsigned int ra,rb,rc,rd;
 unsigned int addr;
@@ -18,6 +16,7 @@ unsigned int addr;
 unsigned char sdata[512];
 unsigned char udata[512];
 unsigned char rdata[5000];
+unsigned int bindata[16384>>2];
 
 //-----------------------------------------------------------------------------
 void xor_data ( unsigned char *sdata, unsigned int len )
@@ -551,6 +550,32 @@ int read_unprotect ( void )
     return(0);
 }
 //-----------------------------------------------------------------------------
+int write_unprotect ( void )
+{
+    unsigned int ra,rb;
+
+    printf("write_unprotect()\n");
+    sdata[0]=0x73;
+    sdata[1]=sdata[0]^0xFF;
+    ser_senddata(sdata,2);
+    while(1)
+    {
+        rb=ser_copystring(rdata);
+        if(rb==2)
+        {
+            ser_dump(rb);
+            break;
+        }
+    }
+    if((rdata[0]!=0x79)||(rdata[1]!=0x79))
+    {
+        printf("read_unprotect error\n");
+        for(ra=0;ra<rb;ra++) printf("0x%02X\n",rdata[ra]);
+        return(1);
+    }
+    return(0);
+}
+//-----------------------------------------------------------------------------
 int get_stm_info ( void )
 {
     unsigned int ra,rb,rc;
@@ -563,63 +588,31 @@ int get_stm_info ( void )
     return(0);
 }
 //-----------------------------------------------------------------------------
-int do_stm_stuff ( void )
-{
-    unsigned int ra,rb,rc;
-
-
-    //if(detect_chip()) return(1);
-    //if(get()) return(1);
-    //if(getverpstat()) return(1);
-    //if(getid()) return(1);
-
-
-    //if(erase_flash()) return(1);
-    if(extended_erase_flash()) return(1);
-
-    ////if(read_unprotect()) return(1);
-    ////sleep(1);
-    ////if(detect_chip()) return(1);
-
-    //if(read_mem_32(0x08000000,&rc)) return(1);
-    //if(read_mem_32(0x08000004,&rc)) return(1);
-    //if(read_mem_32(0x08000008,&rc)) return(1);
-
-    //for(ra=0;ra<bindatalen;ra++)
-    //{
-        //if(write_mem_32(0x08000000+(ra<<2),bindata[ra])) return(1);
-    //}
-    //for(ra=0;ra<10;ra++)
-    //{
-        //if(read_mem_32(0x08000000+(ra<<2),&rc)) return(1);
-    //}
-
-    ////sdata[0]=0x92;
-    ////sdata[1]=sdata[0]^0xFF;
-    //////ser_senddata(sdata,2);
-    ////while(1)
-    ////{
-        ////rb=ser_copystring(rdata);
-        ////for(ra=0;ra<rb;ra++)
-        ////{
-            ////printf("0x%02X ",rdata[ra]);
-            ////if((rdata[ra]>=0x20)&&(rdata[ra]<127)) printf("[%c]",rdata[ra]);
-            ////printf("\n");
-        ////}
-        ////ser_dump(rb);
-    ////}
-
-
-
-
-    return(0);
-}
-//-----------------------------------------------------------------------------
-int main ( void )
+int main ( int argc, char *argv[] )
 {
     unsigned int ra,rb,rc,rd;
+    unsigned int binlen;
+    FILE *fp;
 
-    if(ser_open())
+    if(argc<3)
+    {
+        printf("progstm /dev/ttyXYZ filename.bin\n");
+        return(1);
+    }
+
+    fp=fopen(argv[2],"rb");
+    if(fp==NULL)
+    {
+        printf("Error opening file [%s]\n",argv[2]);
+        return(1);
+    }
+    memset(bindata,0xFF,sizeof(bindata));
+    binlen=fread(bindata,1,sizeof(bindata),fp);
+    fclose(fp);
+    printf("%u bytes read\n",binlen);
+    binlen+=3;
+    binlen>>=2;
+    if(ser_open(argv[1]))
     {
         printf("ser_open() failed\n");
         return(1);
@@ -631,15 +624,18 @@ int main ( void )
         return(1);
     }
 
-
     get_stm_info();
-    do_stm_stuff();
+    if(extended_erase_flash()) return(1);
 
+    for(ra=0;ra<binlen;ra++)
+    {
+        if(write_mem_32(0x08000000+(ra<<2),bindata[ra])) return(1);
+    }
 
     ser_close();
     return(0);
 }
 //-----------------------------------------------------------------------------
-// Copyright (C) David Welch, 2000, 2003, 2008, 2009
+// Copyright (C) David Welch, 2000-2015
 //-----------------------------------------------------------------------------
 

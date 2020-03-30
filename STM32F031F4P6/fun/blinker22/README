@@ -1,0 +1,9 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This uses the systick timer in the arm core.
+
+The HSI (8MHz) clock is the default per the documentation and this
+appears to confirm that counting to 16 million clocks for each led
+state (on or off), the state change is every 2 seconds.

@@ -3,7 +3,7 @@
 // Copyright (c) David Welch 1996
 //-----------------------------------------------------------------------------
 
-unsigned char ser_open ( void );
+unsigned char ser_open ( char * );
 void strobedtr ( void );
 void ser_close ( void );
 void ser_senddata ( unsigned char *, unsigned short );
