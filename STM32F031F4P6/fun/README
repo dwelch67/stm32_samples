@@ -1,0 +1,21 @@
+
+This subdirectory contains examples that are not limited to but developed
+on the pcb saved here
+
+stm32fun.kicad_pcb
+stm32fun2.kicad_pcb
+
+stm32fun is powered and controlled by discrete wires, access to use
+the bootloader uart mode as well as SWD to program the MCU.
+
+stm32fun2 is meant to be used with a 3.3V Arduino like 6 pin board
+like these
+
+https://www.sparkfun.com/products/9873
+https://www.sparkfun.com/products/13746
+
+but can be used with individual signals.  Only the bootloader uart
+pins are exposed not SWD.
+
+The progstm directory contains a tool that I use to program the flash
+in these devices.
