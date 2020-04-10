@@ -1,0 +1,23 @@
+
+xCLOPS = -Wall -O2 -nostdlib -ffreestanding -fomit-frame-pointer
+CLOPS = -Wall -O2 -fomit-frame-pointer
+
+all : notmain.bin
+
+clean :
+	rm -f *.bin
+	rm -f *.o
+	rm -f *.elf
+	rm -f *.list
+
+flash.o : flash.s
+	clang $(CLOPS) -c flash.s -o flash.o
+
+notmain.o : notmain.c
+	clang $(CLOPS) -flto=thin -c notmain.c
+
+notmain.bin : flash.ld flash.o notmain.o
+	ld.lld -T flash.ld flash.o notmain.o -o notmain.elf
+	#arm-none-eabi-objdump -D notmain.elf > notmain.list
+	llvm-objdump -D notmain.elf > notmain.list
+	llvm-objcopy notmain.elf notmain.bin -O binary
