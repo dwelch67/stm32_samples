@@ -1,0 +1,11 @@
+
+See the README in the above directory for more information on
+documentation for this board.
+
+In particular AN2606 and AN3155 were used to develop/verify this
+program.
+
+This is derived from my other progstm.  The low memory part here is
+different than other stm32 parts.  It does not support the same commands
+the same way, have to do page erases and cant write four bytes at a
+time.  Experimentally figured out how to get it working.

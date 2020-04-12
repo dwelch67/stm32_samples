@@ -1,0 +1,38 @@
+
+This is the second one of these parts I have dealt with.  I expect
+this to be the new norm.
+
+First off THE PINOUT IS DIFFERENT, from older parts, even better
+power is now ground or something like that, so make sure you build
+your board to the datasheet for this part, not other STM32 parts.
+
+Second you get ONE SHOT at serial bootloader programming, a virgin
+part will go into the bootloader.  But once programmed with a
+vector table it uses the internal option register to determine
+boot mode which defaults to NOT using the BOOT0 pin. So load and
+run the RUN_ME_FIRST program, then power cycle the chip not just
+reset, and now you can use the BOOT0 pin like all the STM32s up to
+this point.  Failing to do that you have to use an SWD debugger
+to get into the chip.
+
+Third you cant necessarily just poke at the flash registers from
+the debugger, but you can load programs into ram that can.  So if you
+get stuck not being able to load using the serial bootloader then
+you need to write programs that you load and run from ram that
+do whatever.  I was not able to erase the flash, but was able
+to set the option register correctly using a ram based version
+of RUN_ME_FIRST.  Remember to power cycle after changing that
+register.
+
+If you dont mess up then if you use progstm to load RUN_ME_FIRST
+(and then power cycle dont just reset) you can in use the serial
+bootloader to load programs (progstm) and use the boot0 and reset
+buttons to put it back in the bootloader to try again. I have
+confirmed this on virgin parts.
+
+Basically RUN_ME_FIRST using progstm, then you can use progstm from
+there on out and not need a swd/jtag debugger for this part.
+
+Not that not all of my progstms are created equal, there are different
+revisions of bootloaders that come with these parts so the one in
+this parts directory tree goes with this part.
