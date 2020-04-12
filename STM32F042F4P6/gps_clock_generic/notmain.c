@@ -1,4 +1,16 @@
 
+//PA6H GPRMC
+//BN220 GNRMC
+
+//#define BN220
+#define PA6H
+
+#ifdef PA6H
+#undef BN220
+#else
+#define BN220
+#endif
+
 void PUT32 ( unsigned int, unsigned int );
 unsigned int GET32 ( unsigned int );
 void dummy ( unsigned int );
@@ -11,7 +23,6 @@ void dummy ( unsigned int );
 #define USART2BASE  0x40004400
 
 #define RCC_CR      (RCCBASE+0x00)
-#define RCC
 
 static unsigned char num[8];
 
@@ -138,7 +149,13 @@ static int do_nmea ( void )
             }
             case 2:
             {
+//should I just ignore this character and keep going?
+#ifdef PA6H
                 if(ra=='P') state++;
+#endif
+#ifdef BN220
+                if(ra=='N') state++;
+#endif
                 else state=0;
                 break;
             }
@@ -260,7 +277,10 @@ static int do_nmea ( void )
                     //just have the colon show validity state
                     if(validity)
                     {
-                        //num[1]|=0x80;
+                    }
+                    else
+                    {
+                        num[3]|=0x40;
                     }
                     show_number();
 
@@ -279,19 +299,50 @@ int notmain ( void )
     unsigned int ra;
     unsigned int rb;
 
-    timezone=4;
-    rb=0x44444444;
+    //timezone=4;
+    //rb=0x44444444;
+    //ra=GET32(0x20000D00);
+    //if(ra==0x44444444)
+    //{
+        //timezone=5; //EST
+        //rb=0x55555555;
+    //}
+    //else
+    //if(ra==0x55555555)
+    //{
+        //timezone=4; //EDT
+        //rb=0x44444444;
+    //}
+
+    timezone=0;
+    rb=0;
     ra=GET32(0x20000D00);
-    if(ra==0x44444444)
+    switch(ra)
     {
-        timezone=5;
-        rb=0x55555555;
-    }
-    else
-    if(ra==0x55555555)
-    {
-        timezone=4;
-        rb=0x44444444;
+        case 0x44444444:
+        {
+            timezone=5; //EST
+            rb=0x55555555;
+            break;
+        }
+        case 0x55555555:
+        {
+            timezone=7; //Arizona
+            rb=0x77777777;
+            break;
+        }
+        case 0x77777777:
+        {
+            timezone=4; //EDT
+            rb=0x44444444;
+            break;
+        }
+        default:
+        {
+            timezone=7; //Arizona
+            rb=0x77777777;
+            break;
+        }
     }
     PUT32(0x20000D00,rb);
 

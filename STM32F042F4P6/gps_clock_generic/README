@@ -1,0 +1,14 @@
+
+This is a generic NMEA parser intended for GPS based clocks the
+specific initial board is SF1X4GPS.kicad_pcb which uses the PA6H
+GTOP Ladybird 1 GPS which works pretty good indoors significantly better
+than modules from before.  They are pricy at $20 each so have some
+BN-220s that dont solder down on this board but work at like $15 each.
+
+Hoping for something closer to $10 with an antenna that I can solder
+down that works great indoors.
+
+This board was designed to mate with SF1X4MCU2.kicad_pcb which uses
+an STM32F042L010K4T6 so see that directory for more.
+
+I have reused this nmea code many times now, works great.
