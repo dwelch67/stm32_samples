@@ -1,0 +1,29 @@
+
+Well somebody who knows better and was thinking about it at the time
+wanted to see what color each of the displays was so without using
+a resistor powered across an led or two with 3.3v to ground.  First off
+due to how the led behaved couldnt actually tell the color, second it
+damaged the led.  Those good old 1/8th and 1/4th inch leds could handle
+it.
+
+fortunately (?) it was the d led on this module that I damaged.
+since only b and c are used for the first digit since it is off or
+a 1.
+
+ //aaa
+//f   b
+//f   b
+//f   b
+ //ggg
+//e   c
+//e   c
+//e   c
+ //ddd
+
+so the only real difference here is that I flipped all the numbers
+swapped b and e, c and f, a and d.  and the order of the grounds.
+
+was easier than I was expecting.
+
+I had specifically designed both boards so that the usb connector is
+on the bottom, for this one it will be on top...
