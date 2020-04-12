@@ -12,6 +12,7 @@ clean:
 	rm -f *.o
 	rm -f *.elf
 	rm -f *.list
+	rm -f mkheader
 
 #---------------------------------
 

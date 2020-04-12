@@ -1,4 +1,7 @@
 
+#undef INVERTED
+//#define INVERTED
+
 #include <stdio.h>
 
  //aaa
@@ -44,9 +47,9 @@ int main ( void )
     unsigned int rb;
     unsigned int rc;
 
-    unsigned int seven[16];
+    unsigned int seven[32];
     //all leds off
-    for(rb=0;rb<16;rb++)
+    for(rb=0;rb<32;rb++)
     {
         seven[rb]=
             (1<<(LEDA+16))|
@@ -58,6 +61,25 @@ int main ( void )
             (1<<(LEDG+16))|
             (1<<(LEDP+16));
     }
+#ifdef INVERTED
+    for(ra=0;ra<10;ra++)
+    {
+        for(rb=0;segs[ra][rb];rb++)
+        {
+            switch(segs[ra][rb])
+            {
+                case 'a': { segs[ra][rb]='d'; break; }
+                case 'b': { segs[ra][rb]='e'; break; }
+                case 'c': { segs[ra][rb]='f'; break; }
+                case 'd': { segs[ra][rb]='a'; break; }
+                case 'e': { segs[ra][rb]='b'; break; }
+                case 'f': { segs[ra][rb]='c'; break; }
+                case 'g': { segs[ra][rb]='g'; break; }
+            }
+        }
+    }
+#endif
+
     //toggle the ones on that need to be on for numbers 0 to 9
     for(ra=0;ra<10;ra++)
     {
@@ -75,47 +97,77 @@ int main ( void )
             }
         }
     }
-    //make the table
-    for(rb=0;rb<16;rb++)
+    //add the decimal point
+    for(ra=0;ra<10;ra++)
     {
-        // above 9 all off
-        if(rb>9)
+        seven[ra+16]=seven[ra];
+        seven[ra+16]^=(1<<(LEDP+16))|(1<<(LEDP+ 0));
+    }
+    //make the table
+    for(rb=0;rb<32;rb++)
+    {
+        switch(rb)
         {
-            //GNDS HIGH LEDS LOW
-            rc=0;
-            rc|=(1<<(LEDA+16));
-            rc|=(1<<(LEDB+16));
-            rc|=(1<<(LEDC+16));
-            rc|=(1<<(LEDD+16));
-            rc|=(1<<(LEDE+16));
-            rc|=(1<<(LEDF+16));
-            rc|=(1<<(LEDG+16));
-            rc|=(1<<(GND0+0));
-            rc|=(1<<(GND1+0));
-            rc|=(1<<(GND2+0));
-            rc|=(1<<(GND3+0));
-            printf("{");
-            printf("0x%08X,",rc);
-            printf("0x%08X,",rc);
-            printf("0x%08X,",rc);
-            printf("0x%08X,",rc);
-            printf("},//%u\n",rb);
+            case 0: case 16:
+            case 1: case 17:
+            case 2: case 18:
+            case 3: case 19:
+            case 4: case 20:
+            case 5: case 21:
+            case 6: case 22:
+            case 7: case 23:
+            case 8: case 24:
+            case 9: case 25:
+            {
+                //the bsrr to make each digit on for each ground/position
+                //seven[5][0] makes the first digit a 5
+                //seven[5][1] makes the second digit a 5
+                //seven[5][2] makes the third digit a 5
+                //seven[5][3] makes the fourth digit a 5
+                {
+                    //ONE GROUND AT A TIME
+                    printf("{");
+#ifdef INVERTED
+                    printf("0x%08X,",seven[rb]|(1<<(GND0+ 0))|(1<<(GND1+ 0))|(1<<(GND2+ 0))|(1<<(GND3+16)));
+                    printf("0x%08X,",seven[rb]|(1<<(GND0+ 0))|(1<<(GND1+ 0))|(1<<(GND2+16))|(1<<(GND3+ 0)));
+                    printf("0x%08X,",seven[rb]|(1<<(GND0+ 0))|(1<<(GND1+16))|(1<<(GND2+ 0))|(1<<(GND3+ 0)));
+                    printf("0x%08X,",seven[rb]|(1<<(GND0+16))|(1<<(GND1+ 0))|(1<<(GND2+ 0))|(1<<(GND3+ 0)));
+#else
+                    printf("0x%08X,",seven[rb]|(1<<(GND0+16))|(1<<(GND1+ 0))|(1<<(GND2+ 0))|(1<<(GND3+ 0)));
+                    printf("0x%08X,",seven[rb]|(1<<(GND0+ 0))|(1<<(GND1+16))|(1<<(GND2+ 0))|(1<<(GND3+ 0)));
+                    printf("0x%08X,",seven[rb]|(1<<(GND0+ 0))|(1<<(GND1+ 0))|(1<<(GND2+16))|(1<<(GND3+ 0)));
+                    printf("0x%08X,",seven[rb]|(1<<(GND0+ 0))|(1<<(GND1+ 0))|(1<<(GND2+ 0))|(1<<(GND3+16)));
+#endif
+                    printf("},//%u\n",rb);
+                }
+                break;
+            }
+            default:
+            {
+                //GNDS HIGH LEDS LOW
+                rc=0;
+                rc|=(1<<(LEDA+16));
+                rc|=(1<<(LEDB+16));
+                rc|=(1<<(LEDC+16));
+                rc|=(1<<(LEDD+16));
+                rc|=(1<<(LEDE+16));
+                rc|=(1<<(LEDF+16));
+                rc|=(1<<(LEDG+16));
+                rc|=(1<<(LEDP+16));
+                rc|=(1<<(GND0+0));
+                rc|=(1<<(GND1+0));
+                rc|=(1<<(GND2+0));
+                rc|=(1<<(GND3+0));
+                printf("{");
+                printf("0x%08X,",rc);
+                printf("0x%08X,",rc);
+                printf("0x%08X,",rc);
+                printf("0x%08X,",rc);
+                printf("},//%u\n",rb);
+                break;
+            }
         }
-        else
-        //the bsrr to make each digit on for each ground/position
-        //seven[5][0] makes the first digit a 5
-        //seven[5][1] makes the second digit a 5
-        //seven[5][2] makes the third digit a 5
-        //seven[5][3] makes the fourth digit a 5
-        {
-            //ONE GROUND AT A TIME
-            printf("{");
-            printf("0x%08X,",seven[rb]|(1<<(GND0+16))|(1<<(GND1+ 0))|(1<<(GND2+ 0))|(1<<(GND3+ 0)));
-            printf("0x%08X,",seven[rb]|(1<<(GND0+ 0))|(1<<(GND1+16))|(1<<(GND2+ 0))|(1<<(GND3+ 0)));
-            printf("0x%08X,",seven[rb]|(1<<(GND0+ 0))|(1<<(GND1+ 0))|(1<<(GND2+16))|(1<<(GND3+ 0)));
-            printf("0x%08X,",seven[rb]|(1<<(GND0+ 0))|(1<<(GND1+ 0))|(1<<(GND2+ 0))|(1<<(GND3+16)));
-            printf("},//%u\n",rb);
-        }
+
     }
     return(0);
 }
