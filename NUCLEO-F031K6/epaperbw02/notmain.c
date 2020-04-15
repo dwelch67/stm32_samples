@@ -27,6 +27,7 @@ void dummy ( unsigned int );
 #define RESET_RST   (1<<(1+16))
 #define BUSY_BIT (1<<0)
 
+//old, why was it different then?
 //const unsigned char lut_full_update[] =
 //{
     //0x02, 0x02, 0x01, 0x11, 0x12, 0x12, 0x22, 0x22,
@@ -53,11 +54,7 @@ const unsigned char lut_partial_update[] =
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-
-
 #include "data.h"
-
-
 
 static void spi_reset ( void )
 {
