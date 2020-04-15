@@ -213,6 +213,7 @@ static void display_init ( unsigned int full )
 static unsigned int aa,bb,cc,dd;
 
 static unsigned char num[8];
+static unsigned int full;
 void show_number ( void )
 {
     unsigned int ra;
@@ -223,7 +224,7 @@ void show_number ( void )
     unsigned int y;
 
 
-    display_init(1);
+    display_init(full);
 
     //set x start and end
     spi_command(0x44);
@@ -450,7 +451,6 @@ static unsigned int uart_recv ( void )
 static unsigned char xstring[32];
 static unsigned int tim[4];
 static unsigned int lasttim[4];
-
 //------------------------------------------------------------------------
 static void show_clock ( void )
 {
@@ -462,6 +462,9 @@ static void show_clock ( void )
     if(tim[2]!=lasttim[2]) ra++;
     if(tim[3]!=lasttim[3]) ra++;
     if(ra==0) return;
+
+
+    if(tim[1]!=lasttim[1]) full=1; else full=0;
 
     lasttim[0]=tim[0];
     lasttim[1]=tim[1];
@@ -640,6 +643,7 @@ static int do_nmea ( void )
 int notmain ( void )
 {
     unsigned int ra;
+    unsigned int rb;
 
     num[0]=3;
     num[1]=4;
@@ -729,8 +733,23 @@ int notmain ( void )
     uart_init();
 
     timezone=4;
-    if(GET32(0x20000D00)==0x12341234) timezone=5;
-    PUT32(0x20000D00,0x12341234);
+    rb=0x44444444;
+    ra=GET32(0x20000D00);
+    if(ra==0x44444444)
+    {
+        timezone=5; //EST
+        rb=0x55555555;
+    }
+    else
+    if(ra==0x55555555)
+    {
+        timezone=4; //EDT
+        rb=0x44444444;
+    }
+    PUT32(0x20000D00,rb);
+
+
+    full=0;
 
     tim[0]=1;
     tim[1]=2;
