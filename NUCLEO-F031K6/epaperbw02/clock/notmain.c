@@ -248,16 +248,22 @@ void show_number ( void )
 
     //write ram
     spi_command(0x24);
-    //for(y=0;y<37;y++)
-    //{
-        //for(ra=0;ra<64;ra++) spi_data(0xF0);
-        //for(ra=0;ra<64;ra++) spi_data(0x0F);
-    //}
-    for(ra=datastart[num[0]];fontdata[ra];ra+=2)
+
+    if(num[0]==0)
     {
-        rb=fontdata[ra+0];
-        rc=fontdata[ra+1];
-        for(rx=0;rx<rb;rx++) spi_data(rc);
+        for(y=0;y<32;y++)
+        {
+            for(ra=0;ra<32;ra++) spi_data(0xFF);
+        }
+    }
+    else
+    {
+        for(ra=datastart[num[0]];fontdata[ra];ra+=2)
+        {
+            rb=fontdata[ra+0];
+            rc=fontdata[ra+1];
+            for(rx=0;rx<rb;rx++) spi_data(rc);
+        }
     }
     for(y=0;y<5;y++)
     {
