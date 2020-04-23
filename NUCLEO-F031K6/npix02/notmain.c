@@ -50,20 +50,71 @@ void fifo_wait ( void )
         if((GET16(SPI1BASE+0x08)&(1<<12))==0) break;
     }
 }
-const unsigned short data[6]=
+
+unsigned short data[32];
+unsigned int off;
+unsigned int bit;
+
+void add_bit ( unsigned int x )
 {
-0x2492,
-0x4924,
-0x9249,
-0x2712,
-0x4900,
-0,
-};
+    data[off]<<=1;
+    data[off]|=(x&1);
+    bit++;
+    if(bit==16)
+    {
+        off++;
+        bit=0;
+    }
+}
+void add_one_color ( unsigned int c )
+{
+    unsigned int ra;
+    for(ra=0x80;ra;ra>>=1)
+    {
+        if(c&ra)
+        {
+            add_bit(1);
+            add_bit(1);
+            add_bit(0);
+        }
+        else
+        {
+            add_bit(1);
+            add_bit(0);
+            add_bit(0);
+        }
+    }
+}
+void add_colors ( unsigned int g, unsigned int r, unsigned int b )
+{
+    add_one_color(g);
+    add_one_color(r);
+    add_one_color(b);
+}
+
+void run_it ( void )
+{
+    unsigned int ra;
+
+    PUT16(SPI1BASE+0x0C,0x0000);
+    for(ra=0;ra<off;ra++)
+    {
+        fifo_wait();
+        PUT16(SPI1BASE+0x0C,data[ra]);
+    }
+    PUT16(SPI1BASE+0x0C,0x0000);
+    for(ra=0;ra<400000;ra++) dummy(ra);
+}
+void round_off ( void )
+{
+            //add_bit(1);
+            add_bit(0);
+    while(bit!=0) add_bit(0);
+}
 
 int notmain ( void )
 {
     unsigned int ra;
-    unsigned int rb;
 
     clock_init();
 
@@ -78,23 +129,11 @@ int notmain ( void )
 
     //moder
     ra=GET32(GPIOABASE+0x00);
-    //ra&=~(3<<(4<<1)); //PA4
-    //ra|= (2<<(4<<1)); //PA4 alternate function
-    //ra&=~(3<<(5<<1)); //PA5
-    //ra|= (2<<(5<<1)); //PA5 alternate function
-    //ra&=~(3<<(6<<1)); //PA6
-    //ra|= (2<<(6<<1)); //PA6 alternate function
     ra&=~(3<<(7<<1)); //PA7
     ra|= (2<<(7<<1)); //PA7 alternate function
     PUT32(GPIOABASE+0x00,ra);
     //AFRL
     ra=GET32(GPIOABASE+0x20);
-    //ra&=~(0xF<<(4<<2)); //PA4
-    //ra|= (0x0<<(4<<2)); //PA4
-    //ra&=~(0xF<<(5<<2)); //PA5
-    //ra|= (0x0<<(5<<2)); //PA5
-    //ra&=~(0xF<<(6<<2)); //PA6
-    //ra|= (0x0<<(6<<2)); //PA6
     ra&=~(0xF<<(7<<2)); //PA7
     ra|= (0x0<<(7<<2)); //PA7
     PUT32(GPIOABASE+0x20,ra);
@@ -106,53 +145,67 @@ int notmain ( void )
     //PUT32(RCCBASE+0x04,(0xF<<4)|(7<<8)); //SLOOOWWWW
 
     PUT16(SPI1BASE+0x00,(0<<6)|(2<<3)|(1<<2)|0);
-    PUT16(SPI1BASE+0x04,0x0F0C);
+    PUT16(SPI1BASE+0x04,0x0F04);
     PUT16(SPI1BASE+0x00,(1<<6)|(2<<3)|(1<<2)|0);
 
-//1101101101101101
-//1011011011011011
-//0110110110110110
-//1101101101101101
-//1011011000000000
+while(1)
+{
+    off=0;
+    bit=0;
 
-//1101 1011 0110 1101 DB6D
-//1011 0110 1101 1011 B6Db
-//0110 1101 1011 0110 6DB6
-//1101 1011 0110 1101 DB6D
-//1011 0110 0000 0000 B600
-
-    ra=0;
-    PUT16(SPI1BASE+0x0C,data[ra++]);
-    PUT16(SPI1BASE+0x0C,data[ra++]);
-    //PUT16(SPI1BASE+0x0C,data[ra++]);
-    for(ra=0;data[ra];ra++)
+    data[off++]=0x0000;
+    add_colors(0x00,0x00,0x01);
+    add_colors(0x00,0x01,0x00);
+    add_colors(0x01,0x00,0x00);
+    add_colors(0x00,0x00,0x01);
+    if(bit==16)
     {
-        fifo_wait();
-        PUT16(SPI1BASE+0x0C,data[ra]);
+        off++;
+        bit=0;
     }
+    while(bit!=0) add_bit(0);
+    data[off++]=0x0000;
+    run_it();
 
-    //for(rb=0;rb<6;rb++)
-    //{
-        //while(1)
-        //{
-            //ra=GET16(SPI1BASE+0x08);
-            //if((ra&(1<<12))==0) break;
-        //}
-        //PUT8(SPI1BASE+0x0C,0xAA);
-        ////GET8(SPI1BASE+0x0C);
-        //while(1)
-        //{
-            //ra=GET16(SPI1BASE+0x08);
-            //if((ra&(1<<12))==0) break;
-        //}
-        //PUT8(SPI1BASE+0x0C,0xCC);
-        ////GET8(SPI1BASE+0x0C);
-    //}
-    //while(1)
-    //{
-        //ra=GET16(SPI1BASE+0x08);
-        //if((ra&(1<<7))==0) break;
-    //}
+    off=0;
+    bit=0;
+
+    data[off++]=0x0000;
+    add_colors(0x00,0x01,0x00);
+    add_colors(0x01,0x00,0x00);
+    add_colors(0x00,0x00,0x01);
+    add_colors(0x00,0x01,0x00);
+    if(bit==16)
+    {
+        off++;
+        bit=0;
+    }
+    while(bit!=0) add_bit(0);
+    data[off++]=0x0000;
+
+    run_it();
+
+    off=0;
+    bit=0;
+
+    data[off++]=0x0000;
+    add_colors(0x01,0x00,0x00);
+    add_colors(0x00,0x00,0x01);
+    add_colors(0x00,0x01,0x00);
+    add_colors(0x01,0x00,0x00);
+    if(bit==16)
+    {
+        off++;
+        bit=0;
+    }
+    while(bit!=0) add_bit(0);
+    data[off++]=0x0000;
+    run_it();
+
+
+
+}
+
 
     return(0);
 }
