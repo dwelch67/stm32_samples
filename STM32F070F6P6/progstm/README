@@ -1,0 +1,13 @@
+
+See the README in the above directory for more information on
+documentation for this board.
+
+In particular AN2606 and AN3155 were used to develop/verify this
+program.  See the erase example for more information on starting
+to talk to the bootloader.
+
+This is a generic program that you specify the serial port and
+the binary file.
+
+./progstm /dev/ttyUSB4 ../blinker01/blinker01.gcc.thumb.flash.bin
+
