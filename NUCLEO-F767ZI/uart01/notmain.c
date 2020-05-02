@@ -1,9 +1,6 @@
 
-void PUT16 ( unsigned int, unsigned int );
 void PUT32 ( unsigned int, unsigned int );
-unsigned int GET16 ( unsigned int );
 unsigned int GET32 ( unsigned int );
-void dummy ( unsigned int );
 
 #define RCC_BASE 0x40023800
 #define RCC_CR          (RCC_BASE+0x00)
@@ -21,7 +18,6 @@ void dummy ( unsigned int );
 #define UART_CR1      (UART_BASE+0x00)
 #define UART_BRR      (UART_BASE+0x0C)
 #define UART_ISR      (UART_BASE+0x1C)
-#define UART_RDR      (UART_BASE+0x24)
 #define UART_TDR      (UART_BASE+0x28)
 
 //PD8 USART3 TX alternate function 7
@@ -31,7 +27,7 @@ static int clock_init ( void )
 {
     unsigned int ra;
 
-    //switch to external clock.
+    //switch to external 8MHz clock.
     ra=GET32(RCC_CR);
     ra|=1<<16;
     PUT32(RCC_CR,ra);
@@ -63,11 +59,6 @@ static int uart_init ( void )
     ra|= (2<<(8<<1)); //PD8
     ra|= (2<<(9<<1)); //PD9
     PUT32(GPIOD_MODER,ra);
-
-    //ra=GET32(GPIOD_OTYPER);
-    //ra&=~(1<<8); //PD8
-    //ra&=~(1<<9); //PD9
-    //PUT32(GPIOD_OTYPER,ra);
 
     ra=GET32(GPIOD_AFRH);
     ra&=~(0xF<<((8-8)<<2)); //PD8
