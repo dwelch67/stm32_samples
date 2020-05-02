@@ -10,6 +10,5 @@ SECTIONS
     .text : { *(.text*) } > rom
     .rodata : { *(.rodata*) } > rom
     .bss : { *(.bss*) } > ram
-    .data : { *(.data*) } > ram
 }
 
