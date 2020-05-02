@@ -2,14 +2,10 @@
 See the previous level README for schematic and programmers reference
 information.
 
-The generic nucleo board documentation says there are three user
-leds.
+The nucleo board documentation says there are three user leds.
 
-//PA5 or PB0 defaults to PB0
+//PB0
 //PB7
 //PB14
-
-The default/as-shipped solder bridges set the first led on PB0.  So
-we only need to mess with GPIOB ports for this one.
 
 This example blinks all three user leds.

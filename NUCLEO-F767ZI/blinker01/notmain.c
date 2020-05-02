@@ -17,7 +17,7 @@ void dummy ( unsigned int );
 #define GPIOB_OTYPER    (GPIOBBASE+0x04)
 #define GPIOB_BSRR      (GPIOBBASE+0x18)
 
-//PA5 or PB0 defaults to PB0
+//PB0
 //PB7
 //PB14
 
@@ -31,19 +31,13 @@ int notmain ( void )
     PUT32(RCC_AHB1ENR,ra);
 
     ra=GET32(GPIOB_MODER);
-    ra&=~(3<<(0<<1)); //PB0
-    ra|= (1<<(0<<1)); //PB0
-    ra&=~(3<<(7<<1)); //PB7
-    ra|= (1<<(7<<1)); //PB7
+    ra&=~(3<<( 0<<1)); //PB0
+    ra|= (1<<( 0<<1)); //PB0
+    ra&=~(3<<( 7<<1)); //PB7
+    ra|= (1<<( 7<<1)); //PB7
     ra&=~(3<<(14<<1)); //PB14
     ra|= (1<<(14<<1)); //PB14
     PUT32(GPIOB_MODER,ra);
-    //OTYPER
-    ra=GET32(GPIOB_OTYPER);
-    ra&=~(1<<0); //PB0
-    ra&=~(1<<7); //PB7
-    ra&=~(1<<14); //PB14
-    PUT32(GPIOB_OTYPER,ra);
 
     for(rx=0;;rx++)
     {

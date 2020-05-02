@@ -1,5 +1,6 @@
 
-ARMGNU = arm-none-eabi
+#ARMGNU ?= arm-none-eabi
+ARMGNU ?= arm-linux-gnueabi
 
 XCPU = -mcpu=cortex-m0
 XCPUx = -mcpu=cortex-m7
@@ -15,16 +16,14 @@ clean:
 	rm -f *.elf
 	rm -f *.list
 
-#---------------------------------
-
 flash.o : flash.s
 	$(ARMGNU)-as $(AOPS) flash.s -o flash.o
 
 notmain.o : notmain.c
 	$(ARMGNU)-gcc $(COPS) -mthumb -c notmain.c -o notmain.o
 
-notmain.bin : flash.ld flash.o notmain.o
-	$(ARMGNU)-ld -o notmain.elf -T flash.ld flash.o notmain.o
+notmain.bin :       flash.ld flash.o notmain.o
+	$(ARMGNU)-ld -T flash.ld flash.o notmain.o -o notmain.elf
 	$(ARMGNU)-objdump -D notmain.elf > notmain.list
-	$(ARMGNU)-objcopy notmain.elf notmain.bin -O binary
+	$(ARMGNU)-objcopy -O binary notmain.elf notmain.bin
 
