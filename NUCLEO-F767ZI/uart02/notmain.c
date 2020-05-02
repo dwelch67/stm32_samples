@@ -1,23 +1,20 @@
 
-void PUT16 ( unsigned int, unsigned int );
 void PUT32 ( unsigned int, unsigned int );
-unsigned int GET16 ( unsigned int );
 unsigned int GET32 ( unsigned int );
-void dummy ( unsigned int );
 
-#define RCC_BASE 0x40023800
+#define RCC_BASE        0x40023800
 #define RCC_CR          (RCC_BASE+0x00)
 #define RCC_CFGR        (RCC_BASE+0x08)
 #define RCC_APB1RSTR    (RCC_BASE+0x20)
 #define RCC_AHB1ENR     (RCC_BASE+0x30)
 #define RCC_APB1ENR     (RCC_BASE+0x40)
 
-#define GPIODBASE 0x40020C00
+#define GPIODBASE       0x40020C00
 #define GPIOD_MODER     (GPIODBASE+0x00)
 #define GPIOD_AFRH      (GPIODBASE+0x24)
 
-#define USART3_BASE 0x40004800
-#define UART_BASE USART3_BASE
+#define USART3_BASE     0x40004800
+#define UART_BASE       USART3_BASE
 #define UART_CR1      (UART_BASE+0x00)
 #define UART_BRR      (UART_BASE+0x0C)
 #define UART_ISR      (UART_BASE+0x1C)
@@ -31,7 +28,7 @@ static int clock_init ( void )
 {
     unsigned int ra;
 
-    //switch to external clock.
+    //switch to external 8MHz clock.
     ra=GET32(RCC_CR);
     ra|=1<<16;
     PUT32(RCC_CR,ra);
@@ -63,11 +60,6 @@ static int uart_init ( void )
     ra|= (2<<(8<<1)); //PD8
     ra|= (2<<(9<<1)); //PD9
     PUT32(GPIOD_MODER,ra);
-
-    //ra=GET32(GPIOD_OTYPER);
-    //ra&=~(1<<8); //PD8
-    //ra&=~(1<<9); //PD9
-    //PUT32(GPIOD_OTYPER,ra);
 
     ra=GET32(GPIOD_AFRH);
     ra&=~(0xF<<((8-8)<<2)); //PD8

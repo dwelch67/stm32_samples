@@ -1,7 +1,0 @@
-
-See the previous level README for schematic and programmers reference
-information.
-
-Derived from uart01.  Good baseline for 8Mhz crystal apps.
-
-Echos the character value it receives.
