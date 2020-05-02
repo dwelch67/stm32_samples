@@ -1,10 +1,6 @@
 
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
-
 void PUT32 ( unsigned int, unsigned int );
 unsigned int GET32 ( unsigned int );
-void dummy ( unsigned int );
 
 #define RCCBASE 0x40023800
 #define RCC_AHB1ENR (RCCBASE+0x30)
@@ -21,7 +17,7 @@ void dummy ( unsigned int );
 #define GPIOB_OTYPER    (GPIOBBASE+0x04)
 #define GPIOB_BSRR      (GPIOBBASE+0x18)
 
-//PA5 or PB0 defaults to PB0
+//PB0
 //PB7
 //PB14
 
@@ -29,7 +25,6 @@ void dummy ( unsigned int );
 #define STK_RVR 0xE000E014
 #define STK_CVR 0xE000E018
 
-//------------------------------------------------------------------------
 static void led_init ( void )
 {
     unsigned int ra;
@@ -39,31 +34,25 @@ static void led_init ( void )
     PUT32(RCC_AHB1ENR,ra);
 
     ra=GET32(GPIOB_MODER);
-    ra&=~(3<<(0<<1)); //PB0
-    ra|= (1<<(0<<1)); //PB0
-    ra&=~(3<<(7<<1)); //PB7
-    ra|= (1<<(7<<1)); //PB7
+    ra&=~(3<<( 0<<1)); //PB0
+    ra|= (1<<( 0<<1)); //PB0
+    ra&=~(3<<( 7<<1)); //PB7
+    ra|= (1<<( 7<<1)); //PB7
     ra&=~(3<<(14<<1)); //PB14
     ra|= (1<<(14<<1)); //PB14
     PUT32(GPIOB_MODER,ra);
-    //OTYPER
-    ra=GET32(GPIOB_OTYPER);
-    ra&=~(1<<0); //PB0
-    ra&=~(1<<7); //PB7
-    ra&=~(1<<14); //PB14
-    PUT32(GPIOB_OTYPER,ra);
 }
-//------------------------------------------------------------------------
+
 static void led_on ( void )
 {
-    PUT32(GPIOB_BSRR,((1<<0)<<0)|((1<<7)<<0)|((1<<14)<<0));
+    PUT32(GPIOB_BSRR,((1<<0)<< 0)|((1<<7)<< 0)|((1<<14)<< 0));
 }
-//------------------------------------------------------------------------
+
 static void led_off ( void )
 {
     PUT32(GPIOB_BSRR,((1<<0)<<16)|((1<<7)<<16)|((1<<14)<<16));
 }
-//------------------------------------------------------------------------
+
 void do_delay ( unsigned int sec )
 {
     unsigned int ra,rb,rc,rd;
@@ -80,7 +69,7 @@ void do_delay ( unsigned int sec )
         }
     }
 }
-//------------------------------------------------------------------------
+
 int notmain ( void )
 {
     unsigned int rx;
@@ -108,5 +97,5 @@ int notmain ( void )
     }
     return(0);
 }
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
+
+

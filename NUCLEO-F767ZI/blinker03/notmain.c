@@ -1,9 +1,6 @@
 
 void PUT32 ( unsigned int, unsigned int );
-void PUT32 ( unsigned int, unsigned int );
-unsigned int GET16 ( unsigned int );
 unsigned int GET32 ( unsigned int );
-void dummy ( unsigned int );
 
 #define RCCBASE 0x40023800
 #define RCC_AHB1ENR (RCCBASE+0x30)
@@ -21,10 +18,6 @@ void dummy ( unsigned int );
 #define GPIOB_OTYPER    (GPIOBBASE+0x04)
 #define GPIOB_BSRR      (GPIOBBASE+0x18)
 
-//PA5 or PB0 defaults to PB0
-//PB7
-//PB14
-
 #define TIM5BASE  0x40000C00
 #define TIM5_CR1        (TIM5BASE+0x00)
 #define TIM5_DIER       (TIM5BASE+0x0C)
@@ -33,8 +26,9 @@ void dummy ( unsigned int );
 #define TIM5_PSC        (TIM5BASE+0x24)
 #define TIM5_ARR        (TIM5BASE+0x2C)
 
-
-
+//PB0
+//PB7
+//PB14
 
 static void led_init ( void )
 {
@@ -52,17 +46,11 @@ static void led_init ( void )
     ra&=~(3<<(14<<1)); //PB14
     ra|= (1<<(14<<1)); //PB14
     PUT32(GPIOB_MODER,ra);
-    //OTYPER
-    ra=GET32(GPIOB_OTYPER);
-    ra&=~(1<<0); //PB0
-    ra&=~(1<<7); //PB7
-    ra&=~(1<<14); //PB14
-    PUT32(GPIOB_OTYPER,ra);
 }
 
 static void led_on ( void )
 {
-    PUT32(GPIOB_BSRR,((1<<0)<<0)|((1<<7)<<0)|((1<<14)<<0));
+    PUT32(GPIOB_BSRR,((1<<0)<< 0)|((1<<7)<< 0)|((1<<14)<< 0));
 }
 
 static void led_off ( void )
@@ -110,7 +98,7 @@ int notmain ( void )
     for(rx=0;rx<5;rx++)
     {
         led_on();
-        while(1) if(GET32(TIM5_CNT)&0x200000) break;
+        while(1) if((GET32(TIM5_CNT)&0x200000)!=0) break;
         led_off();
         while(1) if((GET32(TIM5_CNT)&0x200000)==0) break;
     }

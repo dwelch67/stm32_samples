@@ -42,9 +42,9 @@ int notmain ( void )
     for(rx=0;;rx++)
     {
         PUT32(GPIOB_BSRR,((1<<0)<<0)|((1<<7)<<16)|((1<<14)<<0));
-        for(ra=0;ra<200000;ra++) dummy(ra);
+        for(ra=0;ra<800000;ra++) dummy(ra);
         PUT32(GPIOB_BSRR,((1<<0)<<16)|((1<<7)<<0)|((1<<14)<<16));
-        for(ra=0;ra<200000;ra++) dummy(ra);
+        for(ra=0;ra<800000;ra++) dummy(ra);
     }
     return(0);
 }
