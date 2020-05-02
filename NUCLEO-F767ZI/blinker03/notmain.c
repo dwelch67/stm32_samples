@@ -74,7 +74,7 @@ static void timer_init ( void )
     PUT32(TIM5_CR1,0x0001);
 }
 
-void do_delay ( unsigned int x )
+static void do_delay ( unsigned int x )
 {
     unsigned int ra;
 
