@@ -11,20 +11,6 @@ void dummy ( unsigned int );
 #define RCC_AHB1ENR     (RCCBASE+0x30)
 #define RCC_APB1ENR     (RCCBASE+0x40)
 
-#define GPIOABASE 0x40020000
-#define GPIOA_MODER     (GPIOABASE+0x00)
-#define GPIOA_OTYPER    (GPIOABASE+0x04)
-#define GPIOA_OSPEEDR   (GPIOABASE+0x08)
-#define GPIOA_PUPDR     (GPIOABASE+0x0C)
-#define GPIOA_BSRR      (GPIOABASE+0x18)
-
-#define GPIOCBASE 0x40020800
-#define GPIOC_MODER     (GPIOCBASE+0x00)
-#define GPIOC_OTYPER    (GPIOCBASE+0x04)
-#define GPIOC_OSPEEDR   (GPIOCBASE+0x08)
-#define GPIOC_PUPDR     (GPIOCBASE+0x0C)
-#define GPIOC_IDR       (GPIOCBASE+0x10)
-
 #define TIM5BASE  0x40000C00
 #define TIM5_CR1        (TIM5BASE+0x00)
 #define TIM5_DIER       (TIM5BASE+0x0C)
@@ -35,10 +21,10 @@ void dummy ( unsigned int );
 
 #define GPIOBBASE 0x40020400
 #define GPIOB_MODER     (GPIOBBASE+0x00)
-#define GPIOB_OTYPER    (GPIOBBASE+0x04)
+//#define GPIOB_OTYPER    (GPIOBBASE+0x04)
 #define GPIOB_BSRR      (GPIOBBASE+0x18)
 
-//PA5 or PB0 defaults to PB0
+//PB0
 //PB7
 //PB14
 
@@ -58,46 +44,16 @@ static void led_init ( void )
     ra&=~(3<<(14<<1)); //PB14
     ra|= (1<<(14<<1)); //PB14
     PUT32(GPIOB_MODER,ra);
-    //OTYPER
-    ra=GET32(GPIOB_OTYPER);
-    ra&=~(1<<0); //PB0
-    ra&=~(1<<7); //PB7
-    ra&=~(1<<14); //PB14
-    PUT32(GPIOB_OTYPER,ra);
 }
 
 static void led_on ( void )
 {
-    PUT32(GPIOB_BSRR,((1<<0)<<0)|((1<<7)<<0)|((1<<14)<<0));
+    PUT32(GPIOB_BSRR,((1<<0)<< 0)|((1<<7)<< 0)|((1<<14)<< 0));
 }
 
 static void led_off ( void )
 {
     PUT32(GPIOB_BSRR,((1<<0)<<16)|((1<<7)<<16)|((1<<14)<<16));
-}
-
-static void button_init ( void )
-{
-    unsigned int ra;
-
-    ra=GET32(RCC_AHB1ENR);
-    ra|=1<<2; //enable GPIOC
-    PUT32(RCC_AHB1ENR,ra);
-
-    //moder 2b00
-    ra=GET32(GPIOC_MODER);
-    ra&=~(3<<26); //PC13
-    PUT32(GPIOC_MODER,ra);
-
-    //pupdr 2b00
-    ra=GET32(GPIOC_PUPDR);
-    ra&=~(3<<26); //PC13
-    PUT32(GPIOC_PUPDR,ra);
-}
-
-static unsigned int read_button ( void )
-{
-    return(GET32(GPIOC_IDR)&(1<<13));
 }
 
 static void timer_init ( void )
@@ -136,27 +92,6 @@ int notmain ( void )
     unsigned int rx;
 
     led_init();
-    button_init();
-
-    //this is a safety measure, if the code below that messes with
-    //the clock source, bricks the microcontroller then press and
-    //hold the user button, and press reset, on that reset this code
-    //will see the button pressed and go into this infinite loop
-    //instead of into the code below, allowing us to reprogram the
-    //microcontrollers flash with hopefully a not buggy program.
-    if(read_button()!=0)
-    {
-        //make the led glow
-        while(1)
-        {
-            led_on();
-            led_off();
-        }
-    }
-    //as delivered this code does not brick the microcontroller
-    //the above was for me to develop this code and for you to change
-    //this code as desired.
-
     timer_init();
 
     for(rx=0;rx<5;rx++)
@@ -167,7 +102,7 @@ int notmain ( void )
         do_delay(1);
     }
 
-    //switch to external clock.
+    //switch to external 8MHz clock.
     ra=GET32(RCC_CR);
     ra|=1<<16;
     PUT32(RCC_CR,ra);
