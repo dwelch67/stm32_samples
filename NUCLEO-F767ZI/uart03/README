@@ -1,9 +1,0 @@
-
-See the previous level README for schematic and programmers reference
-information.
-
-So this is the baseline for projects.  The chip comes up using HSI
-at 16Mhz, the HSE is 8MHz, this example uses the PLL to multiply that
-to 16MHz.  If you have the HSE of 8Mhz then use this example, or
-you can comment out the clock_init and use this example with the
-HSI (16Mhz)

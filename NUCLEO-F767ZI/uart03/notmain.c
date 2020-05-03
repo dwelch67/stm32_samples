@@ -1,11 +1,8 @@
 
-void PUT16 ( unsigned int, unsigned int );
 void PUT32 ( unsigned int, unsigned int );
-unsigned int GET16 ( unsigned int );
 unsigned int GET32 ( unsigned int );
-void dummy ( unsigned int );
 
-#define RCC_BASE 0x40023800
+#define RCC_BASE        0x40023800
 #define RCC_CR          (RCC_BASE+0x00)
 #define RCC_PLLCFGR     (RCC_BASE+0x04)
 #define RCC_CFGR        (RCC_BASE+0x08)
@@ -13,26 +10,27 @@ void dummy ( unsigned int );
 #define RCC_AHB1ENR     (RCC_BASE+0x30)
 #define RCC_APB1ENR     (RCC_BASE+0x40)
 
-#define GPIODBASE 0x40020C00
+#define GPIODBASE       0x40020C00
 #define GPIOD_MODER     (GPIODBASE+0x00)
 #define GPIOD_AFRH      (GPIODBASE+0x24)
 
-#define USART3_BASE 0x40004800
-#define UART_BASE USART3_BASE
-#define UART_CR1      (UART_BASE+0x00)
-#define UART_BRR      (UART_BASE+0x0C)
-#define UART_ISR      (UART_BASE+0x1C)
-#define UART_RDR      (UART_BASE+0x24)
-#define UART_TDR      (UART_BASE+0x28)
+#define USART3_BASE     0x40004800
+#define UART_BASE       USART3_BASE
+#define UART_CR1        (UART_BASE+0x00)
+#define UART_BRR        (UART_BASE+0x0C)
+#define UART_ISR        (UART_BASE+0x1C)
+#define UART_RDR        (UART_BASE+0x24)
+#define UART_TDR        (UART_BASE+0x28)
 
 //PD8 USART3 TX alternate function 7
 //PD9 USART3 RX alternate function 7
 
 static int clock_init ( void )
 {
+    //switch from internal rc at 16MHz to external based 16MHz
     unsigned int ra;
 
-    //switch to external clock.
+    //switch to external 8MHz clock.
     ra=GET32(RCC_CR);
     ra|=1<<16;
     PUT32(RCC_CR,ra);
@@ -155,5 +153,3 @@ int notmain ( void )
     }
     return(0);
 }
-
-
