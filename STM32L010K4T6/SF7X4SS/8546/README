@@ -1,0 +1,16 @@
+
+The attached kicad pcb file is what I used for this project.
+
+SF7X4_8546.kicad_pcb
+SF7X4_8546_MCU.kicad_pcb
+
+Based around these seven segment displays from sparkfun.
+
+https://www.sparkfun.com/products/8546
+
+Three boards total, the first one is just the leds and resistors.
+The MCU board drives the leds, with numbers00 it takes a string
+from the uart and displays four numbers based on that.  A third
+board has a gps and extracts the time (very accurate and no
+need to set the thing) and creates the string to send to the
+mcu board.
