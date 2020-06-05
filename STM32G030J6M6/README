@@ -1,0 +1,24 @@
+
+
+1       8
+2 VCC   7
+3 GND   6 PA10 RX
+4       5 PA9  TX
+
+This is the hookup to use the UART bootloader.  The documentation
+is unclear.  It shows [PA9] and [PA10] but then in the pin
+descriptions does not show these signals as having pins.  But this
+happened to work.
+
+This part does let you use the UART bootloader if the flash is empty
+otherwise there is a security deal that blocks it, you are expected
+to use SWD.  But if you use progstm (the one in this directory)
+to program the part with the RUN_ME_FIRST binary.  it will change the
+bit from default so that you can use boot0 and continue to use
+the UART bootloader.  I assume this is the new norm, and/or the
+bootloader will just go away some day.
+
+see the tiny.kicad_pcb board, costs like $1.50 for three at
+oshpark.
+
+I have an led on PB13
