@@ -18,7 +18,18 @@ bit from default so that you can use boot0 and continue to use
 the UART bootloader.  I assume this is the new norm, and/or the
 bootloader will just go away some day.
 
+After RUN_ME_FIRST remove power to the chip for it to work.
+
 see the tiny.kicad_pcb board, costs like $1.50 for three at
 oshpark.
 
 I have an led on PB13
+
+tiny2.kicad_pcb
+using this part
+STM32G030J6M6
+these cute little switches they dont look like the picture but they
+fit/work just fine.
+MCSLPT4644B1TR
+A 10K (0603) for the boot0 pull up, and then a 0603 led and resistor.
+
