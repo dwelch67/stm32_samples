@@ -377,7 +377,7 @@ void update_time ( unsigned int h, unsigned int m, unsigned int s )
     unsigned int xr;
     unsigned int xg;
 
-    if(h>12) h=0;
+    if(h>11) h=0;
     if(m>59) m=0;
     if(s>59) s=0;
 
