@@ -4,7 +4,7 @@ information.
 
 Same as blinker05 but is using the internal 16mhz clock HSI16.  the
 led changes state every 4 seconds give or take 65536000/16000000 =
-4.096 seconds so that sounds about right.  Maybe being a slave to the
+4.096 seconds so that sounds about right.  Maybe being a dependent to the
 stlink mcu is not the best idea?  It can be reprogrammed if you do a
 firmware update from ST, and maybe the mcu outputs something different
 then is not the clock I see today for HSE.  Maybe I use the HSI16 as

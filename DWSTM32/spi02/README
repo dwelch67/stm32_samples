@@ -11,7 +11,7 @@ for one of them (leave it an input!) and jumper over to use that led
 relative to the other.
 
 I didnt know there was such a thing as TI mode vs Motorola mode.  I
-personally dont ever care.  The datasheet for a slave device (as well
+personally dont ever care.  The datasheet for a dependent device (as well
 as a master) document how they behave, you _simply_ make the master
 change the output on the correct edges, and sample on the correct edges
 unfortunately this SPI controller is too closely tied to the four
@@ -37,7 +37,7 @@ or we play games and use the spi controller itself, clock out some
 bits with nss high which shouldnt affect the target, and we dont need
 another timer.  With the systick timer built in and so may others
 which are so trivial to program though, other than knowing how
-busy works.  Here again the datasheet for your slave should document
+busy works.  Here again the datasheet for your dependent should document
 the time between nss falling and when your first clock edge can be
 so you may have to either use a scope on this or control that bit
 with software, and add a delay between dropping nss and starting
