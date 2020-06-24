@@ -1,0 +1,36 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+derived from npix examples
+
+It uses the hardware spi controller to generate timed clock and data
+for APA201C three color programmable leds.
+
+I have one of these
+
+https://www.sparkfun.com/products/14360
+
+   USB
+
+PA9     VIN
+PA10    GND   <----
+NRST    NRST
+GND     +5V   <----
+PA12    PA2
+PB0     PA7   <---- DATA
+PB7     PA6
+PB6     PA5   <---- CLOCK
+PB1     PA4
+PF0     PA3
+PF1     PA1
+PA8     PA0
+PA11    AREF
+PB5     +3V3
+PB4     PB3
+
+8MHz internal clock/8 = 1000KHz which is between the 800 and 1200 spec
+
+Extra zeros up front seem to be fine, without another form of sync
+the three ones that lead the led bit sequence appear to be how it
+detects the start of the stream.
