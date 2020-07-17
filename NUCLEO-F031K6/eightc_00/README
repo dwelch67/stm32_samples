@@ -1,0 +1,16 @@
+
+This was a fun experiment.
+
+20 leds in a seven segment like configuration
+
+ABCD
+E  F
+G  H
+IJKL
+M  N
+O  P
+QRST
+
+Charlieplexed
+
+Less than a buck a board at oshpark.
