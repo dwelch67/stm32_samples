@@ -93,8 +93,8 @@ pipeline stages.  It has been plenty of time now but the cortex-m3
 was the first one out, and the cortex-m3 is ARMv7m based, the
 cortex-m4 is also ARMv7m based.  cortex-m3 for example is the
 name of a specific ARM processor core product.  ARMv7m is the name
-of the general architecure that that specific product is designed to
-meet, other cores that are also from that archtecture are similar in
+of the general architecture that that specific product is designed to
+meet, other cores that are also from that architecture are similar in
 how they work, they all conform.  The cortex-m0 and m0+ though come
 from the ARMv6m architecture.  Why that matters is because the
 instruction set used by all of the cortex-m cores so far is called
@@ -102,12 +102,12 @@ thumb, a reduced version of the full blown ARM instruction set.
 Originally (started with the ARMv7T or ARM7TDMI core) thumb was strictly
 16 bit instructions.  The ARMv4T and ARMv5 used this, ARMv6m though
 which is a special cortex-m subset/relation to the full ARMv6 took
-some of the undefined instruciton patterns, and implemented them such
+some of the undefined instruction patterns, and implemented them such
 that they became a variable length instruction.  Basically they added
 a small number of 32 bit instructions but these are NOT 32 bit ARM
 instructions but 32 bit thumb2 extensions to the thumb instruction
 set, different encoding.  If you look at the ARMv7m documentation
-they show different encodings for each instruciton, some of the T1 or
+they show different encodings for each instruction, some of the T1 or
 T2 or whatever encodings will say all thumb variants or list a long
 list of ARMvwhatever numbers.  Some will list only ARMv6m and ARMv7m
 and some will say ARMv7m only.  I counted one day and the difference
