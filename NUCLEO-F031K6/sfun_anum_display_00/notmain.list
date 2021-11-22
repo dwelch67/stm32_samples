@@ -1,0 +1,257 @@
+
+notmain.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08000000 <_start>:
+ 8000000:	20001000 	andcs	r1, r0, r0
+ 8000004:	08000041 	stmdaeq	r0, {r0, r6}
+ 8000008:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 800000c:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 8000010:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 8000014:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 8000018:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 800001c:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 8000020:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 8000024:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 8000028:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 800002c:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 8000030:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 8000034:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 8000038:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+ 800003c:	08000047 	stmdaeq	r0, {r0, r1, r2, r6}
+
+08000040 <reset>:
+ 8000040:	f000 f86c 	bl	800011c <notmain>
+ 8000044:	e7ff      	b.n	8000046 <hang>
+
+08000046 <hang>:
+ 8000046:	e7fe      	b.n	8000046 <hang>
+
+08000048 <PUT16>:
+ 8000048:	8001      	strh	r1, [r0, #0]
+ 800004a:	4770      	bx	lr
+
+0800004c <PUT32>:
+ 800004c:	6001      	str	r1, [r0, #0]
+ 800004e:	4770      	bx	lr
+
+08000050 <GET16>:
+ 8000050:	8800      	ldrh	r0, [r0, #0]
+ 8000052:	4770      	bx	lr
+
+08000054 <GET32>:
+ 8000054:	6800      	ldr	r0, [r0, #0]
+ 8000056:	4770      	bx	lr
+
+08000058 <dummy>:
+ 8000058:	4770      	bx	lr
+ 800005a:	46c0      	nop			; (mov r8, r8)
+
+0800005c <i2c_stop>:
+ 800005c:	b510      	push	{r4, lr}
+ 800005e:	4c05      	ldr	r4, [pc, #20]	; (8000074 <i2c_stop+0x18>)
+ 8000060:	2101      	movs	r1, #1
+ 8000062:	0020      	movs	r0, r4
+ 8000064:	f7ff fff2 	bl	800004c <PUT32>
+ 8000068:	2102      	movs	r1, #2
+ 800006a:	0020      	movs	r0, r4
+ 800006c:	f7ff ffee 	bl	800004c <PUT32>
+ 8000070:	bd10      	pop	{r4, pc}
+ 8000072:	46c0      	nop			; (mov r8, r8)
+ 8000074:	48000018 	stmdami	r0, {r3, r4}
+
+08000078 <i2c_start>:
+ 8000078:	2180      	movs	r1, #128	; 0x80
+ 800007a:	b510      	push	{r4, lr}
+ 800007c:	4c05      	ldr	r4, [pc, #20]	; (8000094 <i2c_start+0x1c>)
+ 800007e:	0289      	lsls	r1, r1, #10
+ 8000080:	0020      	movs	r0, r4
+ 8000082:	f7ff ffe3 	bl	800004c <PUT32>
+ 8000086:	2180      	movs	r1, #128	; 0x80
+ 8000088:	0020      	movs	r0, r4
+ 800008a:	0249      	lsls	r1, r1, #9
+ 800008c:	f7ff ffde 	bl	800004c <PUT32>
+ 8000090:	bd10      	pop	{r4, pc}
+ 8000092:	46c0      	nop			; (mov r8, r8)
+ 8000094:	48000018 	stmdami	r0, {r3, r4}
+
+08000098 <i2c_write_byte>:
+ 8000098:	b570      	push	{r4, r5, r6, lr}
+ 800009a:	0006      	movs	r6, r0
+ 800009c:	2508      	movs	r5, #8
+ 800009e:	2480      	movs	r4, #128	; 0x80
+ 80000a0:	e015      	b.n	80000ce <i2c_write_byte+0x36>
+ 80000a2:	2102      	movs	r1, #2
+ 80000a4:	4813      	ldr	r0, [pc, #76]	; (80000f4 <i2c_write_byte+0x5c>)
+ 80000a6:	f7ff ffd1 	bl	800004c <PUT32>
+ 80000aa:	2101      	movs	r1, #1
+ 80000ac:	4811      	ldr	r0, [pc, #68]	; (80000f4 <i2c_write_byte+0x5c>)
+ 80000ae:	f7ff ffcd 	bl	800004c <PUT32>
+ 80000b2:	2180      	movs	r1, #128	; 0x80
+ 80000b4:	480f      	ldr	r0, [pc, #60]	; (80000f4 <i2c_write_byte+0x5c>)
+ 80000b6:	0249      	lsls	r1, r1, #9
+ 80000b8:	f7ff ffc8 	bl	800004c <PUT32>
+ 80000bc:	2180      	movs	r1, #128	; 0x80
+ 80000be:	480d      	ldr	r0, [pc, #52]	; (80000f4 <i2c_write_byte+0x5c>)
+ 80000c0:	0289      	lsls	r1, r1, #10
+ 80000c2:	3d01      	subs	r5, #1
+ 80000c4:	f7ff ffc2 	bl	800004c <PUT32>
+ 80000c8:	0864      	lsrs	r4, r4, #1
+ 80000ca:	2d00      	cmp	r5, #0
+ 80000cc:	d007      	beq.n	80000de <i2c_write_byte+0x46>
+ 80000ce:	4234      	tst	r4, r6
+ 80000d0:	d1e7      	bne.n	80000a2 <i2c_write_byte+0xa>
+ 80000d2:	2180      	movs	r1, #128	; 0x80
+ 80000d4:	4807      	ldr	r0, [pc, #28]	; (80000f4 <i2c_write_byte+0x5c>)
+ 80000d6:	0289      	lsls	r1, r1, #10
+ 80000d8:	f7ff ffb8 	bl	800004c <PUT32>
+ 80000dc:	e7e5      	b.n	80000aa <i2c_write_byte+0x12>
+ 80000de:	2101      	movs	r1, #1
+ 80000e0:	4804      	ldr	r0, [pc, #16]	; (80000f4 <i2c_write_byte+0x5c>)
+ 80000e2:	f7ff ffb3 	bl	800004c <PUT32>
+ 80000e6:	2180      	movs	r1, #128	; 0x80
+ 80000e8:	4802      	ldr	r0, [pc, #8]	; (80000f4 <i2c_write_byte+0x5c>)
+ 80000ea:	0249      	lsls	r1, r1, #9
+ 80000ec:	f7ff ffae 	bl	800004c <PUT32>
+ 80000f0:	2000      	movs	r0, #0
+ 80000f2:	bd70      	pop	{r4, r5, r6, pc}
+ 80000f4:	48000018 	stmdami	r0, {r3, r4}
+
+080000f8 <send_command.constprop.0>:
+ 80000f8:	b510      	push	{r4, lr}
+ 80000fa:	0004      	movs	r4, r0
+ 80000fc:	f7ff ffbc 	bl	8000078 <i2c_start>
+ 8000100:	20e0      	movs	r0, #224	; 0xe0
+ 8000102:	f7ff ffc9 	bl	8000098 <i2c_write_byte>
+ 8000106:	2800      	cmp	r0, #0
+ 8000108:	d105      	bne.n	8000116 <send_command.constprop.0+0x1e>
+ 800010a:	0020      	movs	r0, r4
+ 800010c:	f7ff ffc4 	bl	8000098 <i2c_write_byte>
+ 8000110:	2000      	movs	r0, #0
+ 8000112:	f7ff ffc1 	bl	8000098 <i2c_write_byte>
+ 8000116:	f7ff ffa1 	bl	800005c <i2c_stop>
+ 800011a:	bd10      	pop	{r4, pc}
+
+0800011c <notmain>:
+ 800011c:	b530      	push	{r4, r5, lr}
+ 800011e:	482b      	ldr	r0, [pc, #172]	; (80001cc <notmain+0xb0>)
+ 8000120:	b089      	sub	sp, #36	; 0x24
+ 8000122:	f7ff ff97 	bl	8000054 <GET32>
+ 8000126:	2180      	movs	r1, #128	; 0x80
+ 8000128:	0289      	lsls	r1, r1, #10
+ 800012a:	4301      	orrs	r1, r0
+ 800012c:	4827      	ldr	r0, [pc, #156]	; (80001cc <notmain+0xb0>)
+ 800012e:	f7ff ff8d 	bl	800004c <PUT32>
+ 8000132:	2090      	movs	r0, #144	; 0x90
+ 8000134:	05c0      	lsls	r0, r0, #23
+ 8000136:	f7ff ff8d 	bl	8000054 <GET32>
+ 800013a:	230f      	movs	r3, #15
+ 800013c:	0001      	movs	r1, r0
+ 800013e:	2005      	movs	r0, #5
+ 8000140:	4399      	bics	r1, r3
+ 8000142:	4301      	orrs	r1, r0
+ 8000144:	2090      	movs	r0, #144	; 0x90
+ 8000146:	05c0      	lsls	r0, r0, #23
+ 8000148:	f7ff ff80 	bl	800004c <PUT32>
+ 800014c:	4820      	ldr	r0, [pc, #128]	; (80001d0 <notmain+0xb4>)
+ 800014e:	f7ff ff81 	bl	8000054 <GET32>
+ 8000152:	2303      	movs	r3, #3
+ 8000154:	0001      	movs	r1, r0
+ 8000156:	481e      	ldr	r0, [pc, #120]	; (80001d0 <notmain+0xb4>)
+ 8000158:	4399      	bics	r1, r3
+ 800015a:	f7ff ff77 	bl	800004c <PUT32>
+ 800015e:	2103      	movs	r1, #3
+ 8000160:	481c      	ldr	r0, [pc, #112]	; (80001d4 <notmain+0xb8>)
+ 8000162:	f7ff ff73 	bl	800004c <PUT32>
+ 8000166:	2101      	movs	r1, #1
+ 8000168:	481a      	ldr	r0, [pc, #104]	; (80001d4 <notmain+0xb8>)
+ 800016a:	f7ff ff6f 	bl	800004c <PUT32>
+ 800016e:	2102      	movs	r1, #2
+ 8000170:	4818      	ldr	r0, [pc, #96]	; (80001d4 <notmain+0xb8>)
+ 8000172:	f7ff ff6b 	bl	800004c <PUT32>
+ 8000176:	2021      	movs	r0, #33	; 0x21
+ 8000178:	f7ff ffbe 	bl	80000f8 <send_command.constprop.0>
+ 800017c:	20e0      	movs	r0, #224	; 0xe0
+ 800017e:	f7ff ffbb 	bl	80000f8 <send_command.constprop.0>
+ 8000182:	2080      	movs	r0, #128	; 0x80
+ 8000184:	f7ff ffb8 	bl	80000f8 <send_command.constprop.0>
+ 8000188:	2081      	movs	r0, #129	; 0x81
+ 800018a:	f7ff ffb5 	bl	80000f8 <send_command.constprop.0>
+ 800018e:	4b12      	ldr	r3, [pc, #72]	; (80001d8 <notmain+0xbc>)
+ 8000190:	466a      	mov	r2, sp
+ 8000192:	9300      	str	r3, [sp, #0]
+ 8000194:	4b11      	ldr	r3, [pc, #68]	; (80001dc <notmain+0xc0>)
+ 8000196:	9301      	str	r3, [sp, #4]
+ 8000198:	9302      	str	r3, [sp, #8]
+ 800019a:	23d0      	movs	r3, #208	; 0xd0
+ 800019c:	011b      	lsls	r3, r3, #4
+ 800019e:	8193      	strh	r3, [r2, #12]
+ 80001a0:	f7ff ff6a 	bl	8000078 <i2c_start>
+ 80001a4:	20e0      	movs	r0, #224	; 0xe0
+ 80001a6:	f7ff ff77 	bl	8000098 <i2c_write_byte>
+ 80001aa:	2800      	cmp	r0, #0
+ 80001ac:	d109      	bne.n	80001c2 <notmain+0xa6>
+ 80001ae:	250e      	movs	r5, #14
+ 80001b0:	466c      	mov	r4, sp
+ 80001b2:	446d      	add	r5, sp
+ 80001b4:	e000      	b.n	80001b8 <notmain+0x9c>
+ 80001b6:	7820      	ldrb	r0, [r4, #0]
+ 80001b8:	3401      	adds	r4, #1
+ 80001ba:	f7ff ff6d 	bl	8000098 <i2c_write_byte>
+ 80001be:	42a5      	cmp	r5, r4
+ 80001c0:	d1f9      	bne.n	80001b6 <notmain+0x9a>
+ 80001c2:	f7ff ff4b 	bl	800005c <i2c_stop>
+ 80001c6:	2000      	movs	r0, #0
+ 80001c8:	b009      	add	sp, #36	; 0x24
+ 80001ca:	bd30      	pop	{r4, r5, pc}
+ 80001cc:	40021014 	andmi	r1, r2, r4, lsl r0
+ 80001d0:	48000004 	stmdami	r0, {r2}
+ 80001d4:	48000018 	stmdami	r0, {r3, r4}
+ 80001d8:	0d01dd00 	stceq	13, cr13, [r1, #-0]
+ 80001dc:	0d000d00 	stceq	13, cr0, [r0, #-0]
+
+Disassembly of section .ARM.attributes:
+
+00000000 <.ARM.attributes>:
+   0:	00002c41 	andeq	r2, r0, r1, asr #24
+   4:	61656100 	cmnvs	r5, r0, lsl #2
+   8:	01006962 	tsteq	r0, r2, ror #18
+   c:	00000022 	andeq	r0, r0, r2, lsr #32
+  10:	726f4305 	rsbvc	r4, pc, #335544320	; 0x14000000
+  14:	2d786574 	cfldr64cs	mvdx6, [r8, #-464]!	; 0xfffffe30
+  18:	0600304d 	streq	r3, [r0], -sp, asr #32
+  1c:	094d070c 	stmdbeq	sp, {r2, r3, r8, r9, sl}^
+  20:	14041201 	strne	r1, [r4], #-513	; 0xfffffdff
+  24:	17011501 	strne	r1, [r1, -r1, lsl #10]
+  28:	1a011803 	bne	4603c <_start-0x7fb9fc4>
+  2c:	Address 0x000000000000002c is out of bounds.
+
+
+Disassembly of section .comment:
+
+00000000 <.comment>:
+   0:	3a434347 	bcc	10d0d24 <_start-0x6f2f2dc>
+   4:	35312820 	ldrcc	r2, [r1, #-2080]!	; 0xfffff7e0
+   8:	322d393a 	eorcc	r3, sp, #950272	; 0xe8000
+   c:	2d393130 	ldfcss	f3, [r9, #-192]!	; 0xffffff40
+  10:	302d3471 	eorcc	r3, sp, r1, ror r4
+  14:	6e756275 	mrcvs	2, 3, r6, cr5, cr5, {3}
+  18:	29317574 	ldmdbcs	r1!, {r2, r4, r5, r6, r8, sl, ip, sp, lr}
+  1c:	322e3920 	eorcc	r3, lr, #32, 18	; 0x80000
+  20:	3220312e 	eorcc	r3, r0, #-2147483637	; 0x8000000b
+  24:	31393130 	teqcc	r9, r0, lsr r1
+  28:	20353230 	eorscs	r3, r5, r0, lsr r2
+  2c:	6c657228 	sfmvs	f7, 2, [r5], #-160	; 0xffffff60
+  30:	65736165 	ldrbvs	r6, [r3, #-357]!	; 0xfffffe9b
+  34:	415b2029 	cmpmi	fp, r9, lsr #32
+  38:	612f4d52 			; <UNDEFINED> instruction: 0x612f4d52
+  3c:	392d6d72 	pushcc	{r1, r4, r5, r6, r8, sl, fp, sp, lr}
+  40:	6172622d 	cmnvs	r2, sp, lsr #4
+  44:	2068636e 	rsbcs	r6, r8, lr, ror #6
+  48:	69766572 	ldmdbvs	r6!, {r1, r4, r5, r6, r8, sl, sp, lr}^
+  4c:	6e6f6973 			; <UNDEFINED> instruction: 0x6e6f6973
+  50:	37373220 	ldrcc	r3, [r7, -r0, lsr #4]!
+  54:	5d393935 			; <UNDEFINED> instruction: 0x5d393935
+	...

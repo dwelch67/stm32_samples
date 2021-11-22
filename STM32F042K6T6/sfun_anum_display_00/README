@@ -1,0 +1,102 @@
+
+See the top level README for schematic and programmers reference information.
+
+SparkFun Qwiic Alphanumeric Display.
+
+Uses a VK16K33 (HT16K33).  
+
+Not a fan of the library, had to figure it out myself.
+
+
+VIN
+GND  GND
+RST
+5V
+A7
+A6
+A5
+A4
+A3
+A2
+A1   SDA
+A0   SCL
+REF
+3V3  VCC
+D13
+
+
+	send_command(0x21,0x00); //enable oscillator
+	send_command(0xEF,0x00); //full brightness (reset value)
+	send_command(0x80,0x00); //blinking off (reset value)
+	send_command(0x81,0x00); //blinking off, display on
+
+So not sure why sparkfun did the same register twice.
+
+Then using the address register of 0 then the following bytes cover leds.
+They broke them out in banks of four, one for each digit. so the top
+bar for the four places are in a group of four bits in a byte.
+
+Seems like there are 16 bits per group...There is one colon and one
+decimal point and they are in their own location.
+
+//  aaaa    bbbb     cccc     dddd    
+// I    j  J    k i K    l   L    m   
+// I    j  J    k   K    l   L    m   
+//  EEee    FFff     GGgg     HHhh    
+// A    o  B    p i C    q   D    r   
+// A    o  B    p   C    q   D    r   
+//  ssss    tttt     uuuu n   vvvv    
+ 
+ 
+// a  00000000
+// 0  hgfedcba 
+// 1  .......i 
+// 2  ....mlkj upper bits are top left angle
+// 3  .......n 
+// 4  ....rqpo upper bits middle verticle
+// 5  ........
+// 6  ....vuts upper bits slash
+// 7  ........
+// 8  ....DCBA upper bits slash
+// 9  ........
+//10  ....LKJI
+//11  ........
+//12  ....HGFE upper bits slash
+
+//  aaaa  
+// f    b 
+// f    b 
+//  gghh  
+// e    c 
+// e    c 
+//  dddd  
+ 
+// a  00000000
+// 0  hhhhaaaa 
+// 1  .......C colon 
+// 2  ....bbbb 
+// 3  .......D decimal
+// 4  ....cccc 
+// 5  ........
+// 6  ....dddd 
+// 7  ........
+// 8  ....eeee 
+// 9  ........
+//10  ....ffff
+//11  ........
+//12  ....gggg 
+
+I was only initially interested in 7 segment so this and the next example
+were to figure that out.
+
+From the breakout jst cable 
+
+red vcc
+black gnd
+yellow scl
+blue sck
+
+This one was to figure out the segments
+
+
+
