@@ -1,0 +1,707 @@
+
+See the previous level README for schematic and programmers reference
+information.
+
+This came from a stackoverflow question but taps into demonstrations I
+have done before.
+
+There are two demonstrations here, first is that for high performance
+processors like these ARM cores, if your fetch is multiple instructions
+then you can get into situations where the performance of your code
+can vary based on its alignment in memory.  Basically it may take N
+or N + 1 what I call fetch lines (similar to a cache line) to execute
+a loop.  But can that be measured or not, some processors no, some yes.
+
+The second demonstration is a small subset of the perf00.  The issue
+there was that SRAMs are not built out of byte wide modules, they are
+larger 32 bits at least for a processor like this or multiples of 
+32 bits.  It is a waste of chip real estate, risk, cost, etc to 
+implement byte addressable memory for these srams.  The side effect of
+this is that you can only read or write aligned, lets say 32 bit words,
+to from this SRAM (this is true for cache ram as well as system SRAM,
+or most others).  Which means if you want to write a byte to memory then
+you have to read a 32 bit value (lets assume it is 32 bits wide) 
+modify the byte of interest and then write 32 bits back to the sram.
+This takes clock cycles.  If you create a flood of writes (memset,
+memcpy, etc) then it can back pressure the system and stall the 
+processor, and the processor will be limited to the write rate with
+read-modify-write.  You will also see this with unaligned word writes
+as you have to read-modify-write two 32 bit locations in order to do 
+that write.  Reads are affected as well, byte reads are not done as
+byte reads a full word (or multiple) is read and the processor isolates
+the byte off of the bus and discards the others.  But word sized 
+unaligned accesses should cause two SRAM cycles to read two 32 bit
+locations and that is also a performance hit.  (there are reasons why
+early MIPS and ARM processors did not support unaligned accesses, sadly
+due to lazy programmers and processors like x86, these platforms have
+to cave in and allow this, but as with any processor there is a 
+performance hit.
+
+I normally do the discovery live as I write this readme, but I had
+already done this for stackoverflow and know some of the answers.
+
+Some relevant information from the ARM ARM and ARM TRM.
+
+....
+
+The Prefetch Unit (PFU) provides:
+
+64-bit instruction fetch bandwidth.
+
+4x64-bit pre-fetch queue to decouple instruction pre-fetch from DPU 
+pipeline operation.
+
+A Branch Target Address Cache (BTAC) for single-cycle turn-around of 
+branch predictor state and target address.
+
+A static branch predictor when no BTAC is specified.
+
+Forwarding of flags for early resolution of direct branches in the 
+decoder and first execution stages of the processor pipeline.
+
+....
+
+Instruction fetches, identified by ARPROT[2], are always a 64 bit
+transfer size, and never locked or exclusive.
+
+....
+
+
+The Branch predictor is always enabled in the processor, therefore 
+CCR.BP is RAO/WI.
+
+....
+
+
+DISBTACREAD 
+0 Normal operation
+1 BTAC is not used and only static branch prediction can occur.
+
+....
+
+
+The simplest demonstration for affects of fetching on code performance
+can be done with this loop
+
+loop:
+    sub r0,#1
+    bne loop
+
+I am not using the unified syntax so that is really a subs, but the
+assembler does not accept subs, it just generates it (originally thumb
+did not have an option)
+
+The code under test for this initial demonstration is
+
+.balign 0x100
+/* r0 count */
+/* r1 timer address */
+.thumb_func
+.globl TEST
+TEST:
+    push {r4,r5}
+    ldr r4,[r1]
+
+loop:
+    sub r0,#1
+    bne loop
+
+    ldr r5,[r1]
+    sub r0,r4,r5
+    pop {r4,r5}
+    bx lr
+
+    nop
+    nop
+    nop
+    nop
+
+The systick timer will be set up and the address of the count register
+will be supplied as well as the number of loops to run.  
+
+Doing things like this
+
+beg=read_timer();
+for(i=0;i<1000;i++)
+{
+    do_one_thing();
+}
+end=read_timer();
+
+Is a very bad way to do a benchmark, esp with what is about to be shown.
+
+Michael Abrash.  Zen of assembly language, everything you see here and
+much more was learned there.
+
+I have the test loop embedded in the test code, yes you cannot remove
+all effects of measurement.  And the reading of the timer before and
+after is also embedded in the test code.  The number of loops ideally
+shadows this overhead.
+
+So we build the program
+
+We run the test a few times to see if it is consistent.
+
+    ra=TEST(0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+    ra=TEST(0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+    ra=TEST(0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+    ra=TEST(0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+
+Our original alignment is as such
+
+
+08000100 <TEST>:
+ 8000100:	b430      	push	{r4, r5}
+ 8000102:	680c      	ldr	r4, [r1, #0]
+
+08000104 <loop>:
+ 8000104:	3801      	subs	r0, #1
+ 8000106:	d1fd      	bne.n	8000104 <loop>
+ 8000108:	680d      	ldr	r5, [r1, #0]
+ 800010a:	1b60      	subs	r0, r4, r5
+ 800010c:	bc30      	pop	{r4, r5}
+ 800010e:	4770      	bx	lr
+ 8000110:	46c0      	nop			; (mov r8, r8)
+ 8000112:	46c0      	nop			; (mov r8, r8)
+ 8000114:	46c0      	nop			; (mov r8, r8)
+ 8000116:	46c0      	nop			; (mov r8, r8)
+
+
+Specifically
+
+08000104 <loop>:
+ 8000104:	3801      	subs	r0, #1
+ 8000106:	d1fd      	bne.n	8000104 <loop>
+
+
+The code under test really should be assembly or machine language, and
+if you put it up front in the binary then whatever you do in the C
+code wont affect its alignment, if you let it fall where it may each
+change to some other part of the program can affect the alignment.
+
+So the initial result is
+
+00001029 
+00001006 
+00001006 
+00001006 
+
+This shows there is some caching even though we have not turned any
+caches on in the ARM core itself.  Being an STM32 part there is caching
+in front of the flash that we cannot turn off, but...How is it that
+we can do two instructions, 0x1000 loops and it only takes 0x1000
+clocks?  Magic?  Superscaler, yeah right.  It could be that the systick
+timer is driven by the arm clock divided by something, that is 
+not uncommon (note the debug timer provides you with no value added
+over systick, so I use systick).
+
+From all of those quotes we know that branch prediction is enabled and
+BTAC is default. Branch Target Address Cache.  Basically as you run
+code there is a wee bitty cache that remembers the branch addresses
+so that when you hit address X it will cause a hit and start a fetch
+of that address.  There may be other features but that is essentially
+a cache.  (and knowing its depth, it might be like three addresses
+for example, I think that is what the ARM11 mpcore has) you can take
+advantage of that and defeat the cache based branch predictor improvement.
+
+As documented if we try to disable the branch prediction in general
+
+    hexstring(GET32(0xE000ED14));
+    PUT32(0xE000ED14,0x00000200);
+    hexstring(GET32(0xE000ED14));
+
+00040200 
+00040200 
+
+It stays enabled.
+
+But if we disable BTAC and go to static only
+
+    hexstring(GET32(0xE000E008));
+    PUT32(0xE000E008,0x00003000);
+    hexstring(GET32(0xE000E008));
+
+00001000 
+00003000 
+
+and the test result at the original alignment is now
+
+0000400F 
+0000400F 
+0000400F 
+0000400F 
+
+and we dont seen any caching detected.
+
+
+08000100 <TEST>:
+ 8000100:	46c0      	nop			; (mov r8, r8)
+ 8000102:	b430      	push	{r4, r5}
+ 8000104:	680c      	ldr	r4, [r1, #0]
+
+08000106 <loop>:
+ 8000106:	3801      	subs	r0, #1
+ 8000108:	d1fd      	bne.n	8000106 <loop>
+ 800010a:	680d      	ldr	r5, [r1, #0]
+ 800010c:	1b60      	subs	r0, r4, r5
+ 800010e:	bc30      	pop	{r4, r5}
+ 8000110:	4770      	bx	lr
+ 8000112:	46c0      	nop			; (mov r8, r8)
+ 8000114:	46c0      	nop			; (mov r8, r8)
+ 8000116:	46c0      	nop			; (mov r8, r8)
+ 8000118:	46c0      	nop			; (mov r8, r8)
+
+If we add one nop to change the alignment of the loop under test by
+one halfword, then we get.
+
+0000600B 
+0000600B 
+0000600B 
+0000600B 
+
+Which is a dramatic difference.  Note not only is the loop in the
+middle the same machine code, but the whole test from the push to the
+bx lr is the same machine code.  The exact same machine code on the
+same chip in the same condition the only difference is where in the
+address space that machine code lives.  Move it by 2 bytes and you
+get a 50% performance hit.
+
+Lets add more
+
+0000500C 
+0000500C 
+0000500C 
+0000500C 
+
+0000500B 
+0000500B 
+0000500B 
+0000500B 
+
+0000500A 
+0000500A 
+0000500A 
+0000500A 
+
+
+08000100 <TEST>:
+ 8000100:	46c0      	nop			; (mov r8, r8)
+ 8000102:	46c0      	nop			; (mov r8, r8)
+ 8000104:	46c0      	nop			; (mov r8, r8)
+ 8000106:	46c0      	nop			; (mov r8, r8)
+ 8000108:	46c0      	nop			; (mov r8, r8)
+ 800010a:	b430      	push	{r4, r5}
+ 800010c:	680c      	ldr	r4, [r1, #0]
+
+0800010e <loop>:
+ 800010e:	3801      	subs	r0, #1
+ 8000110:	d1fd      	bne.n	800010e <loop>
+ 8000112:	680d      	ldr	r5, [r1, #0]
+ 8000114:	1b60      	subs	r0, r4, r5
+ 8000116:	bc30      	pop	{r4, r5}
+ 8000118:	4770      	bx	lr
+ 800011a:	46c0      	nop			; (mov r8, r8)
+ 800011c:	46c0      	nop			; (mov r8, r8)
+ 800011e:	46c0      	nop			; (mov r8, r8)
+ 8000120:	46c0      	nop			; (mov r8, r8)
+
+
+00010FFC 
+00010FFC 
+00010FFC 
+00010FFC 
+
+wow
+
+0000FFFC 
+0000FFFC 
+0000FFFC 
+0000FFFC 
+
+0000FFFB 
+0000FFFB 
+0000FFFB 
+0000FFFB 
+
+0000FFFA 
+0000FFFA 
+0000FFFA 
+0000FFFA 
+
+0000FFFA 
+0000FFFA 
+0000FFFA 
+0000FFFA 
+
+0000EFFB 
+0000EFFB 
+0000EFFB 
+0000EFFB 
+
+0000EFFB 
+0000EFFB 
+0000EFFB 
+0000EFFB 
+
+Okay we are dealing with something more than just fetching.  There is
+no doubt some sort of flash prefetcher and STM32s flash cache thing
+etc.  So going to turn the BTAC back on and demonstrate something.
+
+Original alignment
+
+00001029 
+00001006 
+00001006 
+00001006 
+
+08000100 <TEST>:
+ 8000100:	46c0      	nop			; (mov r8, r8)
+ 8000102:	b430      	push	{r4, r5}
+ 8000104:	680c      	ldr	r4, [r1, #0]
+
+08000106 <loop>:
+ 8000106:	3801      	subs	r0, #1
+ 8000108:	d1fd      	bne.n	8000106 <loop>
+ 800010a:	680d      	ldr	r5, [r1, #0]
+ 800010c:	1b60      	subs	r0, r4, r5
+ 800010e:	bc30      	pop	{r4, r5}
+ 8000110:	4770      	bx	lr
+ 8000112:	46c0      	nop			; (mov r8, r8)
+ 8000114:	46c0      	nop			; (mov r8, r8)
+ 8000116:	46c0      	nop			; (mov r8, r8)
+ 8000118:	46c0      	nop			; (mov r8, r8)
+
+00002013 
+00002003 
+00002003 
+00002003 
+
+Change by 2 bytes and our performance is cut in half, same machine code.
+
+00001028 
+00001006 
+00001006 
+00001006 
+
+00001027 
+00001006 
+00001006 
+00001006 
+
+00001026 
+00001006 
+00001006 
+00001006 
+
+08000100 <TEST>:
+ 8000100:	46c0      	nop			; (mov r8, r8)
+ 8000102:	46c0      	nop			; (mov r8, r8)
+ 8000104:	46c0      	nop			; (mov r8, r8)
+ 8000106:	46c0      	nop			; (mov r8, r8)
+ 8000108:	46c0      	nop			; (mov r8, r8)
+ 800010a:	b430      	push	{r4, r5}
+ 800010c:	680c      	ldr	r4, [r1, #0]
+
+0800010e <loop>:
+ 800010e:	3801      	subs	r0, #1
+ 8000110:	d1fd      	bne.n	800010e <loop>
+ 8000112:	680d      	ldr	r5, [r1, #0]
+ 8000114:	1b60      	subs	r0, r4, r5
+ 8000116:	bc30      	pop	{r4, r5}
+ 8000118:	4770      	bx	lr
+ 800011a:	46c0      	nop			; (mov r8, r8)
+ 800011c:	46c0      	nop			; (mov r8, r8)
+ 800011e:	46c0      	nop			; (mov r8, r8)
+ 8000120:	46c0      	nop			; (mov r8, r8)
+
+00002010 
+00002001 
+00002001 
+00002001 
+
+The documentation implies/states a 64 bit fetch.  Which is 4 16 bit
+instructions.  And we see that as we play with the four possible
+alignments of this loop, one alignment has a sensitivity causing
+a major performance hit.  Same machine code.
+
+They are getting much better but flashes are good and bad for mcus
+they tend to run slow and as you bump the clock speed up of your
+processor then wait states are added to keep from overclocking the
+flash, making your code run faster in bursts but take the same
+amount of time to fetch.  This is getting better in newer mcus but I
+suspect the flash is still at half the rate.  STM32 makes it hard to
+see since they play games with your flash performance.
+
+The SRAM though tends to not have any of these effects and is a good
+place to test and also a good place to put performance sensitive code.
+
+So will turn BTAC off again and run this test, since we are in sram
+we can do a bunch of tests all at once, dont have to reflash each time.
+
+
+    for(rd=0;rd<8;rd++)
+    {
+        rb=0x20002000;
+        for(rc=0;rc<rd;rc++)
+        {
+            PUT32(rb,0xb430); rb+=2; //46c0         nop         ; (mov r8, r8)
+        }
+
+        PUT32(rb,0xb430); rb+=2; // 800010a:    b430        push    {r4, r5}
+        PUT32(rb,0x680c); rb+=2; // 800010c:    680c        ldr r4, [r1, #0]
+                                 //0800010e <loop>:
+        PUT32(rb,0x3801); rb+=2; // 800010e:    3801        subs    r0, #1
+        PUT32(rb,0xd1fd); rb+=2; // 8000110:    d1fd        bne.n   800010e <loop>
+        PUT32(rb,0x680d); rb+=2; // 8000112:    680d        ldr r5, [r1, #0]
+        PUT32(rb,0x1b60); rb+=2; // 8000114:    1b60        subs    r0, r4, r5
+        PUT32(rb,0xbc30); rb+=2; // 8000116:    bc30        pop {r4, r5}
+        PUT32(rb,0x4770); rb+=2; // 8000118:    4770        bx  lr
+        PUT32(rb,0x46c0); rb+=2;
+        PUT32(rb,0x46c0); rb+=2;
+        PUT32(rb,0x46c0); rb+=2;
+        PUT32(rb,0x46c0); rb+=2;
+        PUT32(rb,0x46c0); rb+=2;
+        PUT32(rb,0x46c0); rb+=2;
+
+        ra=HOP(0x1000,STK_CVR,0x20002001);  hexstrings(rd); hexstring(ra%0x00FFFFFF);
+        ra=HOP(0x1000,STK_CVR,0x20002001);  hexstrings(rd); hexstring(ra%0x00FFFFFF);
+        ra=HOP(0x1000,STK_CVR,0x20002001);  hexstrings(rd); hexstring(ra%0x00FFFFFF);
+        ra=HOP(0x1000,STK_CVR,0x20002001);  hexstrings(rd); hexstring(ra%0x00FFFFFF);
+
+    }
+
+
+00000000 00004003 
+00000000 00004003 
+00000000 00004003 
+00000000 00004003 
+00000001 00005002 
+00000001 00005002 
+00000001 00005002 
+00000001 00005002 
+00000002 00004003 
+00000002 00004003 
+00000002 00004003 
+00000002 00004003 
+00000003 00004003 
+00000003 00004003 
+00000003 00004003 
+00000003 00004003 
+00000004 00004003 
+00000004 00004003 
+00000004 00004003 
+00000004 00004003 
+00000005 00005002 
+00000005 00005002 
+00000005 00005002 
+00000005 00005002 
+00000006 00004003 
+00000006 00004003 
+00000006 00004003 
+00000006 00004003 
+00000007 00004003 
+00000007 00004003 
+00000007 00004003 
+00000007 00004003 
+
+So even with BTAC off we get the sensitivity every four alignments like
+we did in the flash.  There were just other factors in the flash, with
+BTAC BP off, that added more chaos, implying that there are multiple
+sensitivities at a range of addresses, and we never got back to that
+original performance of 0x400F.
+
+So there is still some branch prediction here, but what we are seeing
+is the affect of having a fetch that is multiple instructions (and
+is aligned) so as we move even our two instruction loop through
+different alignments eventually we hit one where an extra fetch is 
+needed per loop, and that affects the overall performance.
+
+This is one of a long list or reasons why I say benchmarks are b......t.
+The same machine code can easily perform and vastly different rates
+on the same hardware all other factors held constant other than
+where those instructions are in the address space.  Then if you toss
+in branch prediction features, etc.  The performance changes again.
+
+If you have code with multiple loops in it then you may have one
+gain performance by an alignment change but two others lose performance.
+You can certainly demonstrate this on your own and by adding nops in
+between the loops can tune the overall performance better or worse.
+
+Too many times folks will think they ran the test once and gathered
+a result and it is done.
+
+-------------
+
+There are many SRAMs in a chip design. There are obvious ones like the
+SRAM we use as programmers in an mcu for data storage generally.  But
+there are others buried in all kinds of places.  The chip designers
+will have a laundry list of choices as there is a "memory compiler"
+that generates a number of memories for that process on that foundry.
+They may want weird sizes like an 11 bit wide, etc...  But certainly the
+SRAM we see as programmers is implemented ideally in units of 32 bits
+wide.  We will assume that this one is 32 bits wide.  In such a way
+that only 32 bit, aligned, reads or writes can happen to that sram.
+Any other operation like a byte write, will involve multiple SRAM
+bus cycles.  Read 32 bits, modify one byte, write 32 bits.
+
+That leads to these two tests
+
+
+.balign 0x80
+
+/* r0 address */
+/* r1 count */
+/* r2 timer address */
+.thumb_func
+.globl swtest
+swtest:
+    push {r4,r5}
+    ldr r4,[r2]
+
+swloop:
+    str r3,[r0]
+    str r3,[r0]
+    str r3,[r0]
+    str r3,[r0]
+
+    str r3,[r0]
+    str r3,[r0]
+    str r3,[r0]
+    str r3,[r0]
+
+    str r3,[r0]
+    str r3,[r0]
+    str r3,[r0]
+    str r3,[r0]
+
+    str r3,[r0]
+    str r3,[r0]
+    str r3,[r0]
+    str r3,[r0]
+    sub r1,#1
+    bne swloop
+
+    ldr r5,[r2]
+    sub r0,r4,r5
+    pop {r4,r5}
+    bx lr
+
+
+
+.balign 0x80
+
+/* r0 address */
+/* r1 count */
+/* r2 timer address */
+.thumb_func
+.globl lwtest
+lwtest:
+    push {r4,r5}
+    ldr r4,[r2]
+
+lwloop:
+    ldr r3,[r0]
+    ldr r3,[r0]
+    ldr r3,[r0]
+    ldr r3,[r0]
+
+    ldr r3,[r0]
+    ldr r3,[r0]
+    ldr r3,[r0]
+    ldr r3,[r0]
+
+    ldr r3,[r0]
+    ldr r3,[r0]
+    ldr r3,[r0]
+    ldr r3,[r0]
+
+    ldr r3,[r0]
+    ldr r3,[r0]
+    ldr r3,[r0]
+    ldr r3,[r0]
+    sub r1,#1
+    bne lwloop
+
+    ldr r5,[r2]
+    sub r0,r4,r5
+    pop {r4,r5}
+    bx lr
+
+
+
+A series of stores (writes) and a series of loads (reads).
+
+The stackoverflow question was related to memcpy, and you will sometimes
+see assembly based optimized code in C libraries to attempt to
+improve performance.  But for a platform like this you can also run
+into performance issues if you do not understand how things work.
+
+You might think and you will find a memcpy that does this, okay if the
+address is unaligned then worst case I can do a byte write, a halfword
+write and then I am word aligned and can do word aligned transfers for
+the bulk of the memcpy and maybe a halfword and a byte at the end
+to finish.  That all sounds logical.  But....
+
+    ra=swtest(0x20002000,0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+    ra=swtest(0x20002000,0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+    ra=swtest(0x20002002,0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+    ra=swtest(0x20002002,0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+
+    ra=lwtest(0x20002000,0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+    ra=lwtest(0x20002000,0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+    ra=lwtest(0x20002002,0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+    ra=lwtest(0x20002002,0x1000,STK_CVR);  hexstring(ra%0x00FFFFFF);
+
+store aligned
+00019FFE 
+00019FFE 
+
+store unaligned
+00030007 
+00030007 
+
+load aligned
+00020001 
+00020001 
+
+load unaligned
+0002A00C 
+0002A00C 
+
+As I described it takes extra cycles for two read-modify-writes to
+write an unaligned word to sram.  And an unaligned read takes two
+SRAM bus cycles to collect the whole word to send back.
+
+So if your memcpy had one address of 0x1000 and the other 0x2000 great
+that is ideal you can do word based stuff and get some good performance,
+but if one is 0x1002 and the other is 0x2000 you are going to lose
+performance even if the memcpy is the same size.  Note that even a
+single line of C code can cause the address of things to change and
+cause the whole program to change performance even if only the memcpy
+affects of the alignment of the pointers.  Seeing what we see above
+if we were to see source of 0x1002 and destination of 0x2000 we would
+want to just use word copies until the end and then patch up with
+halfword or byte if the length is not a multiple of 4.  But if we
+saw source of 0x1000 and destination of 0x2002 we would want to do a
+halfword up front then word, since the store penalty is worse than the
+load penalty....For this system.  That hand tuned memcpy would not
+generically work fast everywhere.
+
+If your world is coming to an end due to memcpy performance problems
+though I would recommend you not use memcpy and you write your own
+and you adust the code doing the copy to be word or double word aligned
+and to use matching lengths (multiple of 4 or 8) even if that is more
+than the data you need to copy.
+
+Go find Michael Abrash, Zen of Assembly language...you should be able
+to find it for free.  The 8088 was obsolete when it came out and if
+you are one of those that thinks that invalidates the book, then you
+unfortunately will suffer that great loss as it has nothing to do really
+with the 8088.  Cycle stealers, using a good timer, trying crazy things
+and seeing what happens, etc.  That is what you learn.  
+
+There are clearly unknows here on this platform that I can only speculate
+about.  But at the same time, with knowledge gained above, I can write
+a benchmark for this platform that either makes it look great or makes
+it look horrible.  Almost like magic tricks.  But they are not magic,
+just read and understand the docs, and most importantly, try stuff.
